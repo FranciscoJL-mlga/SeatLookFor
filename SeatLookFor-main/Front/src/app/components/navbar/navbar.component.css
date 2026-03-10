@@ -1,0 +1,135 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 100px;
+  padding: 0 20px;
+  background-color: var(--primary-color);
+/*   background:
+    linear-gradient(to bottom, rgba(49, 12, 81, 0.8), rgba(49, 12, 81, 0.8)),
+    radial-gradient(circle, #1F0714 26%, #BB16D1 67%, #FF0C0C 88%); */
+  background-size: auto, auto;
+  box-shadow: 0 4px 4px rgba(99, 98, 98, 0.25);
+  flex-wrap: wrap;
+}
+
+.navbar__logo {
+  font-family: 'Island Moments', cursive;
+  font-size: 30px;
+  color: white;
+}
+
+.navbar__search {
+  width: 470px;
+  height: 50px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 8px 7px 3px #998888;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.navbar__search-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding-left: 10px;
+}
+
+.navbar__search-input::placeholder {
+  color: #ccc;
+}
+
+.navbar__user {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 20;
+}
+
+.navbar__user-icon {
+  width: 100%;
+  height: 100%;
+  fill: var(--accent-color);
+}
+
+.navbar__menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__menu-item {
+  transition: transform 0.3s ease;
+}
+
+.navbar__menu-item:hover {
+  transform: translateY(-5px);
+}
+
+.navbar__dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(72, 72, 72, 0.1);
+  min-width: 150px;
+  display: none;
+  z-index: 10;
+  border-bottom: 1px solid var(--accent-color);
+}
+
+.navbar__dropdown--show {
+  display: block;
+}
+
+.navbar__dropdown-item {
+  display: block;
+  padding: 10px 15px;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.navbar__dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.navbar__dropdown-text {
+  display: block;
+  font-size: 14px;
+}
+
+.navbar__username {
+  margin-left: 8px;
+  color: #E8B931;
+  font-weight: 500;
+}
+
+@media (max-width: 1100px) {
+  .navbar__search {
+    width: auto;
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 770px) {
+  .navbar__menu {
+    padding: 10px;
+  }
+  .navbar {
+    flex-direction: column;
+  }
+}
+
+

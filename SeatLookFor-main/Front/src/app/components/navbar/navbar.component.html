@@ -1,0 +1,43 @@
+<nav class="navbar">
+    <span class="navbar__logo"> <a routerLink="/" class="nav-link">searchlookfor</a></span>
+    <div class="navbar__search">
+      <input type="text" class="navbar__search-input" placeholder="Buscar...">
+    </div>
+    <div class="navbar__menu">
+      <div class="navbar__menu-item">
+        <span><a routerLink="/" class="nav-link">Home</a> </span>
+      </div>
+      <div class="navbar__menu-item">
+        <span><a routerLink="/eventos" class="nav-link">Eventos</a> </span>
+      </div>
+      <div class="navbar__menu-item">
+        <span><a routerLink="/about" class="nav-link">Sobre SLF</a> </span>
+      </div>
+      <div class="navbar__user">
+        <a (click)="toggleUserMenu()" style="cursor: pointer;">
+          <svg class="navbar__user-icon" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24">
+            <path fill="#E8B931"
+              d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z" />
+          </svg>
+        </a>
+        <div class="navbar__dropdown" [class.navbar__dropdown--show]="isUserMenuOpen">
+          <ng-container *ngIf="currentUser; else notLoggedIn">
+            <a (click)="navigateToUserOrRegister()" class="navbar__dropdown-item">
+              <span class="navbar__dropdown-text">{{currentUser.nombre}}</span>
+            </a>
+            <a (click)="logout()" class="navbar__dropdown-item">
+              <span class="navbar__dropdown-text">Cerrar Sesión</span>
+            </a>
+          </ng-container>
+          <ng-template #notLoggedIn>
+            <a routerLink="/login" class="navbar__dropdown-item">
+              <span class="navbar__dropdown-text">Iniciar Sesión</span>
+            </a>
+            <a routerLink="/registro" class="navbar__dropdown-item">
+              <span class="navbar__dropdown-text">Registrarse</span>
+            </a>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+</nav>

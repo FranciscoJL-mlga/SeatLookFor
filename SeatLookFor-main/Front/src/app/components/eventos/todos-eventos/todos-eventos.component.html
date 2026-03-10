@@ -1,0 +1,33 @@
+<div class="eventos">
+    <div class="eventos__header">
+        <app-navbar></app-navbar>
+
+        <div class="eventos__filters">
+            <div class="eventos__filters-container">
+                <select [(ngModel)]="filtros.tipo" (change)="aplicarFiltros()">
+                    <option value="">Selecciona un tipo</option>
+                    <option *ngFor="let tipo of tipos" [value]="tipo">{{ tipo }}</option>
+                </select>
+                <select [(ngModel)]="filtros.categoria" (change)="aplicarFiltros()">
+                    <option value="">Selecciona una categoría</option>
+                    <option *ngFor="let categoria of categorias" [value]="categoria">{{ categoria }}</option>
+                </select>
+                <button class="eventos__filters-button" (click)="filtros.duracion = 'corta'; aplicarFiltros()">Corta</button>
+                <button class="eventos__filters-button" (click)="filtros.duracion = 'larga'; aplicarFiltros()">Larga</button>
+                <button class="eventos__filters-button" (click)="filtros.fecha = 'hoy'; aplicarFiltros()">Hoy</button>
+                <button class="eventos__filters-button" (click)="filtros.fecha = 'mañana'; aplicarFiltros()">Mañana</button>
+                <button class="eventos__filters-button" (click)="ordenarValoracion()">Ordenar por valoración</button>
+    
+                <button class="eventos__filters-button" (click)="resetFiltros()">Reset</button>
+            </div>
+        </div>
+    </div>
+    <div class="eventos__container">
+        <app-eventos-card *ngIf="!sinResultados" [eventos]="eventosFiltrados"></app-eventos-card>
+
+        <div *ngIf="sinResultados" class="eventos__no-results">
+            <p>No se encontraron eventos que coincidan con los filtros.</p>
+        </div>
+    </div>
+</div>
+<app-footer></app-footer>

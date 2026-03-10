@@ -1,0 +1,57 @@
+<div class="vista">
+    <app-navbar></app-navbar>
+    
+    <div class="contenido">
+        <div class="resumen-reserva">
+            <h2>Resumen de tu Reserva</h2>
+            
+            <div class="detalles-evento">
+                <h3>Detalles del Evento</h3>
+                <div class="info-evento">
+                    <h4>{{ datosEvento?.evento?.titulo }}</h4>
+                    <p>Fecha: {{ datosEvento?.evento?.fecha }}</p>
+                    <p>Hora: {{ datosEvento?.evento?.hora }}</p>
+                </div>
+            </div>
+
+            <div class="detalles-establecimiento">
+                <h3>Establecimiento</h3>
+                <div class="info-establecimiento">
+                    <img [src]="datosEvento?.establecimiento?.imagen" alt="Imagen del establecimiento">
+                    <h4>{{ datosEvento?.establecimiento?.nombre }}</h4>
+                    <p>{{ datosEvento?.establecimiento?.direccion }}</p>
+                </div>
+            </div>
+
+            <div class="detalles-asientos">
+                <h3>Asientos Seleccionados</h3>
+                <div *ngIf="asientosSeleccionados.length > 0">
+                    <ul>
+                        <li *ngFor="let asiento of asientosSeleccionados">
+                            <div class="asiento-info">
+                                <span>Zona: {{asiento.zona}}</span>
+                                <span>Fila: {{asiento.ejeX}}</span>
+                                <span>Asiento: {{asiento.ejeY}}</span>
+                                <span class="precio">{{asiento.precio}}€</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="total">
+                        <h4>Total a pagar: {{calcularTotal()}}€</h4>
+                    </div>
+                </div>
+                <p *ngIf="asientosSeleccionados.length === 0">
+                    No hay asientos seleccionados.
+                </p>
+            </div>
+
+            <div class="acciones">
+                <button class="btn-secundario" (click)="volverAEvento()">Modificar Reserva</button>
+                <button class="btn-primario" [disabled]="asientosSeleccionados.length === 0" (click)="confirmarReserva()">
+                    Confirmar y Pagar
+                </button>
+            </div>
+        </div>
+    </div>
+    <app-footer></app-footer>
+</div>

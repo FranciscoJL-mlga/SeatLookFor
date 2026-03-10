@@ -1,0 +1,154 @@
+.vista {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.contenido {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.resumen-reserva {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.resumen-reserva h2 {
+    color: #333;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.detalles-evento,
+.detalles-establecimiento,
+.detalles-asientos {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.detalles-evento h3,
+.detalles-establecimiento h3,
+.detalles-asientos h3 {
+    color: #444;
+    margin-bottom: 1rem;
+}
+
+.info-evento,
+.info-establecimiento {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-establecimiento img {
+    max-width: 300px;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.detalles-asientos ul {
+    list-style: none;
+    padding: 0;
+}
+
+.detalles-asientos li {
+    padding: 1rem;
+    background-color: #fff;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.asiento-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.precio {
+    font-weight: bold;
+    color: #28a745;
+}
+
+.total {
+    margin-top: 1rem;
+    text-align: right;
+    padding: 1rem;
+    background-color: #e9ecef;
+    border-radius: 4px;
+}
+
+.total h4 {
+    margin: 0;
+    color: #333;
+}
+
+.acciones {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-primario,
+.btn-secundario {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primario {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primario:hover {
+    background-color: #0056b3;
+}
+
+.btn-primario:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-secundario {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secundario:hover {
+    background-color: #545b62;
+}
+
+@media (max-width: 768px) {
+    .contenido {
+        padding: 1rem;
+    }
+
+    .resumen-reserva {
+        padding: 1rem;
+    }
+
+    .acciones {
+        flex-direction: column;
+    }
+
+    .btn-primario,
+    .btn-secundario {
+        width: 100%;
+    }
+}

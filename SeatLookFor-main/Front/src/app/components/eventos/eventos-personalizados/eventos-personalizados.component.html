@@ -1,0 +1,99 @@
+<div class="layout">
+    <app-navbar></app-navbar>
+    
+    <div class="event">
+        <div class="event__reservation">
+            <h3>Tu Reserva</h3>
+            <div *ngIf="asientosSeleccionados.length > 0">
+                <h4>Asientos seleccionados:</h4>
+                <ul>
+                    <li *ngFor="let asiento of asientosSeleccionados">
+                        Zona: {{asiento.zona}} - Fila {{asiento.ejeX}}, Asiento {{asiento.ejeY}} - Precio: {{asiento.precio | number:'1.2-2'}}€
+                        <button class="event__btn-eliminar" (click)="eliminarAsiento(asiento)">✕</button>
+                    </li>
+                </ul>
+                <p>Total: {{calcularTotal() | number:'1.2-2'}}€</p>
+            </div>
+            <p *ngIf="asientosSeleccionados.length === 0">
+                No has seleccionado ningún asiento todavía.
+            </p>
+            <button class="event__button" [disabled]="asientosSeleccionados.length === 0" (click)="confirmarReserva()">Confirmar Reserva</button>
+        </div>
+        <div class="event__title">
+            <p class="event__title-text">{{ datosEvento?.evento?.titulo }}</p>
+        </div>
+
+        <div class="event__map">
+            <app-asientos *ngIf="datosEvento"
+                [asientos]="datosEvento.asientos || []"
+                (asientosSeleccionadosChange)="onAsientosSeleccionados($event)">
+            </app-asientos>
+        </div>
+
+        <div class="event__info">
+            <div class="event__info-image">
+                <img [src]="datosEvento?.establecimiento?.imagen" alt="Portada de estableciemiento">
+            </div>
+            <div class="event__info-name">
+                <h3>{{datosEvento?.establecimiento?.nombre }}</h3>
+                <p class="event__info-location">📍 {{datosEvento?.establecimiento?.ubicacion }}</p>
+            </div>
+            <div class="event__info-content">
+                <div class="event__info-section">
+                    <h4>Detalles del Evento</h4>
+                    <p><strong>Título:</strong> {{datosEvento?.evento?.titulo }}</p>
+                    <p><strong>Fecha:</strong> {{datosEvento?.evento?.fecha | date:'dd/MM/yyyy'}}</p>
+                    <p><strong>Duración:</strong> {{datosEvento?.evento?.duracion }}</p>
+                    <p><strong>Categoría:</strong> {{datosEvento?.evento?.categoria | titlecase }}</p>
+                    <p><strong>Tipo:</strong> {{datosEvento?.evento?.tipo | titlecase }}</p>
+                </div>
+                <div class="event__info-section">
+                    <h4>Sinopsis</h4>
+                    <p>{{datosEvento?.evento?.descripcion }}</p>
+                </div>
+                <div class="event__info-section">
+                    <h4>Ubicación del Evento</h4>
+                    <p>{{datosEvento?.establecimiento?.ubicacion }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="event__comments">
+            <h3 class="event__comments-title">COMENTARIOS</h3>
+
+            <div *ngIf="comentariosEvento.length > 0; else sinComentarios">
+                <div class="event__comment" *ngFor="let comentario of comentariosEvento">
+                    <div class="event__comment-header">
+                        <div class="event__comment-user">
+                            <div class="event__comment-name">
+                                {{ comentario?.nombre || comentario?.usuario?.nombre || 'Usuario' }}
+                                {{ comentario?.apellido || comentario?.usuario?.apellido || '' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="event__comment-content" *ngIf="comentario?.opinion">
+                        <div class="event__comment-rating">
+                            <ng-container *ngFor="let star of getEstrellas(comentario?.valoracion)">
+                                ⭐
+                            </ng-container>
+                        </div>
+                        <p>{{ comentario.opinion }}</p>
+
+                        <img
+                            *ngIf="comentario.foto"
+                            [src]="getFotoComentario(comentario.foto)"
+                            alt="imagen del comentario"
+                            class="event__comment-image"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <ng-template #sinComentarios>
+                <p>No hay comentarios disponibles para este evento.</p>
+            </ng-template>
+        </div>
+    </div>
+     
+    <app-footer></app-footer>
+</div>

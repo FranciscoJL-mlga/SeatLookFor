@@ -1,0 +1,1595 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API de SeatLookFor",
+        "description": "API para la gestión de eventos y reservas de asientos",
+        "contact": {
+            "email": "contacto@seatlookfor.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Iniciar sesión",
+                "description": "Autentica a un usuario y devuelve un token de acceso",
+                "operationId": "login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "usuario@ejemplo.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "idUsu": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Juan"
+                                                },
+                                                "apellido": {
+                                                    "type": "string",
+                                                    "example": "Pérez"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "usuario@ejemplo.com"
+                                                },
+                                                "admin": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdef123456..."
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login exitoso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciales inválidas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Credenciales inválidas"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error de validación"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "El campo email es obligatorio"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Cerrar sesión",
+                "description": "Cierra la sesión del usuario y revoca el token de acceso",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Logout exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logout exitoso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al cerrar sesión",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al cerrar sesión"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Obtener usuario actual",
+                "description": "Devuelve la información del usuario autenticado",
+                "operationId": "getUser",
+                "responses": {
+                    "200": {
+                        "description": "Información del usuario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "idUsu": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "nombre": {
+                                            "type": "string",
+                                            "example": "Juan"
+                                        },
+                                        "apellido": {
+                                            "type": "string",
+                                            "example": "Pérez"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "usuario@ejemplo.com"
+                                        },
+                                        "admin": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No autenticado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Registrar nuevo usuario",
+                "description": "Crea un nuevo usuario y devuelve un token de acceso",
+                "operationId": "register",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nombre",
+                                    "apellido",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Juan"
+                                    },
+                                    "apellido": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Pérez"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255,
+                                        "example": "usuario@ejemplo.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8,
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8,
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuario registrado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario registrado exitosamente"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "idUsu": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Juan"
+                                                },
+                                                "apellido": {
+                                                    "type": "string",
+                                                    "example": "Pérez"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "usuario@ejemplo.com"
+                                                },
+                                                "admin": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdef123456..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error de validación"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "El email ya está registrado"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/asientos/{idAsi}/comentarios": {
+            "get": {
+                "tags": [
+                    "Comentarios"
+                ],
+                "summary": "Listar comentarios de un asiento",
+                "operationId": "listarComentariosAsiento",
+                "parameters": [
+                    {
+                        "name": "idAsi",
+                        "in": "path",
+                        "description": "ID del asiento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 17
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de comentarios",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "idCom": {
+                                                "type": "integer"
+                                            },
+                                            "opinion": {
+                                                "type": "string"
+                                            },
+                                            "valoracion": {
+                                                "type": "number"
+                                            },
+                                            "foto": {
+                                                "type": "string",
+                                                "nullable": true
+                                            },
+                                            "idUsu": {
+                                                "type": "integer"
+                                            },
+                                            "idAsi": {
+                                                "type": "integer"
+                                            },
+                                            "idEve": {
+                                                "type": "integer",
+                                                "nullable": true
+                                            },
+                                            "usuario": {
+                                                "properties": {
+                                                    "idUsu": {
+                                                        "type": "integer"
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string"
+                                                    },
+                                                    "apellido": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "El asiento no existe"
+                    },
+                    "500": {
+                        "description": "Error interno"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Comentarios"
+                ],
+                "summary": "Crear un comentario para un asiento",
+                "description": "Crea un nuevo comentario y valoración (0‑5) para el asiento indicado. El usuario debe estar autenticado.",
+                "operationId": "comentarAsiento",
+                "parameters": [
+                    {
+                        "name": "idAsi",
+                        "in": "path",
+                        "description": "ID del asiento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 17
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "opinion",
+                                    "valoracion"
+                                ],
+                                "properties": {
+                                    "opinion": {
+                                        "type": "string",
+                                        "example": "Muy cómodo 😍"
+                                    },
+                                    "valoracion": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "maximum": 5,
+                                        "minimum": 0,
+                                        "example": 4.5
+                                    },
+                                    "foto": {
+                                        "description": "Imagen en base64 con cabecera data URI",
+                                        "type": "string",
+                                        "example": "data:image/jpeg;base64,/9j/4AAQSkZJRgABA...",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Comentario guardado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Comentario guardado correctamente"
+                                        },
+                                        "comentario": {
+                                            "properties": {
+                                                "idCom": {
+                                                    "type": "integer"
+                                                },
+                                                "opinion": {
+                                                    "type": "string"
+                                                },
+                                                "valoracion": {
+                                                    "type": "number"
+                                                },
+                                                "foto": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "idUsu": {
+                                                    "type": "integer"
+                                                },
+                                                "idAsi": {
+                                                    "type": "integer"
+                                                },
+                                                "idEve": {
+                                                    "type": "integer",
+                                                    "nullable": true
+                                                },
+                                                "usuario": {
+                                                    "properties": {
+                                                        "idUsu": {
+                                                            "type": "integer"
+                                                        },
+                                                        "nombre": {
+                                                            "type": "string"
+                                                        },
+                                                        "apellido": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado"
+                    },
+                    "404": {
+                        "description": "El asiento no existe"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    },
+                    "500": {
+                        "description": "Error interno"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/establecimientos": {
+            "post": {
+                "tags": [
+                    "Establecimientos"
+                ],
+                "summary": "Crear un establecimiento con sus zonas y asientos",
+                "description": "Crea un nuevo establecimiento y registra zonas (se ignora 'escenario'). Devuelve JSON con el establecimiento creado.",
+                "operationId": "crearEstablecimiento",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nombre",
+                                    "ubicacion",
+                                    "imagen",
+                                    "asientos"
+                                ],
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Palacio de los Deportes"
+                                    },
+                                    "ubicacion": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Madrid, España"
+                                    },
+                                    "imagen": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "https://example.com/foto.jpg"
+                                    },
+                                    "asientos": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "fila",
+                                                "columna",
+                                                "zona"
+                                            ],
+                                            "properties": {
+                                                "fila": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "columna": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "zona": {
+                                                    "type": "string",
+                                                    "maxLength": 5,
+                                                    "example": "A"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "example": [
+                                            {
+                                                "fila": 1,
+                                                "columna": 1,
+                                                "zona": "A"
+                                            },
+                                            {
+                                                "fila": 1,
+                                                "columna": 2,
+                                                "zona": "A"
+                                            },
+                                            {
+                                                "fila": 1,
+                                                "columna": 3,
+                                                "zona": "escenario"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Establecimiento creado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Establecimiento guardado correctamente"
+                                        },
+                                        "establecimiento": {
+                                            "$ref": "#/components/schemas/Establecimiento"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    },
+                    "500": {
+                        "description": "Error interno"
+                    }
+                }
+            }
+        },
+        "/establecimientos/{idEst}": {
+            "get": {
+                "tags": [
+                    "Establecimientos"
+                ],
+                "summary": "Mostrar detalles de un establecimiento",
+                "description": "Devuelve la vista Blade `Establecimiento.mostrarEstablecimiento` con los detalles del establecimiento, incluyendo sus asientos y eventos.",
+                "operationId": "mostrarEstablecimiento",
+                "parameters": [
+                    {
+                        "name": "idEst",
+                        "in": "path",
+                        "description": "ID del establecimiento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vista HTML con los detalles del establecimiento",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "establecimiento": {
+                                            "$ref": "#/components/schemas/Establecimiento"
+                                        },
+                                        "asientos": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "idAsi": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "estado": {
+                                                        "type": "string",
+                                                        "example": "libre"
+                                                    },
+                                                    "zona": {
+                                                        "type": "string",
+                                                        "example": "A"
+                                                    },
+                                                    "ejeX": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "ejeY": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "precio": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 50
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "eventos": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "idEve": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string",
+                                                        "example": "Concierto de Rock"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Establecimiento no encontrado"
+                    }
+                }
+            }
+        },
+        "/establecimientos/{id}": {
+            "delete": {
+                "tags": [
+                    "Establecimientos"
+                ],
+                "summary": "Eliminar un establecimiento",
+                "description": "Elimina un establecimiento y sus asientos asociados. No se puede eliminar si tiene eventos asociados.",
+                "operationId": "eliminarEstablecimiento",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del establecimiento a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Establecimiento eliminado correctamente",
+                        "headers": {
+                            "Location": {
+                                "description": "URL de redirección al listado",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No se puede eliminar el establecimiento",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "No se puede eliminar el establecimiento porque tiene eventos asociados"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Establecimiento no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "No se pudo eliminar el establecimiento"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/eventos": {
+            "get": {
+                "tags": [
+                    "Eventos"
+                ],
+                "summary": "Obtener lista de eventos",
+                "operationId": "8df3c75a189cf773a3eb105ea46e145a",
+                "responses": {
+                    "200": {
+                        "description": "Lista de eventos obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "idEve": {
+                                                "type": "integer"
+                                            },
+                                            "titulo": {
+                                                "type": "string"
+                                            },
+                                            "fecha": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "valoracion": {
+                                                "type": "number"
+                                            },
+                                            "descripcion": {
+                                                "type": "string"
+                                            },
+                                            "tipo": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "Teatro",
+                                                    "Orquesta",
+                                                    "Musical",
+                                                    "Concierto"
+                                                ]
+                                            },
+                                            "categoria": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "Drama",
+                                                    "Familiar",
+                                                    "Clásica",
+                                                    "Musical",
+                                                    "Barroco",
+                                                    "Fantasía",
+                                                    "Suspenso",
+                                                    "Comedia"
+                                                ]
+                                            },
+                                            "duracion": {
+                                                "type": "string",
+                                                "format": "time"
+                                            },
+                                            "ubicacion": {
+                                                "type": "string"
+                                            },
+                                            "portada": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/recientes/{id}": {
+            "get": {
+                "tags": [
+                    "Eventos"
+                ],
+                "summary": "Obtener eventos recientes",
+                "operationId": "93dcfdb09c73ae5caa60a52253fef9a8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Número de eventos recientes a obtener",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Eventos recientes obtenidos exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "recientes": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "idEve": {
+                                                        "type": "integer"
+                                                    },
+                                                    "titulo": {
+                                                        "type": "string"
+                                                    },
+                                                    "fecha": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "valoracion": {
+                                                        "type": "number"
+                                                    },
+                                                    "descripcion": {
+                                                        "type": "string"
+                                                    },
+                                                    "tipo": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "Teatro",
+                                                            "Orquesta",
+                                                            "Musical",
+                                                            "Concierto"
+                                                        ]
+                                                    },
+                                                    "categoria": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "Drama",
+                                                            "Familiar",
+                                                            "Clásica",
+                                                            "Musical",
+                                                            "Barroco",
+                                                            "Fantasía",
+                                                            "Suspenso",
+                                                            "Comedia"
+                                                        ]
+                                                    },
+                                                    "duracion": {
+                                                        "type": "string",
+                                                        "format": "time"
+                                                    },
+                                                    "ubicacion": {
+                                                        "type": "string"
+                                                    },
+                                                    "portada": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontraron eventos"
+                    }
+                }
+            }
+        },
+        "/api/eventos/{id}": {
+            "get": {
+                "tags": [
+                    "Eventos"
+                ],
+                "summary": "Obtener detalles de un evento",
+                "operationId": "b0e630e4892205e6d9196048c2186961",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del evento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalles del evento obtenidos exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "evento": {
+                                            "properties": {
+                                                "idEve": {
+                                                    "type": "integer"
+                                                },
+                                                "titulo": {
+                                                    "type": "string"
+                                                },
+                                                "fecha": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "valoracion": {
+                                                    "type": "number"
+                                                },
+                                                "descripcion": {
+                                                    "type": "string"
+                                                },
+                                                "tipo": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Teatro",
+                                                        "Orquesta",
+                                                        "Musical",
+                                                        "Concierto"
+                                                    ]
+                                                },
+                                                "categoria": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Drama",
+                                                        "Familiar",
+                                                        "Clásica",
+                                                        "Musical",
+                                                        "Barroco",
+                                                        "Fantasía",
+                                                        "Suspenso",
+                                                        "Comedia"
+                                                    ]
+                                                },
+                                                "duracion": {
+                                                    "type": "string",
+                                                    "format": "time"
+                                                },
+                                                "ubicacion": {
+                                                    "type": "string"
+                                                },
+                                                "portada": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "establecimiento": {
+                                            "properties": {
+                                                "idEst": {
+                                                    "type": "integer"
+                                                },
+                                                "nombre": {
+                                                    "type": "string"
+                                                },
+                                                "ubicacion": {
+                                                    "type": "string"
+                                                },
+                                                "imagen": {
+                                                    "type": "string"
+                                                },
+                                                "tipo": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "asientos": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "idAsi": {
+                                                        "type": "integer"
+                                                    },
+                                                    "zona": {
+                                                        "type": "string"
+                                                    },
+                                                    "estado": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "libre",
+                                                            "ocupado"
+                                                        ]
+                                                    },
+                                                    "ejeX": {
+                                                        "type": "integer"
+                                                    },
+                                                    "ejeY": {
+                                                        "type": "integer"
+                                                    },
+                                                    "precio": {
+                                                        "type": "number"
+                                                    },
+                                                    "comentarios": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "idUsu": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "nombre": {
+                                                                    "type": "string"
+                                                                },
+                                                                "apellido": {
+                                                                    "type": "string"
+                                                                },
+                                                                "opinion": {
+                                                                    "type": "string"
+                                                                },
+                                                                "valoracion": {
+                                                                    "type": "number"
+                                                                },
+                                                                "foto": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Evento no encontrado"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
+                    }
+                }
+            }
+        },
+        "/api/zonas-por-establecimiento/{idEst}": {
+            "get": {
+                "tags": [
+                    "Eventos"
+                ],
+                "summary": "Obtener zonas de un establecimiento",
+                "operationId": "cc9370e07cc1f69cf20355c704d019ef",
+                "parameters": [
+                    {
+                        "name": "idEst",
+                        "in": "path",
+                        "description": "ID del establecimiento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Zonas obtenidas exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "idZona": {
+                                                "type": "integer"
+                                            },
+                                            "nombre": {
+                                                "type": "string"
+                                            },
+                                            "asientos": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "zona": {
+                                                            "type": "string"
+                                                        },
+                                                        "ejeX": {
+                                                            "type": "integer"
+                                                        },
+                                                        "ejeY": {
+                                                            "type": "integer"
+                                                        },
+                                                        "estado": {
+                                                            "type": "string"
+                                                        },
+                                                        "precio": {
+                                                            "type": "number"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/eventos/{id}/comentarios": {
+            "get": {
+                "tags": [
+                    "Eventos"
+                ],
+                "summary": "Obtener comentarios de un evento",
+                "operationId": "b31e0df18032c0a55c2812a7efabe577",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del evento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comentarios obtenidos exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "idEve": {
+                                            "type": "integer"
+                                        },
+                                        "comentarios": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "idCom": {
+                                                        "type": "integer"
+                                                    },
+                                                    "opinion": {
+                                                        "type": "string"
+                                                    },
+                                                    "valoracion": {
+                                                        "type": "number"
+                                                    },
+                                                    "foto": {
+                                                        "type": "string"
+                                                    },
+                                                    "idUsu": {
+                                                        "type": "integer"
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string"
+                                                    },
+                                                    "apellido": {
+                                                        "type": "string"
+                                                    },
+                                                    "idAsi": {
+                                                        "type": "integer"
+                                                    },
+                                                    "zona": {
+                                                        "type": "string"
+                                                    },
+                                                    "ejeX": {
+                                                        "type": "integer"
+                                                    },
+                                                    "ejeY": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error del servidor"
+                    }
+                }
+            }
+        },
+        "/api/reservas": {
+            "post": {
+                "tags": [
+                    "Reservas"
+                ],
+                "summary": "Crear una nueva reserva",
+                "operationId": "1459adec8d86a11a86480823932e189d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "totalPrecio",
+                                    "fechaReserva",
+                                    "idAsientos",
+                                    "idEve"
+                                ],
+                                "properties": {
+                                    "totalPrecio": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 50
+                                    },
+                                    "fechaReserva": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-03-20T15:00:00Z"
+                                    },
+                                    "idAsientos": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "idEve": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reserva creada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Reserva creada exitosamente"
+                                        },
+                                        "reservas": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "idRes": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "totalPrecio": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 50
+                                                    },
+                                                    "fechaReserva": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "idAsi": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "idUsu": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "idEve": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Los datos proporcionados no son válidos"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "totalPrecio": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "El campo totalPrecio es obligatorio"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error al crear reservas"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Establecimiento": {
+                "required": [
+                    "idEst",
+                    "nombre",
+                    "ubicacion",
+                    "imagen"
+                ],
+                "properties": {
+                    "idEst": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Palacio de los Deportes"
+                    },
+                    "ubicacion": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Madrid, España"
+                    },
+                    "imagen": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "https://example.com/foto.jpg"
+                    },
+                    "asientos": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "idAsi": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "estado": {
+                                    "type": "string",
+                                    "example": "libre"
+                                },
+                                "zona": {
+                                    "type": "string",
+                                    "maxLength": 5,
+                                    "example": "A"
+                                },
+                                "ejeX": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "ejeY": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "precio": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 50
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Autenticación",
+            "description": "API Endpoints para la gestión de autenticación"
+        },
+        {
+            "name": "Eventos",
+            "description": "Endpoints relacionados con eventos"
+        },
+        {
+            "name": "Reservas",
+            "description": "API Endpoints para la gestión de reservas"
+        },
+        {
+            "name": "Comentarios",
+            "description": "Comentarios"
+        },
+        {
+            "name": "Establecimientos",
+            "description": "Establecimientos"
+        }
+    ]
+}
