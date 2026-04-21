@@ -2,6 +2,12 @@
 
 <div class="max-w-3xl mx-auto px-4 py-8">
     <h1 class="text-2xl font-semibold mb-6 text-gray-800">Crear Evento</h1>
+    <style>
+        /* Labels generados por JS también deben tener color */
+        #zonas-content label { color: #374151; font-weight: 500; font-size: 0.875rem; margin-bottom: 0.3rem; display: block; }
+        #zonas-content input { color: #111827; background: #fff; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.5rem 0.75rem; }
+        #mapa-asientos-container h2 { color: #111827; }
+    </style>
 
     @if(session('success'))
         <div class="bg-green-100 text-green-700 px-4 py-2 rounded mb-4">
@@ -33,13 +39,17 @@
             <textarea name="descripcion" id="descripcion" class="w-full border rounded" required>{{ old('descripcion') }}</textarea>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-3 gap-4">
             <div>
                 <label for="fecha">Fecha</label>
                 <input type="date" name="fecha" id="fecha" value="{{ old('fecha') }}" class="w-full border rounded" required>
             </div>
             <div>
-                <label for="duracion">Duracion</label>
+                <label for="hora">Hora de inicio</label>
+                <input type="time" name="hora" id="hora" value="{{ old('hora') }}" class="w-full border rounded" required>
+            </div>
+            <div>
+                <label for="duracion">Duración</label>
                 <input type="time" name="duracion" id="duracion" value="{{ old('duracion') }}" class="w-full border rounded" required>
             </div>
         </div>
@@ -123,7 +133,7 @@ document.getElementById('establecimiento_id').addEventListener('change', functio
 
     if (!idEst) return;
 
-    fetch(`/zonas-por-establecimiento/${idEst}`)
+    fetch(`/admin/zonas-por-establecimiento/${idEst}`)
         .then(response => response.json())
         .then(zonas => {
             zonasContent.innerHTML = '';
@@ -141,27 +151,41 @@ document.getElementById('establecimiento_id').addEventListener('change', functio
                 `;
 
                 zona.asientos.forEach(asiento => {
-                    const div = document.createElement('div');
-                    div.className = "absolute text-xs text-white flex items-center justify-center rounded cursor-pointer font-bold";
-                    div.style.width = "40px";
-                    div.style.height = "40px";
-                    div.style.left = `${asiento.ejeX * 50 + 5}px`;
-                    div.style.top = `${asiento.ejeY * 50 + 5}px`;
-                    div.style.backgroundColor = "#22c55e";
-                    div.innerText = `Z-${asiento.zona}`;
-                    div.dataset.id = asiento.id;
+                    const COLOR_FREE     = '#10b981';
+                    const COLOR_SELECTED = '#f59e0b';
 
-                    div.addEventListener('click', () => {
-                        const selector = `input[name='asientos_seleccionados[]'][value='${asiento.id}']`;
+                    const wrap = document.createElement('div');
+                    wrap.style.cssText = `position:absolute;width:46px;height:50px;cursor:pointer;
+                        left:${asiento.ejeX * 50 + 5}px;top:${asiento.ejeY * 50 + 5}px;`;
+                    wrap.dataset.id = asiento.id;
+                    wrap.title = `Zona ${asiento.zona} — Fila ${asiento.ejeY}, Col ${asiento.ejeX}`;
 
-                        if (div.classList.toggle('seleccionado')) {
-                            div.style.backgroundColor = "#3b82f6"; // azul
+                    const makeSVG = (color) => `
+                        <svg viewBox="0 0 44 48" width="44" height="48" xmlns="http://www.w3.org/2000/svg"
+                             style="display:block;transition:filter .15s;">
+                            <rect x="5" y="0" width="34" height="29" rx="7" fill="${color}"/>
+                            <rect x="0" y="32" width="44" height="14" rx="5" fill="${color}"/>
+                        </svg>`;
+
+                    wrap.innerHTML = makeSVG(COLOR_FREE);
+
+                    wrap.addEventListener('mouseenter', () => {
+                        if (!wrap.classList.contains('seleccionado'))
+                            wrap.querySelector('svg').style.filter = 'brightness(1.2) drop-shadow(0 0 4px rgba(139,92,246,.5))';
+                    });
+                    wrap.addEventListener('mouseleave', () => {
+                        if (!wrap.classList.contains('seleccionado'))
+                            wrap.querySelector('svg').style.filter = '';
+                    });
+
+                    wrap.addEventListener('click', () => {
+                        if (wrap.classList.toggle('seleccionado')) {
+                            wrap.innerHTML = makeSVG(COLOR_SELECTED);
 
                             const inputId = document.createElement('input');
                             inputId.type = 'hidden';
                             inputId.name = 'asientos_seleccionados[]';
                             inputId.value = asiento.id;
-                            inputId.dataset.id = asiento.id;
                             asientoInputContainer.appendChild(inputId);
 
                             const inputZona = document.createElement('input');
@@ -170,16 +194,14 @@ document.getElementById('establecimiento_id').addEventListener('change', functio
                             inputZona.value = zona.idZona;
                             asientoInputContainer.appendChild(inputZona);
                         } else {
-                            div.style.backgroundColor = "#22c55e"; // verde
+                            wrap.innerHTML = makeSVG(COLOR_FREE);
 
-                            const input1 = document.querySelector(`input[name='asientos_seleccionados[]'][value='${asiento.id}']`);
-                            const input2 = document.querySelector(`input[name='asientos_zonas[${asiento.id}]']`);
-                            if (input1) input1.remove();
-                            if (input2) input2.remove();
+                            document.querySelector(`input[name='asientos_seleccionados[]'][value='${asiento.id}']`)?.remove();
+                            document.querySelector(`input[name='asientos_zonas[${asiento.id}]']`)?.remove();
                         }
                     });
 
-                    mapaAsientos.appendChild(div);
+                    mapaAsientos.appendChild(wrap);
                 });
             });
         })

@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -8,26 +9,54 @@ class AsientosSeeder extends Seeder
 {
     public function run(): void
     {
-        // Crear el establecimiento y obtener su ID
-        $idEst = DB::table('establecimiento')->insertGetId([
-                'ubicacion' => 'Calle Gran Bretaña',
-                'nombre' => 'Teatro las Vegas',
-                'imagen' => 'https://www.estudiosegui.com/wp-content/uploads/2017/02/teatro-cervantes-de-malaga.jpg'
-        ]);
+        $establecimientos = DB::table('establecimiento')->pluck('idEst');
 
-        $asientos = [];
+        foreach ($establecimientos as $idEst) {
+            $asientos = [];
 
-        for ($i = 0; $i < 20; $i++) {
-            $asientos[] = [
-                'estado' => 'libre',
-                'zona' => 'a',
-                'ejeX' => $i % 5,
-                'ejeY' => intdiv($i, 5),
-                'precio' => 0.00,
-                'idEst' => $idEst,
-            ];
+            // Zona A – Preferente (filas 1-3, columnas 3-12) – 30 asientos
+            for ($fila = 1; $fila <= 3; $fila++) {
+                for ($col = 3; $col <= 12; $col++) {
+                    $asientos[] = [
+                        'estado' => 'libre',
+                        'zona'   => 'A',
+                        'ejeX'   => $col,
+                        'ejeY'   => $fila,
+                        'precio' => 45.00,
+                        'idEst'  => $idEst,
+                    ];
+                }
+            }
+
+            // Zona B – Platea (filas 4-6, columnas 3-14) – 36 asientos
+            for ($fila = 4; $fila <= 6; $fila++) {
+                for ($col = 3; $col <= 14; $col++) {
+                    $asientos[] = [
+                        'estado' => 'libre',
+                        'zona'   => 'B',
+                        'ejeX'   => $col,
+                        'ejeY'   => $fila,
+                        'precio' => 30.00,
+                        'idEst'  => $idEst,
+                    ];
+                }
+            }
+
+            // Zona C – Anfiteatro (filas 7-9, columnas 3-14) – 36 asientos
+            for ($fila = 7; $fila <= 9; $fila++) {
+                for ($col = 3; $col <= 14; $col++) {
+                    $asientos[] = [
+                        'estado' => 'libre',
+                        'zona'   => 'C',
+                        'ejeX'   => $col,
+                        'ejeY'   => $fila,
+                        'precio' => 20.00,
+                        'idEst'  => $idEst,
+                    ];
+                }
+            }
+
+            DB::table('asiento')->insert($asientos);
         }
-
-        DB::table('asiento')->insert($asientos);
     }
 }

@@ -30,6 +30,35 @@
 
     <style>
         [x-cloak] { display: none; }
+
+        /* ── Admin form text fix ── */
+        main label {
+            display: block;
+            color: #374151;
+            font-weight: 500;
+            font-size: 0.875rem;
+            margin-bottom: 0.3rem;
+        }
+        main input:not([type="hidden"]),
+        main textarea,
+        main select {
+            color: #111827;
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            width: 100%;
+            transition: border-color 0.15s;
+        }
+        main input:not([type="hidden"]):focus,
+        main textarea:focus,
+        main select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+        }
+        main h1, main h2, main h3, main h4 { color: #111827; }
+        main p:not([class*="text-"]) { color: #374151; }
     </style>
 </head>
 
@@ -114,6 +143,15 @@
 
                     <!-- Right side buttons -->
                     <div class="flex items-center space-x-4">
+                        <a href="{{ route('home') }}"
+                           style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.35);border-radius:8px;font-size:13px;font-weight:600;color:#7c3aed;text-decoration:none;transition:all 0.2s;"
+                           onmouseover="this.style.background='rgba(139,92,246,0.2)'"
+                           onmouseout="this.style.background='rgba(139,92,246,0.1)'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/>
+                            </svg>
+                            Modo Usuario
+                        </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="text-gray-500 hover:text-gray-600 flex items-center space-x-2">

@@ -5,6 +5,7 @@
 
             <!-- Formulario de login -->
             <form method="POST" action="{{ route('admin.login') }}" class="space-y-5">
+                {{-- Formulario de login del panel de administración --}}
                 {{-- Token CSRF obligatorio para Laravel --}}
                 @csrf
 
@@ -49,9 +50,9 @@
                 </div>
 
                 <div class="mt-4 text-center">
-                    <a href="https://seatlook.duckdns.org/login" 
-                       class="text-indigo-600 hover:text-indigo-800 transition duration-300">
-                        Volver al login de usuario
+                    <a href="{{ route('login') }}"
+                       class="text-indigo-400 hover:text-indigo-300 transition duration-300 text-sm">
+                        ← Volver al login de usuario
                     </a>
                 </div>
             </form>

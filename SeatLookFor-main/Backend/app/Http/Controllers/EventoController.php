@@ -309,30 +309,21 @@ class EventoController extends Controller
     public function obtenerZonas($idEst)
     {
         $asientos = Asiento::where('idEst', $idEst)->get();
-
-        $zonasAgrupadas = $asientos->groupBy('zona'); // agrupamos por zona real
+        $zonasAgrupadas = $asientos->groupBy('zona');
         $zonasFinales = [];
 
         foreach ($zonasAgrupadas as $nombreZona => $grupo) {
-            // Busca o crea la zona por nombre y establecimiento
-            $zona = \App\Models\Zona::firstOrCreate([
-                'nombre' => $nombreZona,
-                'idEst' => $idEst,
-            ]);
-
             $zonasFinales[] = [
-                'idZona' => $zona->idZona,
-                'nombre' => $zona->nombre,
-                'asientos' => $grupo->map(function ($a) {
-                    return [
-                        'id' => $a->idAsi,
-                        'zona' => $a->zona,
-                        'ejeX' => $a->ejeX,
-                        'ejeY' => $a->ejeY,
-                        'estado' => $a->estado,
-                        'precio' => $a->precio,
-                    ];
-                })->values(),
+                'idZona' => $nombreZona,
+                'nombre' => 'Zona ' . $nombreZona,
+                'asientos' => $grupo->map(fn ($a) => [
+                    'id'     => $a->idAsi,
+                    'zona'   => $a->zona,
+                    'ejeX'   => $a->ejeX,
+                    'ejeY'   => $a->ejeY,
+                    'estado' => $a->estado,
+                    'precio' => $a->precio,
+                ])->values(),
             ];
         }
 
@@ -343,14 +334,15 @@ class EventoController extends Controller
     {
         try {
            $validator = Validator::make($request->all(), [
-                    'titulo' => 'required|string|max:255',
-                    'descripcion' => 'required|string',
-                    'fecha' => 'required|date',
-                    'duracion' => 'required|date_format:H:i',
+                    'titulo'             => 'required|string|max:255',
+                    'descripcion'        => 'required|string',
+                    'fecha'              => 'required|date',
+                    'hora'               => 'required|date_format:H:i',
+                    'duracion'           => 'required|date_format:H:i',
                     'establecimiento_id' => 'required|exists:establecimiento,idEst',
-                    'tipo' => 'required|in:Teatro,Orquesta,Musical,Concierto',
-                    'categoria' => 'required|in:Drama,Familiar,Clásica,Musical,Barroco,Fantasía,Suspenso,Comedia',
-                    'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                    'tipo'               => 'required|in:Teatro,Orquesta,Musical,Concierto',
+                    'categoria'          => 'required|in:Drama,Familiar,Clásica,Musical,Barroco,Fantasía,Suspenso,Comedia',
+                    'imagen'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 ]);
 
 
@@ -500,8 +492,8 @@ public function ver($id)
     } catch (\Exception $e) {
         Log::error('Error al cargar vista del evento: ' . $e->getMessage());
         return redirect()->route('eventos.listado')->withErrors(['error' => 'No se pudo mostrar el evento.']);
-
     }
+}
 
 public function eliminar($id)
 {

@@ -27,14 +27,22 @@ class Comentario extends Model
         'foto',
         'idUsu',
         'idAsi',
-        'idEve'
+        'idEve',
+        'idParent',
     ];
 
-    public function usuario(){
+    public function usuario()
+    {
         return $this->belongsTo(Usuario::class, 'idUsu');
     }
-    public function asiento(){
-         return $this->belongsTo(Asiento::class, 'idAsi');
+
+    public function asiento()
+    {
+        return $this->belongsTo(Asiento::class, 'idAsi');
     }
 
+    public function respuestas()
+    {
+        return $this->hasMany(Comentario::class, 'idParent', 'idCom')->with('usuario');
+    }
 }

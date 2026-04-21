@@ -18,6 +18,19 @@
                 </div>
             </div>
 
+            <!-- Modo Usuario button -->
+            <div class="hidden sm:flex sm:items-center sm:ms-4">
+                <a href="{{ route('home') }}"
+                   style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.4);border-radius:8px;font-size:13px;font-weight:600;color:#8b5cf6;text-decoration:none;transition:all 0.2s;"
+                   onmouseover="this.style.background='rgba(139,92,246,0.28)'"
+                   onmouseout="this.style.background='rgba(139,92,246,0.15)'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/>
+                    </svg>
+                    Modo Usuario
+                </a>
+            </div>
+
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">

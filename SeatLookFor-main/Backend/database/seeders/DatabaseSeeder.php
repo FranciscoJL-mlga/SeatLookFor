@@ -3,40 +3,62 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Usuario;
-use App\Models\Asiento;
-use App\Models\Reserva;
-use App\Models\Comentario;
-use App\Models\Evento;
-use App\Models\Establecimiento;
-use Database\Seeders\AsientosSeeder;
-use Database\Seeders\ComentariosSeeder;
-
-
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
-    {   
+    {
+        // Deshabilitar comprobaciones de claves foráneas para truncar
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
-        //Asiento::factory()->count(10)->create();
-        //Reserva::factory()->count(5)->create();
-        //Comentario::factory()->count(5)->create();
-        Usuario::factory(10)->create();
-        
+        DB::table('reserva')->truncate();
+        DB::table('comentario')->truncate();
+        DB::table('asientos_evento')->truncate();
+        DB::table('asiento')->truncate();
+        DB::table('evento')->truncate();
+        DB::table('establecimiento')->truncate();
+        DB::table('usuario')->truncate();
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
         $this->call([
-            
-            
             EstablecimientoSeeder::class,
-            UsuarioSeeder::class, 
+            UsuarioSeeder::class,
+            EventoSeeder::class,
             AsientosSeeder::class,
-        
         ]);
-        
-         Evento::factory()->count(5)->create();
+
+        // Vincular todos los asientos de cada establecimiento a sus eventos
+        $this->linkAsientosEventos();
+
+        $this->call([
+            ComentariosSeeder::class,
+            ReservaSeeder::class,
+        ]);
+    }
+
+    private function linkAsientosEventos(): void
+    {
+        $eventos = DB::table('evento')->get();
+
+        foreach ($eventos as $evento) {
+            $asientos = DB::table('asiento')
+                ->where('idEst', $evento->idEst)
+                ->get();
+
+            $pivots = [];
+            foreach ($asientos as $asiento) {
+                $pivots[] = [
+                    'idAsi'  => $asiento->idAsi,
+                    'idEve'  => $evento->idEve,
+                    'precio' => $asiento->precio, // precio base por zona
+                ];
+            }
+
+            if (!empty($pivots)) {
+                DB::table('asientos_evento')->insert($pivots);
+            }
+        }
     }
 }
