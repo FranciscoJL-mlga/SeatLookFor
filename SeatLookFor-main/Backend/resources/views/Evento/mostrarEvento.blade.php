@@ -50,18 +50,45 @@
         <!-- MAPA DE ASIENTOS -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">Mapa de Asientos</h2>
+
+            {{-- Leyenda --}}
+            <div style="display:flex;gap:20px;margin-bottom:14px;flex-wrap:wrap;">
+                @php
+                    $zonaColores = ['A' => '#8b5cf6', 'B' => '#3b82f6', 'C' => '#10b981'];
+                    $coloresExtra = ['#f59e0b','#ef4444','#ec4899','#06b6d4','#84cc16'];
+                    $colIdx = 0;
+                @endphp
+                @foreach($evento->asientos->groupBy('zona') as $zona => $seats)
+                    @php $color = $zonaColores[$zona] ?? $coloresExtra[$colIdx++ % count($coloresExtra)]; @endphp
+                    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;">
+                        <svg viewBox="0 0 44 48" width="18" height="20" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="5" y="0" width="34" height="29" rx="7" fill="{{ $color }}"/>
+                            <rect x="0" y="32" width="44" height="14" rx="5" fill="{{ $color }}"/>
+                        </svg>
+                        Zona {{ $zona }}
+                    </div>
+                @endforeach
+            </div>
+
             <div class="overflow-x-auto">
-                <div class="relative bg-white border rounded-xl shadow p-4 mx-auto" style="width: 1000px; height: 600px;">
+                <div class="relative border rounded-xl bg-gray-50 p-4 mx-auto" style="width:1000px;height:600px;">
+                    {{-- Escenario --}}
+                    <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;font-size:12px;font-weight:700;letter-spacing:2px;padding:6px 40px;border-radius:6px;">ESCENARIO</div>
+
+                    @php $colIdx = 0; @endphp
                     @foreach($evento->asientos as $asiento)
-                        <div
-                            class="absolute text-[11px] font-semibold text-white flex items-center justify-center rounded-md shadow-sm"
-                            style="
-                                width: 40px;
-                                height: 40px;
-                                left: {{ $asiento->ejeX * 50 + 5 }}px;
-                                top: {{ $asiento->ejeY * 50 + 5 }}px;
-                                background-color: #22c55e;">
-                            {{ $asiento->zona }}
+                        @php
+                            $color = $zonaColores[$asiento->zona] ?? $coloresExtra[$colIdx++ % count($coloresExtra)];
+                        @endphp
+                        <div title="Zona {{ $asiento->zona }} — Fila {{ $asiento->ejeY }}, Col {{ $asiento->ejeX }}"
+                             style="position:absolute;
+                                    left:{{ $asiento->ejeX * 50 + 5 }}px;
+                                    top:{{ $asiento->ejeY * 50 + 20 }}px;
+                                    width:46px;height:50px;">
+                            <svg viewBox="0 0 44 48" width="44" height="48" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="5" y="0" width="34" height="29" rx="7" fill="{{ $color }}"/>
+                                <rect x="0" y="32" width="44" height="14" rx="5" fill="{{ $color }}"/>
+                            </svg>
                         </div>
                     @endforeach
                 </div>

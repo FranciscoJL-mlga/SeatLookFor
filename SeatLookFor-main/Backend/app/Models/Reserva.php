@@ -30,16 +30,16 @@ class Reserva extends Model
 
     public function evento()
     {
-        return $this->belongsTo(Evento::class);
+        return $this->belongsTo(Evento::class, 'idEve', 'idEve');
     }
 
     public function asiento()
     {
-        return $this->belongsTo(Asiento::class);
+        return $this->belongsTo(Asiento::class, 'idAsi', 'idAsi');
     }
 
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class);
+        return $this->belongsTo(Usuario::class, 'idUsu', 'idUsu');
     }
 }

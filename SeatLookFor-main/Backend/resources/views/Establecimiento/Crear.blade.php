@@ -1,35 +1,26 @@
 <x-layout.nav>
     <style>
         .butaca {
-            width: 40px;
-            height: 40px;
-            background-color: #22c55e;
-            border-radius: 6px;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 46px;
+            height: 50px;
             position: absolute;
             cursor: grab;
             user-select: none;
         }
-
+        .butaca svg { display: block; transition: filter .15s; }
+        .butaca:hover svg { filter: brightness(1.2) drop-shadow(0 0 4px rgba(139,92,246,.45)); }
         .grid-cell {
             width: 50px;
             height: 50px;
-            border: 1px dashed #ddd;
+            border: 1px dashed #d1d5db;
             box-sizing: border-box;
         }
-
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, 50px);
             grid-auto-rows: 50px;
             position: relative;
         }
-
         .escenario {
             width: 300px;
             height: 40px;
@@ -45,8 +36,6 @@
             cursor: move;
         }
     </style>
-</head>
-<body class="bg-gray-100 p-6">
 
 
 
@@ -154,11 +143,22 @@
             const zona = zonaInput.value.trim();
             if (!zona) return alert("Primero escribe una zona");
 
+            const COLORS = {
+                'A':'#8b5cf6','B':'#3b82f6','C':'#10b981',
+                'D':'#f59e0b','E':'#ef4444','F':'#ec4899'
+            };
+            const color = COLORS[zona.toUpperCase()] || '#6366f1';
+
             const codigo = `${zona}-${seatCount}`;
 
             const div = document.createElement('div');
             div.className = 'butaca';
-            div.innerText = codigo;
+            div.innerHTML = `
+                <svg viewBox="0 0 44 48" width="44" height="48" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="5" y="0" width="34" height="29" rx="7" fill="${color}"/>
+                    <rect x="0" y="32" width="44" height="14" rx="5" fill="${color}"/>
+                    <text x="22" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="white" font-family="sans-serif">${zona}</text>
+                </svg>`;
             div.style.left = `${x}px`;
             div.style.top = `${y}px`;
             div.dataset.codigo = codigo;

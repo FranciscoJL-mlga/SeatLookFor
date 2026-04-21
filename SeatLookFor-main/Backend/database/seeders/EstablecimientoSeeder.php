@@ -2,34 +2,33 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Establecimiento;
 use Illuminate\Support\Facades\DB;
 
 class EstablecimientoSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         DB::table('establecimiento')->insert([
             [
-                'ubicacion' => 'Calle Gran Bretaña',
-                'nombre' => 'Teatro las Vegas',
-                'imagen' => 'https://www.estudiosegui.com/wp-content/uploads/2017/02/teatro-cervantes-de-malaga.jpg'
-                
+                'nombre'    => 'Teatro Cervantes',
+                'ubicacion' => 'C/ Ramos Marín s/n, Málaga',
+                'imagen'    => 'https://picsum.photos/seed/teatro-cervantes/800/450',
             ],
             [
-                'ubicacion' => 'Calle Cea Bermudez',
-                'nombre' => 'Anfiteatro Alan Turing',
-                'imagen' => 'https://www.ladrilleramecanizada.com/blog/wp-content/uploads/2019/04/Teatro-Opera-Garnier.jpg'
+                'nombre'    => 'Auditorio Nacional de Música',
+                'ubicacion' => 'C/ Príncipe de Vergara 146, Madrid',
+                'imagen'    => 'https://picsum.photos/seed/auditorio-madrid/800/450',
             ],
             [
-                'ubicacion' => 'Calle Tarajal',
-                'nombre' => 'Teatro Salino',
-                'imagen' => 'https://media.timeout.com/images/100644343/750/422/image.jpg'
+                'nombre'    => 'Gran Teatro del Liceu',
+                'ubicacion' => 'La Rambla 51-59, Barcelona',
+                'imagen'    => 'https://picsum.photos/seed/liceu-barcelona/800/450',
+            ],
+            [
+                'nombre'    => 'Teatro de la Maestranza',
+                'ubicacion' => 'Paseo de Colón 22, Sevilla',
+                'imagen'    => 'https://picsum.photos/seed/maestranza-sevilla/800/450',
             ],
         ]);
     }
