@@ -369,7 +369,11 @@ class EventoController extends Controller
             if ($request->hasFile('imagen')) {
                 $imagen = $request->file('imagen');
                 $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
-                $imagen->move(public_path('images/eventos'), $nombreImagen);
+                $destino = public_path('images/eventos');
+                if (!file_exists($destino)) {
+                    mkdir($destino, 0775, true);
+                }
+                $imagen->move($destino, $nombreImagen);
                 $evento->portada = 'images/eventos/' . $nombreImagen;
             } else {
                 $evento->portada = 'images/eventos/default.jpg';
