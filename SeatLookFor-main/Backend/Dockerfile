@@ -1,9 +1,9 @@
 FROM php:8.2-cli
 
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libpq-dev libpng-dev libonig-dev libxml2-dev \
+    git curl zip unzip libpq-dev libpng-dev libonig-dev libxml2-dev libzip-dev \
     nodejs npm \
-    && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd \
+    && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd zip \
     && apt-get clean
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -11,6 +11,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 
 COPY . .
+
+# Crear .env desde el ejemplo para que los scripts de composer funcionen
+RUN cp .env.example .env
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN composer install --no-dev --optimize-autoloader
 RUN npm install && npm run build
