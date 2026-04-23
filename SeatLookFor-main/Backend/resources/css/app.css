@@ -1161,9 +1161,19 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; }
 
 @media (max-width: 768px) {
   .event { padding: 15px 0; gap: 16px; width: 100%; margin: 0; }
-  .event__title { width: 100%; border-radius: 0; }
-  .event__map { min-height: 300px; width: 100%; border-radius: 0; }
-  .event__comments { padding: 20px; width: 100%; border-radius: 0; }
+  .event__title { width: 100%; border-radius: 0; padding: 14px 16px; }
+  .event__title-text { font-size: 1.3rem; }
+  .event__map { min-height: 300px; width: 100%; border-radius: 0; padding: 16px 12px; overflow-x: auto; }
+  .event__comments { padding: 16px; width: 100%; border-radius: 0; }
+  .event__info { width: 100%; border-radius: 0; padding: 16px; }
+  .event__reservation { padding: 16px; }
+  .event__reservation h3 { font-size: 1rem; }
+}
+
+/* Seat map scrollable wrapper on mobile */
+@media (max-width: 900px) {
+  .event__map > div { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .seats { min-width: max-content; }
 }
 
 /* ============================================================
