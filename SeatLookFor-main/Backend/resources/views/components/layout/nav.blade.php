@@ -38,10 +38,7 @@
             font-family: 'Poppins', sans-serif;
             font-size: 1.2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--primary);
         }
         .admin-sidebar__user {
             padding: 16px 20px;
@@ -72,7 +69,7 @@
             transition: background 0.15s, color 0.15s;
         }
         .admin-nav-link:hover { background: var(--bg-raised); color: var(--text); }
-        .admin-nav-link--active { background: rgba(139,92,246,0.15); color: var(--primary); font-weight: 600; }
+        .admin-nav-link--active { background: rgba(128,0,32,0.25); color: var(--primary); font-weight: 600; border-left: 2px solid var(--primary); }
 
         .admin-sidebar__footer {
             padding: 16px 12px;
