@@ -1,126 +1,202 @@
 <x-layout.nav>
+<style>
+    .admin-form-wrap { background: var(--bg); min-height: 100vh; padding: 0; margin: -32px -24px; }
+    .admin-form-inner { max-width: 900px; margin: 0 auto; padding: 36px 24px; }
+    .admin-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 28px 32px;
+        margin-bottom: 24px;
+    }
+    .admin-card h2 {
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+    }
+    .admin-label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--text-dim) !important;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+    .admin-input {
+        width: 100%;
+        background: var(--bg-raised) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
+        color: var(--text) !important;
+        font-size: 0.9rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .admin-input:focus {
+        outline: none !important;
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 3px var(--primary-glow) !important;
+    }
+    .admin-input::placeholder { color: var(--text-dim) !important; }
+    .admin-select option { background: var(--bg-raised); color: var(--text); }
+    .admin-btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 13px 32px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+        width: 100%;
+    }
+    .admin-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 20px var(--primary-glow); }
+    #zonas-content label { color: var(--text-dim) !important; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
+    #zonas-content input {
+        color: var(--text) !important;
+        background: var(--bg-raised) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
+        width: 100%;
+    }
+    #mapa-asientos-container h2 { color: var(--text) !important; }
+</style>
 
-<div class="max-w-3xl mx-auto px-4 py-8">
-    <h1 class="text-2xl font-semibold mb-6 text-gray-800">Crear Evento</h1>
-    <style>
-        /* Labels generados por JS también deben tener color */
-        #zonas-content label { color: #374151; font-weight: 500; font-size: 0.875rem; margin-bottom: 0.3rem; display: block; }
-        #zonas-content input { color: #111827; background: #fff; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.5rem 0.75rem; }
-        #mapa-asientos-container h2 { color: #111827; }
-    </style>
+<div class="admin-form-wrap">
+    <div class="admin-form-inner">
 
-    @if(session('success'))
-        <div class="bg-green-100 text-green-700 px-4 py-2 rounded mb-4">
-            {{ session('success') }}
+        <div style="margin-bottom:28px;">
+            <h1 style="font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:700;color:var(--text);">Crear Evento</h1>
+            <p style="color:var(--text-dim);font-size:0.875rem;margin-top:4px;">Rellena los datos del evento, selecciona el establecimiento y elige los asientos disponibles.</p>
         </div>
-    @endif
 
-    @if($errors->any())
-        <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form action="{{ route('eventos.guardar') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded px-6 py-6 space-y-5">
-        @csrf
-
-        <!-- Campos básicos del evento -->
-        <div>
-            <label for="titulo">Título</label>
-            <input type="text" name="titulo" id="titulo" value="{{ old('titulo') }}" class="w-full border rounded" required>
-        </div>
-
-        <div>
-            <label for="descripcion">Descripción</label>
-            <textarea name="descripcion" id="descripcion" class="w-full border rounded" required>{{ old('descripcion') }}</textarea>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-                <label for="fecha">Fecha</label>
-                <input type="date" name="fecha" id="fecha" value="{{ old('fecha') }}" class="w-full border rounded" required>
+        @if(session('success'))
+            <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:14px 18px;margin-bottom:20px;color:#86efac;font-size:0.875rem;">
+                {{ session('success') }}
             </div>
-            <div>
-                <label for="hora">Hora de inicio</label>
-                <input type="time" name="hora" id="hora" value="{{ old('hora') }}" class="w-full border rounded" required>
+        @endif
+
+        @if($errors->any())
+            <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:14px 18px;margin-bottom:20px;">
+                <ul style="margin:0;padding-left:16px;color:#f87171;font-size:0.875rem;">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-            <div>
-                <label for="duracion">Duración</label>
-                <input type="time" name="duracion" id="duracion" value="{{ old('duracion') }}" class="w-full border rounded" required>
+        @endif
+
+        <form action="{{ route('eventos.guardar') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+
+            <!-- Información básica -->
+            <div class="admin-card">
+                <h2>Información del Evento</h2>
+
+                <div style="margin-bottom:16px;">
+                    <label class="admin-label">Título</label>
+                    <input type="text" name="titulo" value="{{ old('titulo') }}" required class="admin-input" placeholder="Ej: La Traviata (Ópera)">
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label class="admin-label">Descripción</label>
+                    <textarea name="descripcion" rows="3" required class="admin-input" placeholder="Describe el evento..." style="resize:vertical;">{{ old('descripcion') }}</textarea>
+                </div>
+
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:16px;">
+                    <div>
+                        <label class="admin-label">Fecha</label>
+                        <input type="date" name="fecha" value="{{ old('fecha') }}" required class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Hora de inicio</label>
+                        <input type="time" name="hora" value="{{ old('hora') }}" required class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Duración</label>
+                        <input type="time" name="duracion" value="{{ old('duracion') }}" required class="admin-input">
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;">
+                    <div>
+                        <label class="admin-label">Tipo</label>
+                        <select name="tipo" required class="admin-input admin-select">
+                            <option value="">Selecciona...</option>
+                            <option value="Teatro"   {{ old('tipo')==='Teatro'    ? 'selected' : '' }}>Teatro</option>
+                            <option value="Orquesta" {{ old('tipo')==='Orquesta'  ? 'selected' : '' }}>Orquesta</option>
+                            <option value="Musical"  {{ old('tipo')==='Musical'   ? 'selected' : '' }}>Musical</option>
+                            <option value="Concierto"{{ old('tipo')==='Concierto' ? 'selected' : '' }}>Concierto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="admin-label">Categoría</label>
+                        <select name="categoria" required class="admin-input admin-select">
+                            <option value="">Selecciona...</option>
+                            @foreach(['Drama','Familiar','Clásica','Musical','Barroco','Fantasía','Suspenso','Comedia'] as $cat)
+                                <option value="{{ $cat }}" {{ old('categoria')===$cat ? 'selected' : '' }}>{{ $cat }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="admin-label">Imagen portada</label>
+                        <input type="file" name="imagen" accept="image/*" class="admin-input" style="padding:6px 14px;">
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div>
-            <label for="establecimiento_id">Establecimiento</label>
-            <select name="establecimiento_id" id="establecimiento_id" class="w-full border rounded" required>
-                <option value="">Seleccione uno</option>
-                @foreach ($establecimientos as $est)
-                    <option value="{{ $est->idEst }}">{{ $est->nombre }}</option>
-                @endforeach
-            </select>
-        </div>
+            <!-- Establecimiento y asientos -->
+            <div class="admin-card">
+                <h2>Establecimiento y Asientos</h2>
 
-        <!-- Contenedor de zonas y precios -->
-        <div id="zonas-content" class="mt-6 space-y-4"></div>
+                <div style="margin-bottom:20px;">
+                    <label class="admin-label">Establecimiento</label>
+                    <select name="establecimiento_id" id="establecimiento_id" required class="admin-input admin-select">
+                        <option value="">Seleccione un establecimiento</option>
+                        @foreach ($establecimientos as $est)
+                            <option value="{{ $est->idEst }}">{{ $est->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-        <!-- Mapa de asientos -->
-        <div id="mapa-asientos-container" class="mt-6 hidden">
-            <h2 class="text-xl font-semibold text-center mb-4">Mapa de Asientos</h2>
-            <p class="text-xs text-gray-500 mb-2 sm:hidden text-center">
-                <i class="bi bi-info-circle"></i> Desliza horizontalmente para ver todos los asientos.
-            </p>
-            <div class="overflow-x-auto">
-                <div id="mapa-asientos" class="relative bg-gray-100 border rounded-xl p-4" style="width: 1000px; height: 600px;"></div>
+                <!-- Zonas y precios -->
+                <div id="zonas-content" class="space-y-4"></div>
+
+                <!-- Mapa de asientos -->
+                <div id="mapa-asientos-container" class="mt-6 hidden">
+                    <h2 style="font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;color:var(--text);text-align:center;margin-bottom:16px;">Mapa de Asientos</h2>
+                    <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:8px;display:none;" class="sm:hidden text-center">
+                        💡 Desliza horizontalmente para ver todos los asientos.
+                    </p>
+                    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+                        <div id="mapa-asientos"
+                             style="position:relative;background:var(--bg-raised);border:1px solid var(--border);border-radius:12px;padding:16px;width:1000px;height:600px;"></div>
+                    </div>
+                </div>
+
+                <div id="asientos-seleccionados-container"></div>
+
+                @error('asientos_seleccionados')
+                    <p style="color:#f87171;font-size:0.85rem;margin-top:10px;text-align:center;">{{ $message }}</p>
+                @enderror
             </div>
-        </div>
 
-        <!-- Contenedor para inputs ocultos -->
-        <div id="asientos-seleccionados-container"></div>
-
-        @error('asientos_seleccionados')
-            <p class="text-red-600 text-sm mt-2 text-center">{{ $message }}</p>
-        @enderror
-
-        <div>
-            <label for="tipo">Tipo</label>
-            <select name="tipo" id="tipo" class="w-full border rounded" required>
-                <option value="">Selecciona un tipo</option>
-                <option value="Teatro">Teatro</option>
-                <option value="Orquesta">Orquesta</option>
-                <option value="Musical">Musical</option>
-                <option value="Concierto">Concierto</option>
-            </select>
-        </div>
-
-        <div>
-            <label for="categoria">Categoría</label>
-            <select name="categoria" id="categoria" class="w-full border rounded" required>
-                <option value="">Selecciona una categoría</option>
-                <option value="Drama">Drama</option>
-                <option value="Familiar">Familiar</option>
-                <option value="Clásica">Clásica</option>
-                <option value="Musical">Musical</option>
-                <option value="Barroco">Barroco</option>
-                <option value="Fantasía">Fantasía</option>
-                <option value="Suspenso">Suspenso</option>
-                <option value="Comedia">Comedia</option>
-            </select>
-        </div>
-
-        <div>
-            <label for="imagen">Imagen</label>
-            <input type="file" name="imagen" id="imagen" class="w-full" accept="image/*">
-        </div>
-
-        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Guardar Evento</button>
-    </form>
+            <button type="submit" class="admin-btn-primary">
+                🎭 Guardar Evento
+            </button>
+        </form>
+    </div>
 </div>
 
-<!-- Script para cargar zonas y asientos -->
 <script>
 document.getElementById('establecimiento_id').addEventListener('change', function () {
     const idEst = this.value;
@@ -129,7 +205,7 @@ document.getElementById('establecimiento_id').addEventListener('change', functio
     const mapaAsientos = document.getElementById('mapa-asientos');
     const asientoInputContainer = document.getElementById('asientos-seleccionados-container');
 
-    zonasContent.innerHTML = '<p>Cargando zonas...</p>';
+    zonasContent.innerHTML = '<p style="color:var(--text-dim);font-size:0.875rem;">Cargando zonas...</p>';
     mapaAsientos.innerHTML = '';
     asientoInputContainer.innerHTML = '';
     mapaContainer.classList.add('hidden');
@@ -137,40 +213,34 @@ document.getElementById('establecimiento_id').addEventListener('change', functio
     if (!idEst) return;
 
     fetch(`/admin/zonas-por-establecimiento/${idEst}`)
-        .then(response => response.json())
+        .then(r => r.json())
         .then(zonas => {
             zonasContent.innerHTML = '';
             mapaAsientos.innerHTML = '';
             mapaContainer.classList.remove('hidden');
 
             zonas.forEach(zona => {
-                // Input de precio por zona
                 zonasContent.innerHTML += `
-                    <div class="mb-4">
-                        <label>${zona.nombre} - Precio</label>
+                    <div style="margin-bottom:16px;">
+                        <label>${zona.nombre} — Precio (€)</label>
                         <input type="hidden" name="zonas[]" value="${zona.idZona}">
-                        <input type="number" name="precios[]" step="0.01" class="w-full border rounded" required placeholder="Precio zona ${zona.nombre}">
-                    </div>
-                `;
+                        <input type="number" name="precios[]" step="0.01" min="0" required placeholder="Precio para zona ${zona.nombre}">
+                    </div>`;
 
                 zona.asientos.forEach(asiento => {
-                    const COLOR_FREE     = '#10b981';
-                    const COLOR_SELECTED = '#f59e0b';
-
+                    const COLOR_FREE = '#10b981', COLOR_SEL = '#f59e0b';
                     const wrap = document.createElement('div');
                     wrap.style.cssText = `position:absolute;width:46px;height:50px;cursor:pointer;
                         left:${asiento.ejeX * 50 + 5}px;top:${asiento.ejeY * 50 + 5}px;`;
                     wrap.dataset.id = asiento.id;
                     wrap.title = `Zona ${asiento.zona} — Fila ${asiento.ejeY}, Col ${asiento.ejeX}`;
 
-                    const makeSVG = (color) => `
-                        <svg viewBox="0 0 44 48" width="44" height="48" xmlns="http://www.w3.org/2000/svg"
-                             style="display:block;transition:filter .15s;">
-                            <rect x="5" y="0" width="34" height="29" rx="7" fill="${color}"/>
-                            <rect x="0" y="32" width="44" height="14" rx="5" fill="${color}"/>
-                        </svg>`;
+                    const svg = (color) => `<svg viewBox="0 0 44 48" width="44" height="48" xmlns="http://www.w3.org/2000/svg" style="display:block;transition:filter .15s;">
+                        <rect x="5" y="0" width="34" height="29" rx="7" fill="${color}"/>
+                        <rect x="0" y="32" width="44" height="14" rx="5" fill="${color}"/>
+                    </svg>`;
 
-                    wrap.innerHTML = makeSVG(COLOR_FREE);
+                    wrap.innerHTML = svg(COLOR_FREE);
 
                     wrap.addEventListener('mouseenter', () => {
                         if (!wrap.classList.contains('seleccionado'))
@@ -183,22 +253,15 @@ document.getElementById('establecimiento_id').addEventListener('change', functio
 
                     wrap.addEventListener('click', () => {
                         if (wrap.classList.toggle('seleccionado')) {
-                            wrap.innerHTML = makeSVG(COLOR_SELECTED);
-
-                            const inputId = document.createElement('input');
-                            inputId.type = 'hidden';
-                            inputId.name = 'asientos_seleccionados[]';
-                            inputId.value = asiento.id;
-                            asientoInputContainer.appendChild(inputId);
-
-                            const inputZona = document.createElement('input');
-                            inputZona.type = 'hidden';
-                            inputZona.name = `asientos_zonas[${asiento.id}]`;
-                            inputZona.value = zona.idZona;
-                            asientoInputContainer.appendChild(inputZona);
+                            wrap.innerHTML = svg(COLOR_SEL);
+                            const iId = document.createElement('input');
+                            iId.type = 'hidden'; iId.name = 'asientos_seleccionados[]'; iId.value = asiento.id;
+                            asientoInputContainer.appendChild(iId);
+                            const iZona = document.createElement('input');
+                            iZona.type = 'hidden'; iZona.name = `asientos_zonas[${asiento.id}]`; iZona.value = zona.idZona;
+                            asientoInputContainer.appendChild(iZona);
                         } else {
-                            wrap.innerHTML = makeSVG(COLOR_FREE);
-
+                            wrap.innerHTML = svg(COLOR_FREE);
                             document.querySelector(`input[name='asientos_seleccionados[]'][value='${asiento.id}']`)?.remove();
                             document.querySelector(`input[name='asientos_zonas[${asiento.id}]']`)?.remove();
                         }
@@ -209,9 +272,8 @@ document.getElementById('establecimiento_id').addEventListener('change', functio
             });
         })
         .catch(() => {
-            zonasContent.innerHTML = '<p class="text-red-600 text-sm">Error al cargar zonas.</p>';
+            zonasContent.innerHTML = '<p style="color:#f87171;font-size:0.875rem;">Error al cargar zonas.</p>';
         });
 });
 </script>
-
 </x-layout.nav>
