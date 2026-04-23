@@ -394,7 +394,13 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; }
   margin-top: 20px;
 }
 
-@media (max-width: 768px) { .footer__nav { flex-direction: column; text-align: center; } }
+@media (max-width: 768px) {
+  .footer__nav { flex-direction: column; align-items: center; text-align: center; gap: 28px; }
+  .footer__section { min-width: unset; width: 100%; }
+  .footer__section ul { align-items: center; }
+  .footer__social { justify-content: center; }
+  .footer__content { padding: 0 16px; }
+}
 
 /* ============================================================
    LANDING PAGE / HOME

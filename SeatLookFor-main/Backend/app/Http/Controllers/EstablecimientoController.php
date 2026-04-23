@@ -151,17 +151,28 @@ public function guardar(Request $request)
 {
     // Validar establecimiento
     $request->validate([
-        'nombre' => 'required|string|max:255',
-        'ubicacion' => 'required|string|max:255',
-        'imagen' => 'required|string|max:255',
-        
+        'nombre'   => 'required|string|max:255',
+        'ubicacion'=> 'required|string|max:255',
+        'imagen'   => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
+
+    $imagenPath = 'images/establecimientos/default.jpg';
+    if ($request->hasFile('imagen')) {
+        $destino = public_path('images/establecimientos');
+        if (!file_exists($destino)) {
+            mkdir($destino, 0775, true);
+        }
+        $file = $request->file('imagen');
+        $nombre = time() . '_' . $file->getClientOriginalName();
+        $file->move($destino, $nombre);
+        $imagenPath = 'images/establecimientos/' . $nombre;
+    }
 
     // Crear el establecimiento
     $establecimiento = Establecimiento::create([
-        'nombre' => $request->input('nombre'),
-        'ubicacion' => $request->input('ubicacion'),
-        'imagen' => $request->input('imagen')
+        'nombre'   => $request->input('nombre'),
+        'ubicacion'=> $request->input('ubicacion'),
+        'imagen'   => $imagenPath,
     ]);
 
     // Procesar los asientos desde el JSON

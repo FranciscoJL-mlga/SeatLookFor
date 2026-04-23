@@ -131,7 +131,8 @@
 
             @if($asientos->count() > 0)
                 {{-- Row labels + seat grid --}}
-                <div style="display:flex;align-items:flex-start;gap:0;">
+                <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;">
+                <div style="display:inline-flex;align-items:flex-start;gap:0;min-width:max-content;">
 
                     {{-- Row letters --}}
                     <div style="display:grid;grid-template-rows:repeat({{ $uniqueRows->count() }},50px);gap:5px;">
@@ -190,6 +191,7 @@
                             @endfor
                         </div>
                     </div>
+                </div>
                 </div>
 
                 {{-- Tooltip carousel --}}

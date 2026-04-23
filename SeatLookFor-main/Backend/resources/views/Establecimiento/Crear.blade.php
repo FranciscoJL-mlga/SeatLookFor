@@ -42,7 +42,7 @@
 <div class="max-w-5xl mx-auto px-4 py-6">
     <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center">Editor de Asientos con Escenario</h1>
 
-    <form id="formularioEstablecimiento" method="POST" action="{{ route('establecimiento.guardar') }}">
+    <form id="formularioEstablecimiento" method="POST" action="{{ route('establecimiento.guardar') }}" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-6">
@@ -68,8 +68,8 @@
                     <input type="text" name="ubicacion" required class="w-full border rounded p-2">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium">Imagen (URL)</label>
-                    <input type="text" name="imagen" required class="w-full border rounded p-2">
+                    <label class="block text-sm font-medium">Imagen</label>
+                    <input type="file" name="imagen" accept="image/*" required class="w-full border rounded p-2">
                 </div>
             </div>
         </div>
