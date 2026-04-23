@@ -26,6 +26,41 @@
 
     <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
 
+        <!-- Panel lateral móvil: resumen arriba en pantallas pequeñas -->
+        <div class="xl:hidden">
+            <div class="bg-gray-900 rounded-2xl p-4 border border-gray-800">
+                <h2 class="font-bold text-base mb-2">Tu selección</h2>
+                <div x-show="selected.length === 0" class="text-gray-500 text-sm text-center py-3">
+                    Haz clic en un asiento libre para seleccionarlo
+                </div>
+                <div x-show="selected.length > 0" class="flex flex-wrap gap-2 mb-3">
+                    <template x-for="s in selected" :key="s.idAsi">
+                        <span class="bg-gray-800 rounded px-2 py-1 text-xs flex items-center gap-1">
+                            <span x-text="'Zona ' + s.zona + ' — ' + s.precio + '€'"></span>
+                            <button @click="toggleSeat(s)" class="text-gray-400 hover:text-red-400 ml-1">✕</button>
+                        </span>
+                    </template>
+                </div>
+                <div x-show="selected.length > 0">
+                    <div class="flex justify-between font-bold text-base mb-3">
+                        <span>Total</span>
+                        <span class="text-yellow-400" x-text="total.toFixed(2) + ' €'"></span>
+                    </div>
+                    <form method="POST" action="{{ route('asientos.seleccionar') }}">
+                        @csrf
+                        <input type="hidden" name="idEvento" value="{{ $evento->idEve }}">
+                        <template x-for="s in selected" :key="s.idAsi">
+                            <input type="hidden" name="idAsientos[]" :value="s.idAsi">
+                        </template>
+                        <button type="submit"
+                                class="w-full bg-yellow-400 text-purple-900 font-bold py-2 rounded-xl hover:bg-yellow-300 transition text-sm">
+                            Continuar <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- Mapa de asientos -->
         <div class="xl:col-span-3">
             <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
@@ -108,8 +143,8 @@
             </div>
         </div>
 
-        <!-- Panel lateral: selección -->
-        <div class="xl:col-span-1">
+        <!-- Panel lateral: selección (solo visible en xl) -->
+        <div class="hidden xl:block xl:col-span-1">
             <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800 sticky top-20">
                 <h2 class="font-bold text-lg mb-4">Tu selección</h2>
 

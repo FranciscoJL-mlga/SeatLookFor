@@ -39,7 +39,7 @@
             <textarea name="descripcion" id="descripcion" class="w-full border rounded" required>{{ old('descripcion') }}</textarea>
         </div>
 
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
                 <label for="fecha">Fecha</label>
                 <input type="date" name="fecha" id="fecha" value="{{ old('fecha') }}" class="w-full border rounded" required>
@@ -70,8 +70,11 @@
         <!-- Mapa de asientos -->
         <div id="mapa-asientos-container" class="mt-6 hidden">
             <h2 class="text-xl font-semibold text-center mb-4">Mapa de Asientos</h2>
+            <p class="text-xs text-gray-500 mb-2 sm:hidden text-center">
+                <i class="bi bi-info-circle"></i> Desliza horizontalmente para ver todos los asientos.
+            </p>
             <div class="overflow-x-auto">
-                <div id="mapa-asientos" class="relative bg-gray-100 border rounded-xl p-4 mx-auto" style="width: 1000px; height: 600px;"></div>
+                <div id="mapa-asientos" class="relative bg-gray-100 border rounded-xl p-4" style="width: 1000px; height: 600px;"></div>
             </div>
         </div>
 

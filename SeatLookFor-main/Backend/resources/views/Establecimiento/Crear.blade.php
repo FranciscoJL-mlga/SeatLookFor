@@ -39,38 +39,34 @@
 
 
 
-<div class="max-w-5xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6 text-center">Editor de Asientos con Escenario</h1>
+<div class="max-w-5xl mx-auto px-4 py-6">
+    <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center">Editor de Asientos con Escenario</h1>
 
     <form id="formularioEstablecimiento" method="POST" action="{{ route('establecimiento.guardar') }}">
         @csrf
 
         <div class="mb-6">
-            <h2 class="text-2xl font-bold mb-4">Crear Establecimiento</h2>
+            <h2 class="text-xl sm:text-2xl font-bold mb-4">Crear Establecimiento</h2>
 
+            @if($errors->any())
+                <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
+                    <ul>
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                @if($errors->any())
-                    <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
-                        <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-medium">Nombre</label>
                     <input type="text" name="nombre" required class="w-full border rounded p-2">
                 </div>
-
                 <div>
                     <label class="block text-sm font-medium">Ubicación</label>
                     <input type="text" name="ubicacion" required class="w-full border rounded p-2">
                 </div>
-
                 <div>
                     <label class="block text-sm font-medium">Imagen (URL)</label>
                     <input type="text" name="imagen" required class="w-full border rounded p-2">
@@ -80,26 +76,31 @@
 
         <input type="hidden" name="asientos" id="inputAsientos">
 
-        <div class="mb-4 flex flex-wrap items-center gap-4">
-            <label class="text-lg font-medium">Nombre de la Zona:</label>
-            <input type="text" id="zona" maxlength="5" placeholder="Máx. 5 caracteres" class="p-2 border rounded w-40">
+        <div class="mb-4 flex flex-wrap items-center gap-3">
+            <label class="text-sm font-medium">Zona:</label>
+            <input type="text" id="zona" maxlength="5" placeholder="Máx. 5 caracteres" class="p-2 border rounded w-36 text-sm">
 
-            <label class="text-lg font-medium">Modo:</label>
-            <select id="modo" class="border p-2 rounded">
+            <label class="text-sm font-medium">Modo:</label>
+            <select id="modo" class="border p-2 rounded text-sm">
                 <option value="add">Añadir asientos</option>
                 <option value="move">Mover</option>
             </select>
 
-            <button id="deshacer"
-                    type="button"
-                    class="ml-auto px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+            <button id="deshacer" type="button"
+                    class="ml-auto px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm">
                 Deshacer (Ctrl+Z)
             </button>
         </div>
 
-        <div id="canvas"
-             class="relative w-[1000px] h-[600px] bg-white border rounded shadow overflow-hidden grid-container"
-             style="grid-template-columns: repeat(20, 50px);">
+        <p class="text-xs text-gray-500 mb-2 sm:hidden">
+            <i class="bi bi-info-circle"></i> Desliza horizontalmente para ver el editor completo.
+        </p>
+
+        <div class="overflow-x-auto">
+            <div id="canvas"
+                 class="relative bg-white border rounded shadow overflow-hidden grid-container"
+                 style="width:1000px;height:600px;grid-template-columns: repeat(20, 50px);">
+            </div>
         </div>
 
         <div class="mt-6 text-center">
