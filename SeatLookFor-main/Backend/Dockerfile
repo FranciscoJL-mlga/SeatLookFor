@@ -11,7 +11,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-COPY . .
+COPY SeatLookFor-main/Backend/ .
 
 RUN cp .env.example .env
 
