@@ -416,36 +416,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; }
   padding-bottom: 80px;
 }
 
-/* Spotlight beams */
-.landing-page__spotlight-container {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.landing-page__spotlight {
-  position: absolute;
-  width: 8%;
-  height: 150%;
-  background: linear-gradient(180deg, rgba(212,170,55,0.08) 0%, rgba(212,170,55,0.15) 50%, rgba(128,0,32,0.10) 100%);
-  transform-origin: bottom center;
-  filter: blur(50px);
-  opacity: 0.18;
-  animation: beamMove 10s ease-in-out infinite;
-}
-
-.landing-page__spotlight--left  { left: 0; bottom: -10%; transform: rotate(-22deg); animation-delay: 0s; }
-.landing-page__spotlight--right { right: 0; bottom: -10%; transform: rotate(22deg); animation-delay: -5s; }
-.landing-page__spotlight--semi-left  { left: -8%; bottom: 84%; transform: rotate(-22deg); animation-delay: 0s; }
-.landing-page__spotlight--semi-right { right: -6%; bottom: 84%; transform: rotate(22deg); animation-delay: -5s; }
-
-@keyframes beamMove {
-  0%, 100% { opacity: 0.18; transform: scale(1) rotate(var(--angle, 0deg)); }
-  50%       { opacity: 0.28; transform: scale(1.04) rotate(calc(var(--angle, 0deg) + 2deg)); }
-}
+/* (spotlight beams now handled via Canvas in home.blade.php) */
 
 /* Hero title */
 .landing-page__title {
