@@ -330,16 +330,23 @@
     var landing = document.getElementById('landing-page');
     var DEG     = Math.PI / 180;
     var lightsOn = true;
-    var mouseOnPage = false;
-    var frame = 0;
+    var frame    = 0;
 
-    var EASE_TRACK  = 0.048;
-    var EASE_RETURN = 0.018;
+    /* Speed toward a card vs returning to park position */
+    var EASE_TRACK  = 0.06;
+    var EASE_RETURN = 0.022;
+
+    /* Spotlight sources at the top, slightly inset from the sides.
+       Default angle = pointing almost straight down (park position). */
+    var DEFAULT_L = Math.PI / 2 + 0.18;   /* left:  slightly right of straight down */
+    var DEFAULT_R = Math.PI / 2 - 0.18;   /* right: slightly left  of straight down */
 
     var lights = [
-        { xFrac: 0.14, yFrac: 0.02, angle: -140*DEG, targetAngle: -140*DEG, defaultAngle: -140*DEG, wobbleOffset: 0 },
-        { xFrac: 0.86, yFrac: 0.02, angle:  -40*DEG, targetAngle:  -40*DEG, defaultAngle:  -40*DEG, wobbleOffset: Math.PI }
+        { xFrac: 0.25, yFrac: 0.0, angle: DEFAULT_L, targetAngle: DEFAULT_L, wobbleOffset: 0 },
+        { xFrac: 0.75, yFrac: 0.0, angle: DEFAULT_R, targetAngle: DEFAULT_R, wobbleOffset: Math.PI }
     ];
+
+    var activeEase = EASE_RETURN;
 
     function lerpAngle(a, b, t) {
         var d = b - a;
@@ -353,19 +360,49 @@
         canvas.height = landing.offsetHeight;
     }
 
+    function aimAt(cx, cy) {
+        activeEase = EASE_TRACK;
+        lights.forEach(function (light) {
+            var lx = light.xFrac * canvas.width;
+            var ly = light.yFrac * canvas.height;
+            light.targetAngle = Math.atan2(cy - ly, cx - lx);
+        });
+    }
+
+    function park() {
+        activeEase = EASE_RETURN;
+        lights[0].targetAngle = DEFAULT_L;
+        lights[1].targetAngle = DEFAULT_R;
+    }
+
+    /* Listen to each card */
+    function bindCards() {
+        var cards = landing.querySelectorAll('.landing-page__card');
+        cards.forEach(function (card) {
+            card.addEventListener('mouseenter', function () {
+                var cr  = card.getBoundingClientRect();
+                var cvr = canvas.getBoundingClientRect();
+                aimAt(cr.left + cr.width  / 2 - cvr.left,
+                      cr.top  + cr.height / 2 - cvr.top);
+            });
+            card.addEventListener('mouseleave', park);
+        });
+    }
+
     function drawLight(light) {
         var W = canvas.width, H = canvas.height;
-        var lx  = light.xFrac * W;
-        var ly  = light.yFrac * H;
-        var len = Math.sqrt(W*W + H*H) * 1.3;
-        var ang = light.angle;
-        var half = 17 * DEG;
+        var lx   = light.xFrac * W;
+        var ly   = light.yFrac * H;
+        var len  = Math.sqrt(W * W + H * H) * 1.2;
+        var ang  = light.angle;
+        var half = 15 * DEG;
 
+        /* Outer beam cone */
         var grad = ctx.createRadialGradient(lx, ly, 0, lx, ly, len);
-        grad.addColorStop(0,    'rgba(255,248,200,0.38)');
-        grad.addColorStop(0.1,  'rgba(255,240,160,0.22)');
-        grad.addColorStop(0.4,  'rgba(255,240,160,0.08)');
-        grad.addColorStop(0.75, 'rgba(255,240,160,0.03)');
+        grad.addColorStop(0,    'rgba(255,248,200,0.40)');
+        grad.addColorStop(0.08, 'rgba(255,240,160,0.24)');
+        grad.addColorStop(0.35, 'rgba(255,240,160,0.09)');
+        grad.addColorStop(0.70, 'rgba(255,240,160,0.03)');
         grad.addColorStop(1,    'rgba(255,240,160,0)');
 
         ctx.save();
@@ -377,72 +414,58 @@
         ctx.fill();
         ctx.restore();
 
-        var hotGrad = ctx.createRadialGradient(lx, ly, 0, lx, ly, len*0.55);
-        hotGrad.addColorStop(0,   'rgba(255,255,220,0.22)');
-        hotGrad.addColorStop(0.6, 'rgba(255,255,200,0.04)');
-        hotGrad.addColorStop(1,   'rgba(255,255,200,0)');
+        /* Bright centre strip */
+        var hotGrad = ctx.createRadialGradient(lx, ly, 0, lx, ly, len * 0.6);
+        hotGrad.addColorStop(0,   'rgba(255,255,230,0.25)');
+        hotGrad.addColorStop(0.5, 'rgba(255,255,210,0.05)');
+        hotGrad.addColorStop(1,   'rgba(255,255,210,0)');
 
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(lx, ly);
-        ctx.arc(lx, ly, len*0.55, ang - 5*DEG, ang + 5*DEG);
+        ctx.arc(lx, ly, len * 0.6, ang - 4 * DEG, ang + 4 * DEG);
         ctx.closePath();
         ctx.fillStyle = hotGrad;
         ctx.fill();
         ctx.restore();
 
-        var bulb = ctx.createRadialGradient(lx, ly, 0, lx, ly, 18);
-        bulb.addColorStop(0,   'rgba(255,255,210,0.85)');
+        /* Source bulb glow */
+        var bulb = ctx.createRadialGradient(lx, ly, 0, lx, ly, 16);
+        bulb.addColorStop(0,   'rgba(255,255,210,0.9)');
         bulb.addColorStop(0.4, 'rgba(255,240,150,0.4)');
         bulb.addColorStop(1,   'rgba(255,240,150,0)');
         ctx.beginPath();
-        ctx.arc(lx, ly, 18, 0, Math.PI*2);
+        ctx.arc(lx, ly, 16, 0, Math.PI * 2);
         ctx.fillStyle = bulb;
         ctx.fill();
     }
 
     function animate() {
-        if (canvas.width !== landing.offsetWidth || canvas.height !== landing.offsetHeight) resize();
+        if (canvas.width !== landing.offsetWidth ||
+            canvas.height !== landing.offsetHeight) resize();
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if (lightsOn) {
-            var ease = mouseOnPage ? EASE_TRACK : EASE_RETURN;
             lights.forEach(function (light) {
-                var sway = Math.sin(frame * 0.012 + light.wobbleOffset) * 0.006;
-                light.angle = lerpAngle(light.angle, light.targetAngle, ease) + sway;
+                var sway = Math.sin(frame * 0.01 + light.wobbleOffset) * 0.005;
+                light.angle = lerpAngle(light.angle, light.targetAngle, activeEase) + sway;
                 drawLight(light);
             });
         }
+
         frame++;
         requestAnimationFrame(animate);
     }
 
-    landing.addEventListener('mousemove', function (e) {
-        mouseOnPage = true;
-        var rect = canvas.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var my = e.clientY - rect.top;
-        lights.forEach(function (light) {
-            var lx = light.xFrac * canvas.width;
-            var ly = light.yFrac * canvas.height;
-            light.targetAngle = Math.atan2(my - ly, mx - lx);
-        });
-    });
-
-    landing.addEventListener('mouseleave', function () {
-        mouseOnPage = false;
-        lights.forEach(function (light) { light.targetAngle = light.defaultAngle; });
-    });
-
     lswitch.addEventListener('click', function () {
         lightsOn = !lightsOn;
         lswitch.setAttribute('aria-pressed', lightsOn ? 'true' : 'false');
-        if (!lightsOn) {
-            lights.forEach(function (light) { light.targetAngle = light.defaultAngle; });
-        }
+        if (!lightsOn) park();
     });
 
     resize();
+    bindCards();
     animate();
 })();
 </script>
