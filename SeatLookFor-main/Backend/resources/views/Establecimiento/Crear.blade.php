@@ -136,7 +136,7 @@
                 <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:20px;">
                     <div style="display:flex;align-items:center;gap:8px;">
                         <label class="admin-label" style="margin:0;">Zona:</label>
-                        <input type="text" id="zona" maxlength="5" placeholder="Máx. 5 car." class="admin-input" style="width:120px;">
+                        <input type="text" id="zona" maxlength="50" placeholder="Nombre de zona" class="admin-input" style="width:180px;">
                     </div>
                     <div style="display:flex;align-items:center;gap:8px;">
                         <label class="admin-label" style="margin:0;">Modo:</label>

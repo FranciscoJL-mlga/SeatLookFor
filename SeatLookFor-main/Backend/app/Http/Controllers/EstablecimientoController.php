@@ -192,8 +192,8 @@ public function guardar(Request $request)
         
         
    foreach ($zonas as $zonaNombre) {
-    if (strlen($zonaNombre) > 5) {
-        return back()->withErrors(['zona' => "La zona '$zonaNombre' no puede tener más de 5 caracteres."])->withInput();
+    if (strlen($zonaNombre) > 50) {
+        return back()->withErrors(['zona' => "La zona '$zonaNombre' no puede tener más de 50 caracteres."])->withInput();
     }
 
     Zona::firstOrCreate([
