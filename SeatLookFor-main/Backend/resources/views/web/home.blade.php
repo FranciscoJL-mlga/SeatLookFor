@@ -160,9 +160,23 @@
 }
 
 /* Content above canvas */
-.landing-page > *:not(.spotlight-canvas):not(.theater-frame) {
+.landing-page > *:not(.spotlight-canvas):not(.theater-frame):not(.theater-bg) {
     position: relative;
     z-index: 2;
+}
+
+/* ── Theater interior background ── */
+.theater-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+.theater-bg > svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
 }
 </style>
 @endpush
@@ -170,6 +184,140 @@
 @section('content')
 
 <div class="landing-page" id="landing-page">
+
+    {{-- Theater interior background --}}
+    <div class="theater-bg" aria-hidden="true">
+        <svg viewBox="0 0 1440 700" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <radialGradient id="tbg" cx="50%" cy="30%" r="80%">
+                    <stop offset="0%"   stop-color="#130810"/>
+                    <stop offset="100%" stop-color="#040204"/>
+                </radialGradient>
+                <linearGradient id="tfloor" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%"   stop-color="#1c0808"/>
+                    <stop offset="100%" stop-color="#050205"/>
+                </linearGradient>
+                <pattern id="sp-a" width="7" height="10" patternUnits="userSpaceOnUse">
+                    <rect x=".4" y="0"  width="5.8" height="6"   fill="#700022" opacity=".95"/>
+                    <rect x=".4" y="7"  width="5.8" height="2.5" fill="#480016" opacity=".95"/>
+                </pattern>
+                <pattern id="sp-b" width="13" height="19" patternUnits="userSpaceOnUse">
+                    <rect x=".5" y="0"  width="11" height="12" fill="#740024" opacity=".95"/>
+                    <rect x=".5" y="13" width="11" height="5"  fill="#4e0018" opacity=".95"/>
+                </pattern>
+                <pattern id="sp-c" width="18" height="29" patternUnits="userSpaceOnUse">
+                    <rect x="1"    y="0"  width="15"  height="19" fill="#7c0026" opacity=".95"/>
+                    <rect x="0"    y="1"  width="1.5" height="17" fill="#200008" opacity=".6"/>
+                    <rect x="16.5" y="1"  width="1.5" height="17" fill="#200008" opacity=".6"/>
+                    <rect x="1"    y="20" width="15"  height="7"  fill="#560018" opacity=".95"/>
+                </pattern>
+                <radialGradient id="tvign" cx="50%" cy="55%" r="70%">
+                    <stop offset="0%"   stop-color="black" stop-opacity="0"/>
+                    <stop offset="100%" stop-color="black" stop-opacity=".82"/>
+                </radialGradient>
+                <linearGradient id="ttop" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%"  stop-color="black" stop-opacity=".6"/>
+                    <stop offset="38%" stop-color="black" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="tbot" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="55%"  stop-color="black" stop-opacity="0"/>
+                    <stop offset="100%" stop-color="black" stop-opacity=".75"/>
+                </linearGradient>
+            </defs>
+
+            <!-- Main background -->
+            <rect width="1440" height="700" fill="url(#tbg)"/>
+
+            <!-- Side walls -->
+            <path d="M0,0 L240,0 L280,700 L0,700Z"       fill="#07030a" opacity=".92"/>
+            <path d="M1440,0 L1200,0 L1160,700 L1440,700Z" fill="#07030a" opacity=".92"/>
+
+            <!-- Left upper balcony box -->
+            <path d="M0,160 Q100,145 230,162 L234,238 Q102,228 0,238Z" fill="#0c0410" opacity=".9"/>
+            <path d="M3,237 Q102,227 230,237"   stroke="#400018" stroke-width="2.5" fill="none" opacity=".65"/>
+            <path d="M4,234 Q102,224 228,234"   stroke="#c9a227" stroke-width=".8"  fill="none" opacity=".18"/>
+            <!-- Right upper balcony box -->
+            <path d="M1440,160 Q1340,145 1210,162 L1206,238 Q1338,228 1440,238Z" fill="#0c0410" opacity=".9"/>
+            <path d="M1437,237 Q1338,227 1210,237" stroke="#400018" stroke-width="2.5" fill="none" opacity=".65"/>
+            <path d="M1436,234 Q1338,224 1212,234" stroke="#c9a227" stroke-width=".8"  fill="none" opacity=".18"/>
+
+            <!-- Wall sconces -->
+            <path d="M90,195 Q108,188 130,195 L130,200 Q108,194 90,200Z" fill="#3a0012" opacity=".55"/>
+            <ellipse cx="110" cy="193" rx="9" ry="4" fill="#c9a227" opacity=".08"/>
+            <path d="M1350,195 Q1332,188 1310,195 L1310,200 Q1332,194 1350,200Z" fill="#3a0012" opacity=".55"/>
+            <ellipse cx="1330" cy="193" rx="9" ry="4" fill="#c9a227" opacity=".08"/>
+
+            <!-- Ceiling lighting rig -->
+            <rect x="270" y="20" width="900" height="9" rx="3" fill="#160914" opacity=".85"/>
+            <line x1="390"  y1="29" x2="390"  y2="62" stroke="#180a16" stroke-width="2" opacity=".8"/>
+            <ellipse cx="390"  cy="65" rx="7" ry="3.5" fill="#130812" opacity=".85"/>
+            <line x1="560"  y1="29" x2="560"  y2="55" stroke="#180a16" stroke-width="2" opacity=".8"/>
+            <ellipse cx="560"  cy="58" rx="7" ry="3.5" fill="#130812" opacity=".85"/>
+            <line x1="720"  y1="29" x2="720"  y2="70" stroke="#180a16" stroke-width="2" opacity=".8"/>
+            <ellipse cx="720"  cy="73" rx="7" ry="3.5" fill="#130812" opacity=".85"/>
+            <line x1="880"  y1="29" x2="880"  y2="55" stroke="#180a16" stroke-width="2" opacity=".8"/>
+            <ellipse cx="880"  cy="58" rx="7" ry="3.5" fill="#130812" opacity=".85"/>
+            <line x1="1050" y1="29" x2="1050" y2="62" stroke="#180a16" stroke-width="2" opacity=".8"/>
+            <ellipse cx="1050" cy="65" rx="7" ry="3.5" fill="#130812" opacity=".85"/>
+
+            <!-- Floor / orchestra pit -->
+            <rect x="0" y="662" width="1440" height="38" fill="url(#tfloor)"/>
+            <line x1="270" y1="664" x2="1170" y2="664" stroke="#350012" stroke-width="1.5" opacity=".4"/>
+
+            <!-- Aisle safety lights – outer left -->
+            <circle cx="272" cy="448" r="2.5" fill="#c9a227" opacity=".55"/>
+            <circle cx="272" cy="490" r="2.5" fill="#c9a227" opacity=".55"/>
+            <circle cx="272" cy="532" r="2.5" fill="#c9a227" opacity=".55"/>
+            <circle cx="272" cy="574" r="2.5" fill="#c9a227" opacity=".55"/>
+            <circle cx="272" cy="616" r="2.5" fill="#c9a227" opacity=".55"/>
+            <!-- outer right -->
+            <circle cx="1168" cy="448" r="2.5" fill="#c9a227" opacity=".55"/>
+            <circle cx="1168" cy="490" r="2.5" fill="#c9a227" opacity=".55"/>
+            <circle cx="1168" cy="532" r="2.5" fill="#c9a227" opacity=".55"/>
+            <circle cx="1168" cy="574" r="2.5" fill="#c9a227" opacity=".55"/>
+            <circle cx="1168" cy="616" r="2.5" fill="#c9a227" opacity=".55"/>
+            <!-- center aisle -->
+            <circle cx="720" cy="438" r="2" fill="#c9a227" opacity=".22"/>
+            <circle cx="720" cy="480" r="2" fill="#c9a227" opacity=".22"/>
+            <circle cx="720" cy="522" r="2" fill="#c9a227" opacity=".22"/>
+            <circle cx="720" cy="564" r="2" fill="#c9a227" opacity=".22"/>
+            <circle cx="720" cy="606" r="2" fill="#c9a227" opacity=".22"/>
+
+            <!-- SEAT ROWS  (CX=720, aisle: left ends at 709, right starts at 731) -->
+            <!-- Row 0 – farthest -->
+            <rect x="610" y="295" width="99"  height="10" fill="url(#sp-a)" opacity=".20"/>
+            <rect x="731" y="295" width="99"  height="10" fill="url(#sp-a)" opacity=".20"/>
+            <!-- Row 1 -->
+            <rect x="570" y="322" width="139" height="10" fill="url(#sp-a)" opacity=".25"/>
+            <rect x="731" y="322" width="139" height="10" fill="url(#sp-a)" opacity=".25"/>
+            <!-- Row 2 -->
+            <rect x="525" y="352" width="184" height="11" fill="url(#sp-a)" opacity=".30"/>
+            <rect x="731" y="352" width="184" height="11" fill="url(#sp-a)" opacity=".30"/>
+            <!-- Row 3 -->
+            <rect x="475" y="386" width="234" height="11" fill="url(#sp-a)" opacity=".34"/>
+            <rect x="731" y="386" width="234" height="11" fill="url(#sp-a)" opacity=".34"/>
+            <!-- Row 4 -->
+            <rect x="420" y="424" width="289" height="19" fill="url(#sp-b)" opacity=".37"/>
+            <rect x="731" y="424" width="289" height="19" fill="url(#sp-b)" opacity=".37"/>
+            <!-- Row 5 -->
+            <rect x="358" y="467" width="351" height="20" fill="url(#sp-b)" opacity=".41"/>
+            <rect x="731" y="467" width="351" height="20" fill="url(#sp-b)" opacity=".41"/>
+            <!-- Row 6 -->
+            <rect x="292" y="513" width="417" height="21" fill="url(#sp-b)" opacity=".44"/>
+            <rect x="731" y="513" width="417" height="21" fill="url(#sp-b)" opacity=".44"/>
+            <!-- Row 7 -->
+            <rect x="233" y="560" width="476" height="29" fill="url(#sp-c)" opacity=".48"/>
+            <rect x="731" y="560" width="476" height="29" fill="url(#sp-c)" opacity=".48"/>
+            <!-- Row 8 – closest -->
+            <rect x="182" y="614" width="527" height="33" fill="url(#sp-c)" opacity=".52"/>
+            <rect x="731" y="614" width="527" height="33" fill="url(#sp-c)" opacity=".52"/>
+
+            <!-- Vignette + top/bottom fades -->
+            <rect width="1440" height="700" fill="url(#tvign)"/>
+            <rect width="1440" height="700" fill="url(#ttop)"/>
+            <rect width="1440" height="700" fill="url(#tbot)"/>
+        </svg>
+    </div>
 
     <canvas id="spotlight-canvas" class="spotlight-canvas"></canvas>
 
