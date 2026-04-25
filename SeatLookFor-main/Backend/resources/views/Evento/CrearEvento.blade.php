@@ -198,12 +198,15 @@
 </div>
 
 <script>
+const COLOR_ON  = '#10b981'; // verde  — asiento incluido en el evento
+const COLOR_OFF = '#4b5563'; // gris   — asiento excluido
+
 document.getElementById('establecimiento_id').addEventListener('change', function () {
     const idEst = this.value;
-    const zonasContent = document.getElementById('zonas-content');
-    const mapaContainer = document.getElementById('mapa-asientos-container');
-    const mapaAsientos = document.getElementById('mapa-asientos');
-    const asientoInputContainer = document.getElementById('asientos-seleccionados-container');
+    const zonasContent           = document.getElementById('zonas-content');
+    const mapaContainer          = document.getElementById('mapa-asientos-container');
+    const mapaAsientos           = document.getElementById('mapa-asientos');
+    const asientoInputContainer  = document.getElementById('asientos-seleccionados-container');
 
     zonasContent.innerHTML = '<p style="color:var(--text-dim);font-size:0.875rem;">Cargando zonas...</p>';
     mapaAsientos.innerHTML = '';
@@ -211,6 +214,28 @@ document.getElementById('establecimiento_id').addEventListener('change', functio
     mapaContainer.classList.add('hidden');
 
     if (!idEst) return;
+
+    /* ── Helpers de hidden inputs ── */
+    function addInputs(asientoId, zonaId) {
+        if (asientoInputContainer.querySelector(`input[name='asientos_seleccionados[]'][value='${asientoId}']`)) return;
+        const iId = document.createElement('input');
+        iId.type = 'hidden'; iId.name = 'asientos_seleccionados[]'; iId.value = asientoId;
+        const iZona = document.createElement('input');
+        iZona.type = 'hidden'; iZona.name = `asientos_zonas[${asientoId}]`; iZona.value = zonaId;
+        asientoInputContainer.append(iId, iZona);
+    }
+    function removeInputs(asientoId) {
+        asientoInputContainer.querySelector(`input[name='asientos_seleccionados[]'][value='${asientoId}']`)?.remove();
+        asientoInputContainer.querySelector(`input[name='asientos_zonas[${asientoId}]']`)?.remove();
+    }
+
+    /* ── Cambiar estado de un asiento (on = incluido) ── */
+    function setAsientoState(wrap, on) {
+        wrap.dataset.on = on ? 'true' : 'false';
+        wrap.querySelectorAll('rect').forEach(r => r.setAttribute('fill', on ? COLOR_ON : COLOR_OFF));
+        if (on) addInputs(wrap.dataset.id, wrap.dataset.zonaId);
+        else    removeInputs(wrap.dataset.id);
+    }
 
     fetch(`/admin/zonas-por-establecimiento/${idEst}`)
         .then(r => r.json())
@@ -220,56 +245,95 @@ document.getElementById('establecimiento_id').addEventListener('change', functio
             mapaContainer.classList.remove('hidden');
 
             zonas.forEach(zona => {
-                zonasContent.innerHTML += `
-                    <div style="margin-bottom:16px;">
-                        <label>${zona.nombre} — Precio (€)</label>
-                        <input type="hidden" name="zonas[]" value="${zona.idZona}">
-                        <input type="number" name="precios[]" step="0.01" min="0" required placeholder="Precio para zona ${zona.nombre}">
-                    </div>`;
 
+                /* ── Fila de zona: precio + botón de toggle ── */
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;align-items:flex-end;gap:12px;margin-bottom:16px;flex-wrap:wrap;';
+                row.innerHTML = `
+                    <div style="flex:1;min-width:160px;">
+                        <label>Zona ${zona.nombre} — Precio (€)</label>
+                        <input type="hidden" name="zonas[]" value="${zona.idZona}">
+                        <input type="number" name="precios[]" step="0.01" min="0" required
+                               placeholder="Precio zona ${zona.nombre}">
+                    </div>
+                    <button type="button"
+                            data-zona="${zona.nombre}" data-zona-id="${zona.idZona}" data-state="on"
+                            style="padding:10px 16px;border-radius:8px;border:1px solid rgba(239,68,68,0.4);
+                                   background:rgba(239,68,68,0.12);color:#f87171;
+                                   font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+                        Excluir zona ${zona.nombre}
+                    </button>`;
+                zonasContent.appendChild(row);
+
+                /* ── Botón de toggle de zona ── */
+                const btn = row.querySelector('button');
+                btn.addEventListener('click', () => {
+                    const turningOff = btn.dataset.state === 'on';
+                    mapaAsientos.querySelectorAll(`.asiento-wrap[data-zona="${zona.nombre}"]`).forEach(w => {
+                        setAsientoState(w, !turningOff);
+                    });
+                    btn.dataset.state = turningOff ? 'off' : 'on';
+                    if (turningOff) {
+                        btn.textContent = `Incluir zona ${zona.nombre}`;
+                        btn.style.borderColor = 'rgba(34,197,94,0.4)';
+                        btn.style.background  = 'rgba(34,197,94,0.12)';
+                        btn.style.color       = '#86efac';
+                    } else {
+                        btn.textContent = `Excluir zona ${zona.nombre}`;
+                        btn.style.borderColor = 'rgba(239,68,68,0.4)';
+                        btn.style.background  = 'rgba(239,68,68,0.12)';
+                        btn.style.color       = '#f87171';
+                    }
+                });
+
+                /* ── Asientos de la zona (todos incluidos por defecto) ── */
                 zona.asientos.forEach(asiento => {
-                    const COLOR_FREE = '#10b981', COLOR_SEL = '#f59e0b';
                     const wrap = document.createElement('div');
+                    wrap.className = 'asiento-wrap';
                     wrap.style.cssText = `position:absolute;width:46px;height:50px;cursor:pointer;
                         left:${asiento.ejeX * 50 + 5}px;top:${asiento.ejeY * 50 + 5}px;`;
-                    wrap.dataset.id = asiento.id;
-                    wrap.title = `Zona ${asiento.zona} — Fila ${asiento.ejeY}, Col ${asiento.ejeX}`;
+                    wrap.dataset.id     = asiento.id;
+                    wrap.dataset.zona   = zona.nombre;
+                    wrap.dataset.zonaId = zona.idZona;
+                    wrap.dataset.on     = 'true';
+                    wrap.title = `Zona ${asiento.zona} — Fila ${asiento.ejeY + 1}, Col ${asiento.ejeX + 1}`;
 
-                    const svg = (color) => `<svg viewBox="0 0 44 48" width="44" height="48" xmlns="http://www.w3.org/2000/svg" style="display:block;transition:filter .15s;">
-                        <rect x="5" y="0" width="34" height="29" rx="7" fill="${color}"/>
-                        <rect x="0" y="32" width="44" height="14" rx="5" fill="${color}"/>
+                    wrap.innerHTML = `<svg viewBox="0 0 44 48" width="44" height="48" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="5" y="0" width="34" height="29" rx="7" fill="${COLOR_ON}"/>
+                        <rect x="0" y="32" width="44" height="14" rx="5" fill="${COLOR_ON}"/>
                     </svg>`;
 
-                    wrap.innerHTML = svg(COLOR_FREE);
+                    /* Incluir por defecto */
+                    addInputs(asiento.id, zona.idZona);
 
                     wrap.addEventListener('mouseenter', () => {
-                        if (!wrap.classList.contains('seleccionado'))
-                            wrap.querySelector('svg').style.filter = 'brightness(1.2) drop-shadow(0 0 4px rgba(139,92,246,.5))';
+                        wrap.querySelector('svg').style.filter = wrap.dataset.on === 'true'
+                            ? 'brightness(1.15) drop-shadow(0 0 4px rgba(16,185,129,.5))'
+                            : 'brightness(1.4)';
                     });
                     wrap.addEventListener('mouseleave', () => {
-                        if (!wrap.classList.contains('seleccionado'))
-                            wrap.querySelector('svg').style.filter = '';
+                        wrap.querySelector('svg').style.filter = '';
                     });
-
                     wrap.addEventListener('click', () => {
-                        if (wrap.classList.toggle('seleccionado')) {
-                            wrap.innerHTML = svg(COLOR_SEL);
-                            const iId = document.createElement('input');
-                            iId.type = 'hidden'; iId.name = 'asientos_seleccionados[]'; iId.value = asiento.id;
-                            asientoInputContainer.appendChild(iId);
-                            const iZona = document.createElement('input');
-                            iZona.type = 'hidden'; iZona.name = `asientos_zonas[${asiento.id}]`; iZona.value = zona.idZona;
-                            asientoInputContainer.appendChild(iZona);
-                        } else {
-                            wrap.innerHTML = svg(COLOR_FREE);
-                            document.querySelector(`input[name='asientos_seleccionados[]'][value='${asiento.id}']`)?.remove();
-                            document.querySelector(`input[name='asientos_zonas[${asiento.id}]']`)?.remove();
-                        }
+                        setAsientoState(wrap, wrap.dataset.on !== 'true');
                     });
 
                     mapaAsientos.appendChild(wrap);
                 });
             });
+
+            /* ── Leyenda ── */
+            const leyenda = document.createElement('div');
+            leyenda.style.cssText = 'margin-top:14px;display:flex;gap:16px;font-size:0.75rem;color:var(--text-dim);';
+            leyenda.innerHTML = `
+                <span style="display:flex;align-items:center;gap:5px;">
+                    <span style="width:12px;height:12px;border-radius:3px;background:${COLOR_ON};display:inline-block;"></span> Incluido
+                </span>
+                <span style="display:flex;align-items:center;gap:5px;">
+                    <span style="width:12px;height:12px;border-radius:3px;background:${COLOR_OFF};display:inline-block;"></span> Excluido
+                </span>
+                <span style="color:var(--text-dim);">Clic en un asiento para incluirlo/excluirlo individualmente</span>`;
+            document.getElementById('mapa-asientos-container').appendChild(leyenda);
         })
         .catch(() => {
             zonasContent.innerHTML = '<p style="color:#f87171;font-size:0.875rem;">Error al cargar zonas.</p>';
