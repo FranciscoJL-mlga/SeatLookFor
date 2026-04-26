@@ -19,7 +19,7 @@
      x-data="seatSelector(window.__asientosData)">
 
     <div class="mb-6">
-        <a href="{{ route('evento.show', $evento->codigo) }}" class="text-gray-400 hover:text-white transition text-sm">
+        <a href="{{ route('evento.show', base64_encode($evento->idEve)) }}" class="text-gray-400 hover:text-white transition text-sm">
             <i class="bi bi-arrow-left me-1"></i> Volver al evento
         </a>
     </div>

@@ -43,9 +43,9 @@ class EventoWebController extends Controller
         return view('web.eventos.index', compact('eventos', 'tipos', 'categorias'));
     }
 
-    public function show(Evento $evento)
+    public function show($id)
     {
-        $evento->load(['asientos.usuariosComentaron', 'establecimiento']);
+        $evento = Evento::with(['asientos.usuariosComentaron', 'establecimiento'])->findOrFail((int) base64_decode($id));
         $idEve = $evento->idEve;
 
         // Eventos finalizados: solo accesibles para usuarios con reserva en ese evento

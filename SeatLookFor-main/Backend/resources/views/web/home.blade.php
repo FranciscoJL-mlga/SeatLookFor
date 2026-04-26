@@ -279,7 +279,7 @@
                             </p>
                         </div>
                     </div>
-                    <a href="{{ route('evento.show', $evento->codigo) }}" class="landing-page__cta">⬊</a>
+                    <a href="{{ route('evento.show', base64_encode($evento->idEve)) }}" class="landing-page__cta">⬊</a>
                 </div>
                 @endforeach
             </div>

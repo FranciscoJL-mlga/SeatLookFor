@@ -14,9 +14,9 @@ use Illuminate\Support\Str;
 
 class AsientoWebController extends Controller
 {
-    public function index(Evento $evento)
+    public function index($id)
     {
-        $evento->load(['asientos.usuariosComentaron', 'establecimiento']);
+        $evento = Evento::with(['asientos.usuariosComentaron', 'establecimiento'])->findOrFail((int) base64_decode($id));
 
         $asientosReservadosIds = Reserva::where('idEve', $evento->idEve)->pluck('idAsi')->toArray();
 
@@ -54,7 +54,7 @@ class AsientoWebController extends Controller
         session(['asientos_seleccionados' => $request->idAsientos]);
         session(['evento_reserva' => $evento->idEve]);
 
-        return redirect()->route('reserva.resumen', $evento->codigo);
+        return redirect()->route('reserva.resumen', base64_encode($evento->idEve));
     }
 
     public function comentar(Request $request, $id)

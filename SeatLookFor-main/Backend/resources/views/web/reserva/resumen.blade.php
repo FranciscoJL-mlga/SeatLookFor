@@ -7,7 +7,7 @@
 (function () {
     const expiresAt  = {{ $expiresAt->timestamp }} * 1000;
     const liberarUrl = "{{ route('reserva.liberar') }}";
-    const eventoUrl  = "{{ route('evento.show', $evento->codigo) }}";
+    const eventoUrl  = "{{ route('evento.show', base64_encode($evento->idEve)) }}";
     const csrfToken  = "{{ csrf_token() }}";
 
     const timerEl = document.getElementById('bloqueo-timer');
@@ -62,7 +62,7 @@
 
                 {{-- ── Breadcrumb / back link ── --}}
                 <div style="text-align:center;margin-bottom:28px;">
-                    <a href="{{ route('evento.show', $evento->codigo) }}"
+                    <a href="{{ route('evento.show', base64_encode($evento->idEve)) }}"
                        style="font-size:13px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;transition:color 0.2s;"
                        onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-dim)'">
                         ← Volver al evento
@@ -144,7 +144,7 @@
 
                 {{-- ── Actions ── --}}
                 <div class="acciones">
-                    <a href="{{ route('evento.show', $evento->codigo) }}" class="btn-secundario">
+                    <a href="{{ route('evento.show', base64_encode($evento->idEve)) }}" class="btn-secundario">
                         ← Modificar Reserva
                     </a>
 

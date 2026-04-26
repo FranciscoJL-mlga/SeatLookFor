@@ -125,7 +125,7 @@
                         @endif
                     </div>
 
-                    <button onclick="window.location.href='{{ route('evento.show', $evento->codigo) }}'"
+                    <button onclick="window.location.href='{{ route('evento.show', base64_encode($evento->idEve)) }}'"
                             class="event-card__button">
                         Reservar
                     </button>
