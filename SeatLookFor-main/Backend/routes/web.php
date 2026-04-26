@@ -19,7 +19,7 @@ use App\Http\Controllers\Web\ReservaWebController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/eventos', [EventoWebController::class, 'index'])->name('eventos.index');
-Route::get('/evento/{id}', [EventoWebController::class, 'show'])->name('evento.show');
+Route::get('/evento/{evento}', [EventoWebController::class, 'show'])->name('evento.show');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 // Auth de usuario (solo para invitados)
@@ -37,9 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/usuario', [PerfilController::class, 'index'])->name('usuario.perfil');
     Route::post('/usuario/password', [PerfilController::class, 'cambiarPassword'])->name('usuario.password');
     Route::post('/usuario/eliminar', [PerfilController::class, 'eliminarCuenta'])->name('usuario.eliminar');
-    Route::get('/asientos/{idEvento}', [AsientoWebController::class, 'index'])->name('asientos.index');
+    Route::get('/asientos/{evento}', [AsientoWebController::class, 'index'])->name('asientos.index');
     Route::post('/asientos/seleccionar', [AsientoWebController::class, 'seleccionar'])->name('asientos.seleccionar');
-    Route::get('/resumen/{idEvento}', [ReservaWebController::class, 'resumen'])->name('reserva.resumen');
+    Route::get('/resumen/{evento}', [ReservaWebController::class, 'resumen'])->name('reserva.resumen');
     Route::post('/reserva', [ReservaWebController::class, 'crear'])->name('reserva.crear');
     Route::post('/reserva/liberar', [ReservaWebController::class, 'liberar'])->name('reserva.liberar');
     Route::post('/asientos/{id}/comentar', [AsientoWebController::class, 'comentar'])->name('asientos.comentar');

@@ -225,7 +225,7 @@
                                 @endif
                             </div>
                             @if($puedeComentarAun)
-                            <a href="{{ route('evento.show', $evento->idEve) }}"
+                            <a href="{{ route('evento.show', $evento->codigo) }}"
                                style="flex-shrink:0;padding:8px 16px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;">
                                 Comentar asiento
                             </a>

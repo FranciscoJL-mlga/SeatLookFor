@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Evento extends Model
 {
@@ -13,7 +14,6 @@ class Evento extends Model
     public $timestamps = false;
     protected $table = 'evento';
 
-    // Clave primaria 
     protected $primaryKey = 'idEve';
 
     protected $fillable = [
@@ -27,8 +27,27 @@ class Evento extends Model
         'fecha',
         'categoria',
         'idEst',
-        'portada'
+        'portada',
+        'codigo',
     ];
+
+    public function getRouteKeyName(): string
+    {
+        return 'codigo';
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::creating(function ($evento) {
+            if (empty($evento->codigo)) {
+                do {
+                    $codigo = Str::random(8);
+                } while (static::where('codigo', $codigo)->exists());
+                $evento->codigo = $codigo;
+            }
+        });
+    }
 
     public function ReservaDeEventos()
     {
