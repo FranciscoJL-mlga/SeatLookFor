@@ -71,11 +71,18 @@
     }
     .admin-btn-danger:hover { background: rgba(239,68,68,0.3); }
     .admin-canvas-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .butaca { width: 46px; height: 50px; position: absolute; cursor: grab; user-select: none; }
+    .butaca { position: absolute; cursor: grab; user-select: none; }
     .butaca svg { display: block; transition: filter .15s; }
     .butaca:hover svg { filter: brightness(1.2) drop-shadow(0 0 4px rgba(139,92,246,.45)); }
-    .grid-cell { width: 50px; height: 50px; border: 1px dashed rgba(139,92,246,0.2); box-sizing: border-box; }
-    .grid-container { display: grid; grid-template-columns: repeat(auto-fill, 50px); grid-auto-rows: 50px; position: relative; }
+    .grid-cell { border: 1px dashed rgba(139,92,246,0.2); box-sizing: border-box; }
+    .grid-container { display: grid; position: relative; }
+    .model-btn {
+        padding: 7px 16px; border: none; background: transparent;
+        color: var(--text-dim); font-size: 0.8rem; font-weight: 600;
+        cursor: pointer; transition: background 0.15s, color 0.15s;
+    }
+    .model-btn:hover:not(.model-btn--active) { background: var(--bg-raised); color: var(--text); }
+    .model-btn--active { background: var(--primary); color: #fff; }
     .escenario {
         width: 300px; height: 40px;
         background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -133,6 +140,16 @@
             <div class="admin-card">
                 <h2>Editor de Asientos</h2>
 
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:16px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <label class="admin-label" style="margin:0;">Modelo:</label>
+                        <div style="display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+                            <button type="button" class="model-btn model-btn--active" data-model="standard">Estándar (20×12)</button>
+                            <button type="button" class="model-btn" data-model="large">Grande (60×36)</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:20px;">
                     <div style="display:flex;align-items:center;gap:8px;">
                         <label class="admin-label" style="margin:0;">Zona:</label>
@@ -160,9 +177,8 @@
                 <p class="canvas-hint">💡 Desliza horizontalmente para ver el editor completo.</p>
 
                 <div class="admin-canvas-wrap">
-                    <div id="canvas"
-                         class="relative grid-container"
-                         style="width:1000px;height:600px;background:var(--bg-raised);border:1px solid var(--border);border-radius:12px;overflow:hidden;grid-template-columns:repeat(20,50px);">
+                    <div id="canvas" class="grid-container"
+                         style="background:var(--bg-raised);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
                     </div>
                 </div>
             </div>
@@ -177,25 +193,66 @@
 </div>
 
 <script>
-    const canvas    = document.getElementById('canvas');
-    const zonaInput = document.getElementById('zona');
-    const modoInput = document.getElementById('modo');
+    const canvas      = document.getElementById('canvas');
+    const zonaInput   = document.getElementById('zona');
+    const modoInput   = document.getElementById('modo');
     const deshacerBtn = document.getElementById('deshacer');
 
-    const CELL = 50, FILAS = 12, COLS = 20;
     const COLORS = { A:'#8b5cf6', B:'#3b82f6', C:'#10b981', D:'#f59e0b', E:'#ef4444', F:'#ec4899' };
 
+    /* ── Modelos de plano ── */
+    const MODELS = {
+        standard: { CELL: 50, COLS: 20, FILAS: 12, SW: 44, SH: 48, SO: 3 },
+        large:    { CELL: 25, COLS: 60, FILAS: 36, SW: 21, SH: 23, SO: 2 }
+    };
+
+    let CELL, COLS, FILAS, SW, SH, SO;
     let modo = 'add';
     let seatCount = 1;
-    const history = [];
-    const occupiedCells = new Set(); // "ejeX,ejeY"
+    let history = [];
+    let occupiedCells = new Set();
+    let painting = false, paintStart = null, paintOverlay = null;
 
-    /* ── Build grid ── */
-    for (let i = 0; i < FILAS * COLS; i++) {
-        const cell = document.createElement('div');
-        cell.classList.add('grid-cell');
-        canvas.appendChild(cell);
+    /* ── Inicializar canvas según modelo ── */
+    function initCanvas(modelKey) {
+        const m = MODELS[modelKey];
+        CELL = m.CELL; COLS = m.COLS; FILAS = m.FILAS;
+        SW = m.SW; SH = m.SH; SO = m.SO;
+
+        // Limpiar
+        canvas.innerHTML = '';
+        history = [];
+        occupiedCells.clear();
+
+        // Dimensiones del canvas
+        canvas.style.width  = `${COLS * CELL}px`;
+        canvas.style.height = `${FILAS * CELL}px`;
+        canvas.style.gridTemplateColumns = `repeat(${COLS}, ${CELL}px)`;
+        canvas.style.gridAutoRows = `${CELL}px`;
+
+        // Celdas de la cuadrícula
+        for (let i = 0; i < FILAS * COLS; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            cell.style.width  = `${CELL}px`;
+            cell.style.height = `${CELL}px`;
+            canvas.appendChild(cell);
+        }
     }
+
+    // Selector de modelo
+    document.querySelectorAll('.model-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.classList.contains('model-btn--active')) return;
+            const hasSeat = canvas.querySelector('.butaca');
+            if (hasSeat && !confirm('Cambiar de modelo borrará todos los asientos colocados. ¿Continuar?')) return;
+            document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('model-btn--active'));
+            btn.classList.add('model-btn--active');
+            initCanvas(btn.dataset.model);
+        });
+    });
+
+    initCanvas('standard');
 
     modoInput.addEventListener('change', e => {
         modo = e.target.value;
@@ -214,23 +271,26 @@
 
     function seatSVG(zona) {
         const color = COLORS[zona.toUpperCase()] || '#6366f1';
-        return `<svg viewBox="0 0 44 48" width="44" height="48" xmlns="http://www.w3.org/2000/svg">
+        const label = zona.length <= 3 ? zona : zona.slice(0, 3);
+        return `<svg viewBox="0 0 44 48" width="${SW}" height="${SH}" xmlns="http://www.w3.org/2000/svg">
             <rect x="5" y="0" width="34" height="29" rx="7" fill="${color}"/>
             <rect x="0" y="32" width="44" height="14" rx="5" fill="${color}"/>
-            <text x="22" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="white" font-family="sans-serif">${zona}</text>
+            <text x="22" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="white" font-family="sans-serif">${label}</text>
         </svg>`;
     }
 
     function createSeat(zona, ejeX, ejeY) {
         const key = posKey(ejeX, ejeY);
-        if (occupiedCells.has(key)) return null; // celda ocupada
+        if (occupiedCells.has(key)) return null;
         occupiedCells.add(key);
 
         const div = document.createElement('div');
         div.className = 'butaca';
+        div.style.width  = `${SW}px`;
+        div.style.height = `${SH}px`;
         div.innerHTML = seatSVG(zona);
-        div.style.left = `${ejeX * CELL + 5}px`;
-        div.style.top  = `${ejeY * CELL + 5}px`;
+        div.style.left = `${ejeX * CELL + SO}px`;
+        div.style.top  = `${ejeY * CELL + SO}px`;
         div.dataset.zona = zona;
         div.dataset.x    = ejeX;
         div.dataset.y    = ejeY;
@@ -253,8 +313,6 @@
     });
 
     /* ── Modo: Pintar zona (arrastrar rectángulo) ── */
-    let painting = false, paintStart = null, paintOverlay = null;
-
     canvas.addEventListener('mousedown', e => {
         if (modo !== 'paint') return;
         const zona = zonaInput.value.trim();
@@ -285,7 +343,6 @@
 
         const x1 = Math.min(paintStart.ejeX, end.ejeX), x2 = Math.max(paintStart.ejeX, end.ejeX);
         const y1 = Math.min(paintStart.ejeY, end.ejeY), y2 = Math.max(paintStart.ejeY, end.ejeY);
-
         const added = [];
         for (let row = y1; row <= y2; row++)
             for (let col = x1; col <= x2; col++) {
@@ -320,8 +377,8 @@
             const rect = canvas.getBoundingClientRect();
             const ejeX = Math.max(0, Math.min(COLS  - 1, Math.round((e.clientX - rect.left - ox) / CELL)));
             const ejeY = Math.max(0, Math.min(FILAS - 1, Math.round((e.clientY - rect.top  - oy) / CELL)));
-            el.style.left = `${ejeX * CELL + 5}px`;
-            el.style.top  = `${ejeY * CELL + 5}px`;
+            el.style.left = `${ejeX * CELL + SO}px`;
+            el.style.top  = `${ejeY * CELL + SO}px`;
             el.dataset.x = ejeX; el.dataset.y = ejeY;
         });
         document.addEventListener('mouseup', () => {
@@ -330,11 +387,10 @@
             const newX = parseInt(el.dataset.x), newY = parseInt(el.dataset.y);
             const newKey = posKey(newX, newY), origKey = posKey(origX, origY);
             if (newKey === origKey) return;
-            // Si la celda destino está ocupada por otro asiento, revertir
             if (occupiedCells.has(newKey)) {
                 el.dataset.x = origX; el.dataset.y = origY;
-                el.style.left = `${origX * CELL + 5}px`;
-                el.style.top  = `${origY * CELL + 5}px`;
+                el.style.left = `${origX * CELL + SO}px`;
+                el.style.top  = `${origY * CELL + SO}px`;
             } else {
                 occupiedCells.delete(origKey);
                 occupiedCells.add(newKey);
@@ -366,8 +422,8 @@
         } else if (last.tipo === 'move') {
             occupiedCells.delete(posKey(parseInt(last.element.dataset.x), parseInt(last.element.dataset.y)));
             occupiedCells.add(posKey(last.oldX, last.oldY));
-            last.element.style.left = `${last.oldX * CELL + 5}px`;
-            last.element.style.top  = `${last.oldY * CELL + 5}px`;
+            last.element.style.left = `${last.oldX * CELL + SO}px`;
+            last.element.style.top  = `${last.oldY * CELL + SO}px`;
             last.element.dataset.x  = last.oldX;
             last.element.dataset.y  = last.oldY;
         } else if (last.tipo === 'remove') {
