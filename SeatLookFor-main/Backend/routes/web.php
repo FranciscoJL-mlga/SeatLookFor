@@ -37,9 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/usuario', [PerfilController::class, 'index'])->name('usuario.perfil');
     Route::post('/usuario/password', [PerfilController::class, 'cambiarPassword'])->name('usuario.password');
     Route::post('/usuario/eliminar', [PerfilController::class, 'eliminarCuenta'])->name('usuario.eliminar');
-    Route::get('/asientos/{id}', [AsientoWebController::class, 'index'])->name('asientos.index');
+    Route::get('/asientos/{idEvento}', [AsientoWebController::class, 'index'])->name('asientos.index');
     Route::post('/asientos/seleccionar', [AsientoWebController::class, 'seleccionar'])->name('asientos.seleccionar');
-    Route::get('/resumen/{id}', [ReservaWebController::class, 'resumen'])->name('reserva.resumen');
+    Route::get('/resumen/{idEvento}', [ReservaWebController::class, 'resumen'])->name('reserva.resumen');
     Route::post('/reserva', [ReservaWebController::class, 'crear'])->name('reserva.crear');
     Route::post('/reserva/liberar', [ReservaWebController::class, 'liberar'])->name('reserva.liberar');
     Route::post('/asientos/{id}/comentar', [AsientoWebController::class, 'comentar'])->name('asientos.comentar');
@@ -52,7 +52,6 @@ Route::middleware('auth')->group(function () {
 // RUTAS ADMINISTRACIÓN (Prefijo /admin)
 // ============================================================
 
-// El login de admin ahora es el mismo que el de usuario
 Route::get('/admin/login', fn () => redirect()->route('login'))
     ->middleware('guest')
     ->name('admin.login.form');

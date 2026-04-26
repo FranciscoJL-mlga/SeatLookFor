@@ -14,14 +14,12 @@ use Illuminate\Support\Facades\DB;
 
 class ReservaWebController extends Controller
 {
-    public function resumen($id)
+    public function resumen($idEvento)
     {
-        $evento    = Evento::with('establecimiento')->findOrFail((int) base64_decode($id));
-        $idEvento  = $evento->idEve;
         $idAsientos = session('asientos_seleccionados', []);
 
         if (empty($idAsientos) || session('evento_reserva') != $idEvento) {
-            return redirect()->route('evento.show', base64_encode($idEvento))
+            return redirect()->route('evento.show', $idEvento)
                 ->with('error', 'Selecciona al menos un asiento antes de continuar.');
         }
 
@@ -33,7 +31,7 @@ class ReservaWebController extends Controller
         foreach ($idAsientos as $idAsi) {
             if (Bloqueo::estaBlockeado($idAsi, $idEvento, $usuario->idUsu)) {
                 session()->forget(['asientos_seleccionados', 'evento_reserva']);
-                return redirect()->route('evento.show', base64_encode($idEvento))
+                return redirect()->route('evento.show', $idEvento)
                     ->with('error', 'Uno o más asientos han sido reservados por otro usuario. Por favor selecciona otros.');
             }
         }
@@ -51,6 +49,7 @@ class ReservaWebController extends Controller
             ]);
         }
 
+        $evento  = Evento::with('establecimiento')->findOrFail($idEvento);
         $asientos = Asiento::with(['eventos' => fn ($q) => $q->where('evento.idEve', $idEvento)])
             ->whereIn('idAsi', $idAsientos)
             ->get()

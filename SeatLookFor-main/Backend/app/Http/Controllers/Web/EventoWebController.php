@@ -45,7 +45,7 @@ class EventoWebController extends Controller
 
     public function show($id)
     {
-        $evento = Evento::with(['asientos.usuariosComentaron', 'establecimiento'])->findOrFail((int) base64_decode($id));
+        $evento = Evento::with(['asientos.usuariosComentaron', 'establecimiento'])->findOrFail($id);
         $idEve = $evento->idEve;
 
         // Eventos finalizados: solo accesibles para usuarios con reserva en ese evento
