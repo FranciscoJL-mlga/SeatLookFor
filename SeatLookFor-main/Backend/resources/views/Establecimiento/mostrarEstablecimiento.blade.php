@@ -51,8 +51,8 @@
         <!-- MAPA DE ASIENTOS -->
         <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Mapa de Asientos</h2>
 
-        <div class="overflow-x-auto">
-            <div class="relative bg-white border rounded-xl shadow p-4 mx-auto" style="width: 1000px; height: 600px;">
+        <div id="estmap-wrap" style="width:100%;overflow:hidden;">
+            <div id="estmap-inner" class="relative bg-white border rounded-xl shadow p-4" style="width:1000px;height:600px;transform-origin:top left;">
                 @foreach($establecimiento->asientos as $asiento)
                     <div
                         class="absolute text-[11px] font-semibold text-white flex items-center justify-center rounded-md shadow-sm"
@@ -121,4 +121,17 @@
             </a>
         </div>
     </div>
+<script>
+(function () {
+    var wrap  = document.getElementById('estmap-wrap');
+    var inner = document.getElementById('estmap-inner');
+    function fit() {
+        var scale = Math.min(1, wrap.offsetWidth / 1000);
+        inner.style.transform = 'scale(' + scale + ')';
+        wrap.style.height = Math.ceil(600 * scale) + 'px';
+    }
+    fit();
+    window.addEventListener('resize', fit);
+})();
+</script>
 </x-layout.nav>

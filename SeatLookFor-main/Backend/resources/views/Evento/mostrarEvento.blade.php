@@ -136,8 +136,8 @@
                 </div>
 
                 {{-- Mapa de asientos --}}
-                <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:20px;">
-                    <div style="position:relative;width:{{ $mapW }}px;height:{{ $mapH }}px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;">
+                <div id="seatmap-wrap" style="width:100%;overflow:hidden;margin-bottom:20px;">
+                    <div id="seatmap-inner" style="position:relative;width:{{ $mapW }}px;height:{{ $mapH }}px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;transform-origin:top left;">
                         <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;padding:4px 24px;border-radius:4px;white-space:nowrap;">ESCENARIO</div>
 
                         @foreach($todosAsientos as $asiento)
@@ -207,6 +207,19 @@
         </div>
     </div>
 <script>
+(function () {
+    var mapW = {{ $mapW }}, mapH = {{ $mapH }};
+    var wrap  = document.getElementById('seatmap-wrap');
+    var inner = document.getElementById('seatmap-inner');
+    function fit() {
+        var scale = Math.min(1, wrap.offsetWidth / mapW);
+        inner.style.transform = 'scale(' + scale + ')';
+        wrap.style.height = Math.ceil(mapH * scale) + 'px';
+    }
+    fit();
+    window.addEventListener('resize', fit);
+})();
+
 function toggleSeat(idAsi, reservado, zoneColor) {
     if (reservado) return;
     var chk  = document.getElementById('chk-' + idAsi);
