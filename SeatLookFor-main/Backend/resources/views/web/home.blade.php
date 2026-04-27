@@ -41,7 +41,7 @@
 .curtain-panel {
     position: absolute;
     top: 0;
-    width: clamp(160px, 20vw, 280px);
+    width: clamp(170px, 21vw, 300px);
     height: 100%;
     min-height: 100vh;
 }
@@ -55,26 +55,43 @@
     background:
         repeating-linear-gradient(
             to right,
-            #1e0008  0px,  #6a001a  6px,  #920026 14px,
-            #780020 20px,  #500014 26px,  #800020 33px,
-            #9c0026 41px,  #6e001b 48px,  #380010 54px
+            #0d0003  0px,
+            #420010  5px,
+            #820020  11px,
+            #9e0028  17px,
+            #8a0022  23px,
+            #5a0016  29px,
+            #180005  35px,
+            #5c0017  41px,
+            #8e0024  48px,
+            #780020  54px,
+            #380010  60px
         );
     clip-path: polygon(
-        0 0, 100% 0, 100% 91%,
-        90% 95%, 80% 91%, 70% 97%, 59% 92%,
-        48% 98%, 37% 93%, 26% 100%, 15% 95%,
-        6% 100%, 0 96%
+        0 0, 100% 0,
+        100%  5%, 97% 10%, 100% 16%, 97% 21%, 99% 27%,
+        97% 33%, 100% 39%, 97% 44%, 99% 50%, 97% 56%,
+        100% 62%, 97% 67%, 99% 73%, 96% 79%, 98% 84%,
+        93% 89%, 85% 93%, 75% 89%, 63% 95%,
+        52% 90%, 40% 96%, 28% 91%, 17% 97%,
+        8% 93%, 0 96%
     );
 }
 .curtain-panel__body::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg,
-        rgba(255,180,120,0.09) 0%,
-        rgba(255,180,120,0.02) 35%,
-        rgba(0,0,0,0.12) 70%,
-        rgba(0,0,0,0.38) 100%);
+    background:
+        linear-gradient(to left,
+            rgba(0,0,0,0.55) 0%,
+            rgba(0,0,0,0.18) 35%,
+            rgba(0,0,0,0)    55%,
+            rgba(0,0,0,0.22) 100%),
+        linear-gradient(180deg,
+            rgba(255,200,140,0.13) 0%,
+            rgba(255,180,100,0.04) 28%,
+            rgba(0,0,0,0.08)       62%,
+            rgba(0,0,0,0.50)       100%);
     clip-path: inherit;
 }
 .curtain-panel__body::after {
@@ -83,26 +100,32 @@
     inset: 0;
     background: repeating-linear-gradient(
         to bottom,
-        transparent 0px, transparent 18px,
-        rgba(255,255,255,0.015) 20px, transparent 22px
+        transparent                  0px,
+        transparent                  22px,
+        rgba(255,255,255,0.018)      24px,
+        transparent                  26px
     );
     clip-path: inherit;
 }
 .curtain-panel__trim {
     position: absolute;
     top: 0; right: 0;
-    width: 2px;
-    height: 91%;
-    background: linear-gradient(180deg, #d4a820 0%, #a8821a 55%, transparent 100%);
-    opacity: 0.65;
+    width: 3px;
+    height: 84%;
+    background: linear-gradient(180deg,
+        #e8c030 0%, #c9a227 30%,
+        #a8821a 60%, transparent 100%);
+    opacity: 0.75;
+    filter: blur(0.5px);
 }
 .curtain-panel__tassel {
     position: absolute;
-    right: -3px;
-    top: 89%;
-    width: 8px; height: 8px;
+    right: -5px;
+    top: 83%;
+    width: 10px; height: 10px;
     border-radius: 50%;
-    background: radial-gradient(circle, #e0b830 0%, #a88020 70%);
+    background: radial-gradient(circle at 35% 35%, #f0d050 0%, #c9a227 45%, #7a6010 100%);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
 }
 
 /* ── Valance ── */
@@ -117,52 +140,72 @@
 /* ── Light switch (desktop only) ── */
 .lswitch {
     position: fixed;
-    bottom: 32px;
-    right: 28px;
+    bottom: 28px;
+    right: 24px;
     z-index: 300;
-    width: 34px;
-    height: 58px;
-    background: #18100a;
-    border: 1.5px solid #5a3810;
-    border-radius: 6px;
-    box-shadow: 0 3px 14px rgba(0,0,0,0.75), inset 0 1px 0 rgba(200,150,60,0.06);
-    cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
-    padding: 5px 5px 6px;
-    transition: border-color 0.3s;
+    gap: 7px;
+    padding: 12px 14px 10px;
+    background: rgba(10, 5, 2, 0.88);
+    border: 1px solid rgba(201,162,39,0.35);
+    border-radius: 14px;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.75), 0 0 0 1px rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    min-width: 68px;
 }
-.lswitch[aria-pressed="true"]  { border-color: rgba(201,162,39,0.55); }
-.lswitch[aria-pressed="false"] { border-color: #5a3810; }
-
-.lswitch__rocker {
-    width: 100%;
-    height: 44%;
-    border-radius: 3px;
-    background: #2e1c08;
-    transition: background 0.3s, transform 0.25s;
+.lswitch:hover {
+    border-color: rgba(201,162,39,0.6);
+    box-shadow: 0 6px 28px rgba(0,0,0,0.75), 0 0 14px rgba(201,162,39,0.18);
+}
+.lswitch[aria-pressed="true"] {
+    border-color: rgba(201,162,39,0.55);
+    box-shadow: 0 6px 28px rgba(0,0,0,0.75), 0 0 20px rgba(201,162,39,0.3), 0 0 0 1px rgba(201,162,39,0.1);
+}
+.lswitch__icon {
+    transition: opacity 0.3s, filter 0.3s;
+}
+.lswitch[aria-pressed="true"]  .lswitch__icon { opacity: 1;    filter: drop-shadow(0 0 6px rgba(224,192,64,0.7)); }
+.lswitch[aria-pressed="false"] .lswitch__icon { opacity: 0.3;  filter: none; }
+.lswitch__label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: #c9a227;
+    transition: opacity 0.3s;
+}
+.lswitch[aria-pressed="true"]  .lswitch__label { opacity: 0.85; }
+.lswitch[aria-pressed="false"] .lswitch__label { opacity: 0.3;  }
+.lswitch__pill {
+    width: 38px; height: 20px;
+    border-radius: 10px;
+    background: #1a0d04;
+    border: 1px solid rgba(201,162,39,0.3);
     position: relative;
+    transition: background 0.3s, border-color 0.3s;
 }
-.lswitch__rocker::after {
-    content: '';
+.lswitch[aria-pressed="true"] .lswitch__pill {
+    background: rgba(201,162,39,0.12);
+    border-color: rgba(201,162,39,0.45);
+}
+.lswitch__knob {
     position: absolute;
-    inset: 2px;
-    border-radius: 2px;
-    background: rgba(255,255,255,0.03);
-}
-.lswitch[aria-pressed="true"]  .lswitch__rocker { background: #c9a227; transform: translateY(2px); }
-.lswitch[aria-pressed="false"] .lswitch__rocker { background: #2e1c08; transform: translateY(-2px); }
-
-.lswitch__dot {
-    width: 7px; height: 7px;
+    top: 3px; left: 3px;
+    width: 12px; height: 12px;
     border-radius: 50%;
-    background: #3a2008;
-    transition: background 0.3s;
+    background: #4a2a08;
+    transition: transform 0.25s, background 0.3s, box-shadow 0.3s;
 }
-.lswitch[aria-pressed="true"]  .lswitch__dot { background: #e0c040; }
-.lswitch[aria-pressed="false"] .lswitch__dot { background: #3a2008; }
+.lswitch[aria-pressed="true"] .lswitch__knob {
+    transform: translateX(18px);
+    background: #e0c040;
+    box-shadow: 0 0 8px rgba(224,192,64,0.7);
+}
 
 /* ── Responsive: hide theater & spotlights on tablet/mobile ── */
 @media (max-width: 960px) {
@@ -402,8 +445,26 @@
 
     {{-- Light switch button --}}
     <button class="lswitch" id="lswitch" aria-pressed="true" title="Apagar/Encender focos">
-        <span class="lswitch__rocker"></span>
-        <span class="lswitch__dot"></span>
+        <svg class="lswitch__icon" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+            <!-- Spotlight cone -->
+            <path d="M14 3 L5 22 L23 22 Z" fill="#c9a227" opacity="0.85"/>
+            <!-- Spotlight body -->
+            <rect x="10" y="0" width="8" height="5" rx="2" fill="#e0c040" opacity="0.9"/>
+            <!-- Lens glint -->
+            <ellipse cx="14" cy="2.5" rx="3" ry="1.2" fill="rgba(255,255,255,0.45)"/>
+            <!-- Cone highlight -->
+            <path d="M14 3 L10 22 L18 22 Z" fill="rgba(255,255,220,0.12)"/>
+            <!-- Base -->
+            <rect x="9" y="22" width="10" height="3" rx="1.5" fill="#c9a227" opacity="0.7"/>
+            <!-- Light rays -->
+            <line x1="5"  y1="22" x2="2"  y2="26" stroke="#c9a227" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+            <line x1="23" y1="22" x2="26" y2="26" stroke="#c9a227" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+            <line x1="14" y1="25" x2="14" y2="28" stroke="#c9a227" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+        </svg>
+        <span class="lswitch__label">Focos</span>
+        <div class="lswitch__pill">
+            <div class="lswitch__knob"></div>
+        </div>
     </button>
 
     <h1 class="landing-page__title" id="landing-title"></h1>
