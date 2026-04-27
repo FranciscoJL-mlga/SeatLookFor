@@ -137,82 +137,11 @@
     pointer-events: none;
 }
 
-/* ── Light switch (desktop only) ── */
-.lswitch {
-    position: fixed;
-    bottom: 28px;
-    right: 24px;
-    z-index: 300;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 7px;
-    padding: 12px 14px 10px;
-    background: rgba(10, 5, 2, 0.88);
-    border: 1px solid rgba(201,162,39,0.35);
-    border-radius: 14px;
-    box-shadow: 0 6px 28px rgba(0,0,0,0.75), 0 0 0 1px rgba(0,0,0,0.5);
-    backdrop-filter: blur(10px);
-    cursor: pointer;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    min-width: 68px;
-}
-.lswitch:hover {
-    border-color: rgba(201,162,39,0.6);
-    box-shadow: 0 6px 28px rgba(0,0,0,0.75), 0 0 14px rgba(201,162,39,0.18);
-}
-.lswitch[aria-pressed="true"] {
-    border-color: rgba(201,162,39,0.55);
-    box-shadow: 0 6px 28px rgba(0,0,0,0.75), 0 0 20px rgba(201,162,39,0.3), 0 0 0 1px rgba(201,162,39,0.1);
-}
-.lswitch__icon {
-    transition: opacity 0.3s, filter 0.3s;
-}
-.lswitch[aria-pressed="true"]  .lswitch__icon { opacity: 1;    filter: drop-shadow(0 0 6px rgba(224,192,64,0.7)); }
-.lswitch[aria-pressed="false"] .lswitch__icon { opacity: 0.3;  filter: none; }
-.lswitch__label {
-    font-family: 'Poppins', sans-serif;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1.8px;
-    text-transform: uppercase;
-    color: #c9a227;
-    transition: opacity 0.3s;
-}
-.lswitch[aria-pressed="true"]  .lswitch__label { opacity: 0.85; }
-.lswitch[aria-pressed="false"] .lswitch__label { opacity: 0.3;  }
-.lswitch__pill {
-    width: 38px; height: 20px;
-    border-radius: 10px;
-    background: #1a0d04;
-    border: 1px solid rgba(201,162,39,0.3);
-    position: relative;
-    transition: background 0.3s, border-color 0.3s;
-}
-.lswitch[aria-pressed="true"] .lswitch__pill {
-    background: rgba(201,162,39,0.12);
-    border-color: rgba(201,162,39,0.45);
-}
-.lswitch__knob {
-    position: absolute;
-    top: 3px; left: 3px;
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: #4a2a08;
-    transition: transform 0.25s, background 0.3s, box-shadow 0.3s;
-}
-.lswitch[aria-pressed="true"] .lswitch__knob {
-    transform: translateX(18px);
-    background: #e0c040;
-    box-shadow: 0 0 8px rgba(224,192,64,0.7);
-}
-
 /* ── Responsive: hide theater & spotlights on tablet/mobile ── */
 @media (max-width: 960px) {
     .theater-frame    { display: none; }
     .theater-backdrop { display: none; }
     .spotlight-canvas { display: none; }
-    .lswitch          { display: none; }
 }
 
 /* Content above decorative layers */
@@ -443,30 +372,6 @@
 
     </div>
 
-    {{-- Light switch button --}}
-    <button class="lswitch" id="lswitch" aria-pressed="true" title="Apagar/Encender focos">
-        <svg class="lswitch__icon" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
-            <!-- Spotlight cone -->
-            <path d="M14 3 L5 22 L23 22 Z" fill="#c9a227" opacity="0.85"/>
-            <!-- Spotlight body -->
-            <rect x="10" y="0" width="8" height="5" rx="2" fill="#e0c040" opacity="0.9"/>
-            <!-- Lens glint -->
-            <ellipse cx="14" cy="2.5" rx="3" ry="1.2" fill="rgba(255,255,255,0.45)"/>
-            <!-- Cone highlight -->
-            <path d="M14 3 L10 22 L18 22 Z" fill="rgba(255,255,220,0.12)"/>
-            <!-- Base -->
-            <rect x="9" y="22" width="10" height="3" rx="1.5" fill="#c9a227" opacity="0.7"/>
-            <!-- Light rays -->
-            <line x1="5"  y1="22" x2="2"  y2="26" stroke="#c9a227" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-            <line x1="23" y1="22" x2="26" y2="26" stroke="#c9a227" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-            <line x1="14" y1="25" x2="14" y2="28" stroke="#c9a227" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
-        </svg>
-        <span class="lswitch__label">Focos</span>
-        <div class="lswitch__pill">
-            <div class="lswitch__knob"></div>
-        </div>
-    </button>
-
     <h1 class="landing-page__title" id="landing-title"></h1>
 
     <p style="text-align:center;color:var(--text-muted);font-size:1.05rem;position:relative;z-index:2;
@@ -543,8 +448,7 @@
 /* ── Spotlight animation ── */
 (function () {
     var canvas  = document.getElementById('spotlight-canvas');
-    var lswitch = document.getElementById('lswitch');
-    if (!canvas || !lswitch) return;
+    if (!canvas) return;
 
     var ctx     = canvas.getContext('2d');
     var landing = document.getElementById('landing-page');
@@ -677,12 +581,6 @@
         frame++;
         requestAnimationFrame(animate);
     }
-
-    lswitch.addEventListener('click', function () {
-        lightsOn = !lightsOn;
-        lswitch.setAttribute('aria-pressed', lightsOn ? 'true' : 'false');
-        if (!lightsOn) park();
-    });
 
     resize();
     bindCards();
