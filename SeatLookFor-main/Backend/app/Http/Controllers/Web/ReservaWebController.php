@@ -14,12 +14,14 @@ use Illuminate\Support\Facades\DB;
 
 class ReservaWebController extends Controller
 {
-    public function resumen($idEvento)
+    public function resumen(Evento $evento)
     {
+        $evento->load('establecimiento');
+        $idEve      = $evento->idEve;
         $idAsientos = session('asientos_seleccionados', []);
 
-        if (empty($idAsientos) || session('evento_reserva') != $idEvento) {
-            return redirect()->route('evento.show', $idEvento)
+        if (empty($idAsientos) || session('evento_reserva') != $idEve) {
+            return redirect()->route('evento.show', $evento->codigo)
                 ->with('error', 'Selecciona al menos un asiento antes de continuar.');
         }
 
@@ -29,28 +31,27 @@ class ReservaWebController extends Controller
 
         // Verificar que ningún asiento esté bloqueado por otro usuario
         foreach ($idAsientos as $idAsi) {
-            if (Bloqueo::estaBlockeado($idAsi, $idEvento, $usuario->idUsu)) {
+            if (Bloqueo::estaBlockeado($idAsi, $idEve, $usuario->idUsu)) {
                 session()->forget(['asientos_seleccionados', 'evento_reserva']);
-                return redirect()->route('evento.show', $idEvento)
+                return redirect()->route('evento.show', $evento->codigo)
                     ->with('error', 'Uno o más asientos han sido reservados por otro usuario. Por favor selecciona otros.');
             }
         }
 
         // Eliminar bloqueos anteriores de este usuario para este evento y crear nuevos
-        Bloqueo::where('idUsu', $usuario->idUsu)->where('idEve', $idEvento)->delete();
+        Bloqueo::where('idUsu', $usuario->idUsu)->where('idEve', $idEve)->delete();
 
         $expiresAt = now()->addMinutes(5);
         foreach ($idAsientos as $idAsi) {
             Bloqueo::create([
                 'idAsi'      => $idAsi,
                 'idUsu'      => $usuario->idUsu,
-                'idEve'      => $idEvento,
+                'idEve'      => $idEve,
                 'expires_at' => $expiresAt,
             ]);
         }
 
-        $evento  = Evento::with('establecimiento')->findOrFail($idEvento);
-        $asientos = Asiento::with(['eventos' => fn ($q) => $q->where('evento.idEve', $idEvento)])
+        $asientos = Asiento::with(['eventos' => fn ($q) => $q->where('evento.idEve', $idEve)])
             ->whereIn('idAsi', $idAsientos)
             ->get()
             ->map(function ($a) {
