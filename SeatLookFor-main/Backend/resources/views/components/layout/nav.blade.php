@@ -136,6 +136,16 @@
             .admin-overlay--show { display: block; }
             .admin-content { padding: 20px 16px; }
         }
+
+        /* ── Tailwind overrides for dark admin theme ── */
+        .admin-content .text-gray-800 { color: #f1f5f9 !important; }
+        .admin-content .text-gray-700 { color: #e2e8f0 !important; }
+        .admin-content .text-gray-600 { color: #cbd5e1 !important; }
+        .admin-content .text-gray-500 { color: #94a3b8 !important; }
+        .admin-content .text-gray-400 { color: #64748b !important; }
+        .admin-content .bg-white { background: var(--bg-card) !important; }
+        .admin-content .shadow-md,
+        .admin-content .shadow-lg { box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important; }
     </style>
 </head>
 <body>
