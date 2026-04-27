@@ -492,11 +492,59 @@ public function ver($id)
 {
     try {
         $evento = Evento::with(['establecimiento', 'ReservaDeEventos', 'asientos'])->findOrFail($id);
-        return view('Evento.mostrarEvento', compact('evento'));
+
+        $asientosEventoIds  = $evento->asientos->pluck('idAsi');
+        $asientosDisponibles = Asiento::where('idEst', $evento->idEst)
+            ->whereNotIn('idAsi', $asientosEventoIds)
+            ->get();
+
+        return view('Evento.mostrarEvento', compact('evento', 'asientosDisponibles'));
     } catch (\Exception $e) {
         Log::error('Error al cargar vista del evento: ' . $e->getMessage());
         return redirect()->route('eventos.listado')->withErrors(['error' => 'No se pudo mostrar el evento.']);
     }
+}
+
+public function actualizarPrecioZona(Request $request, $id)
+{
+    $evento   = Evento::with('asientos')->findOrFail($id);
+    $precios  = $request->input('precios', []);
+
+    foreach ($evento->asientos as $asiento) {
+        $zona = $asiento->zona;
+        if (isset($precios[$zona]) && is_numeric($precios[$zona])) {
+            $evento->asientos()->updateExistingPivot($asiento->idAsi, [
+                'precio' => (float) $precios[$zona],
+            ]);
+        }
+    }
+
+    return redirect()->back()->with('success', 'Precios actualizados correctamente.');
+}
+
+public function vincularAsientos(Request $request, $id)
+{
+    $evento       = Evento::findOrFail($id);
+    $asientosIds  = $request->input('asientos', []);
+    $preciosZona  = $request->input('precio_zona', []);
+
+    if (empty($asientosIds)) {
+        return redirect()->back()->with('error', 'No has seleccionado ningún asiento.');
+    }
+
+    $asientos = Asiento::whereIn('idAsi', $asientosIds)->get();
+
+    foreach ($asientos as $asiento) {
+        $precio = isset($preciosZona[$asiento->zona]) && is_numeric($preciosZona[$asiento->zona])
+            ? (float) $preciosZona[$asiento->zona]
+            : 0;
+
+        $evento->asientos()->syncWithoutDetaching([
+            $asiento->idAsi => ['precio' => $precio],
+        ]);
+    }
+
+    return redirect()->back()->with('success', count($asientosIds) . ' asientos habilitados correctamente.');
 }
 
 public function eliminar($id)

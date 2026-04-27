@@ -1211,7 +1211,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; }
 }
 
 /* Color variables per state */
-.seats__seat--free     { --c: #22c55e; --cd: #14532d; }
+.seats__seat--free     { --c: var(--zone-c, #22c55e); --cd: var(--zone-cd, #14532d); }
 .seats__seat--occupied { --c: #dc2626; --cd: #7f1d1d; opacity: 0.45; cursor: not-allowed; }
 .seats__seat--mine     { --c: #d4aa37; --cd: #7a5c00; opacity: 1 !important; cursor: pointer; }
 .seats__seat--locked   { --c: #f97316; --cd: #7c2d12; opacity: 0.6; cursor: not-allowed; animation: pulse-lock 1.5s ease-in-out infinite; }
@@ -1222,7 +1222,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; }
 /* Hover & selected effects */
 .seats__seat--free:hover {
   transform: translateY(-4px) scale(1.1);
-  filter: drop-shadow(0 6px 8px rgba(34,197,94,0.55));
+  filter: drop-shadow(0 6px 8px rgba(255,255,255,0.25));
   z-index: 2;
 }
 .seats__seat--selected {

@@ -17,11 +17,32 @@
             </div>
         @endif
 
+        @php
+            $zonePalette = [
+                '#3b82f6','#10b981','#8b5cf6','#06b6d4',
+                '#f43f5e','#84cc16','#d946ef','#f97316',
+                '#14b8a6','#6366f1','#ec4899','#eab308',
+                '#22c55e','#ef4444','#fb923c','#38bdf8',
+                '#a3e635','#2dd4bf','#c026d3','#d97706',
+                '#1d4ed8','#15803d','#7c3aed','#be123c',
+                '#0891b2','#65a30d','#9333ea','#0284c7',
+                '#f472b6','#4ade80','#fb7185','#34d399',
+            ];
+            $uniqueZones = $establecimiento->asientos->pluck('zona')->unique()->values();
+            $zoneColors  = [];
+            foreach ($uniqueZones as $i => $zona) {
+                $zoneColors[$zona] = $zonePalette[$i % count($zonePalette)];
+            }
+        @endphp
+
         <!-- LEYENDA -->
-        <div class="flex justify-center gap-6 text-sm text-gray-600 mb-6">
+        <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-600 mb-6">
+            @foreach($zoneColors as $zona => $color)
             <div class="flex items-center gap-2">
-                <span class="w-4 h-4 rounded bg-green-500 inline-block"></span> Libre
+                <span class="w-4 h-4 rounded inline-block" style="background-color:{{ $color }}"></span>
+                Zona {{ $zona }}
             </div>
+            @endforeach
             <div class="flex items-center gap-2">
                 <span class="w-4 h-4 rounded bg-gray-400 inline-block"></span> Ocupado
             </div>
@@ -40,7 +61,7 @@
                             height: 40px;
                             left: {{ $asiento->ejeX * 50 + 5 }}px;
                             top: {{ $asiento->ejeY * 50 + 5 }}px;
-                            background-color: {{ $asiento->estado === 'ocupado' ? '#9ca3af' : '#22c55e' }};
+                            background-color: {{ $asiento->estado === 'ocupado' ? '#9ca3af' : ($zoneColors[$asiento->zona] ?? '#22c55e') }};
                         "
                         title="Zona: {{ $asiento->zona }} | Precio: €{{ number_format($asiento->precio, 2) }}"
                     >

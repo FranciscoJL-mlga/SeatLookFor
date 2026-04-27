@@ -88,4 +88,6 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/zonas-por-establecimiento/{idEst}', [EventoController::class, 'obtenerZonas'])->name('zonas.porEstablecimiento');
     Route::post('/eventos/eliminar/{id}', [EventoController::class, 'eliminar'])->name('eventos.eliminar');
     Route::post('/eventos/estado/{id}', [EventoController::class, 'cambiarEstado'])->name('eventos.estado');
+    Route::post('/eventos/{id}/precio-zona', [EventoController::class, 'actualizarPrecioZona'])->name('eventos.precio-zona');
+    Route::post('/eventos/{id}/asientos/vincular', [EventoController::class, 'vincularAsientos'])->name('eventos.vincular-asientos');
 });
