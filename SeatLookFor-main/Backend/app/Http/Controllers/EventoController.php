@@ -493,16 +493,51 @@ public function ver($id)
     try {
         $evento = Evento::with(['establecimiento', 'ReservaDeEventos', 'asientos'])->findOrFail($id);
 
-        $asientosEventoIds  = $evento->asientos->pluck('idAsi');
-        $asientosDisponibles = Asiento::where('idEst', $evento->idEst)
-            ->whereNotIn('idAsi', $asientosEventoIds)
-            ->get();
+        $reservadosIds  = $evento->ReservaDeEventos->pluck('idAsi')->map(fn ($v) => (int) $v)->toArray();
+        $habilitadosIds = $evento->asientos->pluck('idAsi')->map(fn ($v) => (int) $v)->toArray();
 
-        return view('Evento.mostrarEvento', compact('evento', 'asientosDisponibles'));
+        $todosAsientos = Asiento::where('idEst', $evento->idEst)->get()->map(function ($a) use ($habilitadosIds, $reservadosIds, $evento) {
+            $pivot = $evento->asientos->firstWhere('idAsi', $a->idAsi);
+            return [
+                'idAsi'      => $a->idAsi,
+                'zona'       => $a->zona,
+                'ejeX'       => (int) $a->ejeX,
+                'ejeY'       => (int) $a->ejeY,
+                'habilitado' => in_array($a->idAsi, $habilitadosIds),
+                'reservado'  => in_array($a->idAsi, $reservadosIds),
+                'precio'     => $pivot?->pivot->precio ?? 0,
+            ];
+        });
+
+        return view('Evento.mostrarEvento', compact('evento', 'todosAsientos'));
     } catch (\Exception $e) {
         Log::error('Error al cargar vista del evento: ' . $e->getMessage());
         return redirect()->route('eventos.listado')->withErrors(['error' => 'No se pudo mostrar el evento.']);
     }
+}
+
+public function guardarAsientos(Request $request, $id)
+{
+    $evento = Evento::with(['asientos', 'ReservaDeEventos'])->findOrFail($id);
+
+    $reservadosIds = $evento->ReservaDeEventos->pluck('idAsi')->map(fn ($v) => (int) $v)->toArray();
+    $seleccionados = array_map('intval', $request->input('asientos', []));
+    $preciosZona   = $request->input('precio_zona', []);
+
+    $finalSet = array_unique(array_merge($seleccionados, $reservadosIds));
+
+    $syncData = [];
+    foreach (Asiento::whereIn('idAsi', $finalSet)->get() as $asiento) {
+        $existing = $evento->asientos->firstWhere('idAsi', $asiento->idAsi);
+        $precio = isset($preciosZona[$asiento->zona]) && is_numeric($preciosZona[$asiento->zona])
+            ? (float) $preciosZona[$asiento->zona]
+            : ($existing?->pivot->precio ?? 0);
+        $syncData[$asiento->idAsi] = ['precio' => $precio];
+    }
+
+    $evento->asientos()->sync($syncData);
+
+    return redirect()->back()->with('success', 'Asientos actualizados correctamente.');
 }
 
 public function actualizarPrecioZona(Request $request, $id)
