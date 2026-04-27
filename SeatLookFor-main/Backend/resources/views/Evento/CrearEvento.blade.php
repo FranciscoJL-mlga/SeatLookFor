@@ -175,7 +175,7 @@
                 <div id="mapa-asientos-container" class="mt-6 hidden">
                     <h2 style="font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;color:var(--text);text-align:center;margin-bottom:16px;">Mapa de Asientos</h2>
                     <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:8px;display:none;" class="sm:hidden text-center">
-                        💡 Desliza horizontalmente para ver todos los asientos.
+                        Desliza horizontalmente para ver todos los asientos.
                     </p>
                     <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
                         <div id="mapa-asientos"
@@ -191,7 +191,7 @@
             </div>
 
             <button type="submit" class="admin-btn-primary">
-                🎭 Guardar Evento
+                 Guardar Evento
             </button>
         </form>
     </div>
