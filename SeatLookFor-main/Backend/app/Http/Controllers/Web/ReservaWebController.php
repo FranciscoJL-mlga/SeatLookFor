@@ -51,22 +51,32 @@ class ReservaWebController extends Controller
             ]);
         }
 
-        $asientos = Asiento::with(['eventos' => fn ($q) => $q->where('evento.idEve', $idEve)])
-            ->whereIn('idAsi', $idAsientos)
-            ->get()
-            ->map(function ($a) {
-                return [
-                    'idAsi'  => $a->idAsi,
-                    'zona'   => $a->zona,
-                    'ejeX'   => $a->ejeX,
-                    'ejeY'   => $a->ejeY,
-                    'precio' => $a->eventos->first()?->pivot->precio ?? 0,
-                ];
-            });
+        $evento->load('asientos');
+
+        $idAsientosInt = array_map('intval', $idAsientos);
+
+        $asientos = $evento->asientos
+            ->whereIn('idAsi', $idAsientosInt)
+            ->map(fn ($a) => [
+                'idAsi'  => $a->idAsi,
+                'zona'   => $a->zona,
+                'ejeX'   => (int) $a->ejeX,
+                'ejeY'   => (int) $a->ejeY,
+                'precio' => $a->pivot->precio ?? 0,
+            ]);
+
+        $todosAsientos = $evento->asientos->map(fn ($a) => [
+            'idAsi'        => $a->idAsi,
+            'zona'         => $a->zona,
+            'ejeX'         => (int) $a->ejeX,
+            'ejeY'         => (int) $a->ejeY,
+            'precio'       => $a->pivot->precio ?? 0,
+            'seleccionado' => in_array($a->idAsi, $idAsientosInt),
+        ]);
 
         $total = $asientos->sum('precio');
 
-        return view('web.reserva.resumen', compact('evento', 'asientos', 'total', 'expiresAt'));
+        return view('web.reserva.resumen', compact('evento', 'asientos', 'todosAsientos', 'total', 'expiresAt'));
     }
 
     public function liberar(Request $request)
