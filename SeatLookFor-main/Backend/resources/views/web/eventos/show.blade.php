@@ -14,6 +14,24 @@
     window.__eventoFinalizado = {{ $evento->estado === 'finalizado' ? 'true' : 'false' }};
 </script>
 
+@php
+    $zonePalette = [
+        ['#3b82f6','#1e3a8a'],['#10b981','#064e3b'],['#8b5cf6','#4c1d95'],['#06b6d4','#164e63'],
+        ['#f43f5e','#881337'],['#84cc16','#3f6212'],['#d946ef','#701a75'],['#f97316','#7c2d12'],
+        ['#14b8a6','#134e4a'],['#6366f1','#312e81'],['#ec4899','#831843'],['#eab308','#713f12'],
+        ['#22c55e','#14532d'],['#ef4444','#7f1d1d'],['#fb923c','#9a3412'],['#38bdf8','#0369a1'],
+        ['#a3e635','#365314'],['#2dd4bf','#115e59'],['#c026d3','#701a75'],['#d97706','#78350f'],
+        ['#1d4ed8','#1e3a8a'],['#15803d','#064e3b'],['#7c3aed','#4c1d95'],['#be123c','#881337'],
+        ['#0891b2','#164e63'],['#65a30d','#3f6212'],['#9333ea','#581c87'],['#0284c7','#0c4a6e'],
+        ['#f472b6','#9d174d'],['#4ade80','#14532d'],['#fb7185','#881337'],['#34d399','#064e3b'],
+    ];
+    $uniqueZones = collect($asientos)->pluck('zona')->unique()->values();
+    $zoneColors  = [];
+    foreach ($uniqueZones as $i => $zona) {
+        $zoneColors[$zona] = $zonePalette[$i % count($zonePalette)];
+    }
+@endphp
+
 <div class="layout" x-data="seatSelector(window.__asientosData)">
 
     {{-- ═══════════════════════════════════════════════════
@@ -136,46 +154,6 @@
                 $uniqueEjeX = collect($asientos)->pluck('ejeX')->unique()->sort()->values();
                 $minEjeX    = $uniqueEjeX->first() ?? 3;
                 $maxEjeX    = $uniqueEjeX->last()  ?? 14;
-
-                $zonePalette = [
-                    ['#3b82f6','#1e3a8a'],
-                    ['#10b981','#064e3b'],
-                    ['#8b5cf6','#4c1d95'],
-                    ['#06b6d4','#164e63'],
-                    ['#f43f5e','#881337'],
-                    ['#84cc16','#3f6212'],
-                    ['#d946ef','#701a75'],
-                    ['#f97316','#7c2d12'],
-                    ['#14b8a6','#134e4a'],
-                    ['#6366f1','#312e81'],
-                    ['#ec4899','#831843'],
-                    ['#eab308','#713f12'],
-                    ['#22c55e','#14532d'],
-                    ['#ef4444','#7f1d1d'],
-                    ['#fb923c','#9a3412'],
-                    ['#38bdf8','#0369a1'],
-                    ['#a3e635','#365314'],
-                    ['#2dd4bf','#115e59'],
-                    ['#c026d3','#701a75'],
-                    ['#d97706','#78350f'],
-                    ['#1d4ed8','#1e3a8a'],
-                    ['#15803d','#064e3b'],
-                    ['#7c3aed','#4c1d95'],
-                    ['#be123c','#881337'],
-                    ['#0891b2','#164e63'],
-                    ['#65a30d','#3f6212'],
-                    ['#9333ea','#581c87'],
-                    ['#0284c7','#0c4a6e'],
-                    ['#f472b6','#9d174d'],
-                    ['#4ade80','#14532d'],
-                    ['#fb7185','#881337'],
-                    ['#34d399','#064e3b'],
-                ];
-                $uniqueZones = collect($asientos)->pluck('zona')->unique()->values();
-                $zoneColors  = [];
-                foreach ($uniqueZones as $i => $zona) {
-                    $zoneColors[$zona] = $zonePalette[$i % count($zonePalette)];
-                }
             @endphp
 
             {{-- Screen --}}
