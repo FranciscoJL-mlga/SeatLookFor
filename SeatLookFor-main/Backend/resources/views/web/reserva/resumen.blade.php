@@ -35,6 +35,24 @@
     window.addEventListener('pagehide', liberar);
     document.addEventListener('DOMContentLoaded', tick);
 })();
+
+(function () {
+    var wrap  = document.getElementById('resumap-wrap');
+    var inner = document.getElementById('resumap-inner');
+    function fit() {
+        if (!wrap || !inner) return;
+        inner.style.transform = 'scale(1)';
+        wrap.style.height = '';
+        var naturalW = inner.offsetWidth;
+        var naturalH = inner.offsetHeight;
+        if (!naturalW) return;
+        var scale = Math.min(1, wrap.offsetWidth / naturalW);
+        inner.style.transform = 'scale(' + scale + ')';
+        wrap.style.height = Math.ceil(naturalH * scale) + 'px';
+    }
+    document.addEventListener('DOMContentLoaded', fit);
+    window.addEventListener('resize', fit);
+})();
 </script>
 @endpush
 
@@ -155,8 +173,8 @@
                     </div>
 
                     {{-- Mapa --}}
-                    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;">
-                        <div style="position:relative;width:{{ $mapW }}px;height:{{ $mapH }}px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;min-width:{{ $mapW }}px;">
+                    <div id="resumap-wrap" style="overflow:hidden;width:100%;">
+                        <div id="resumap-inner" style="position:relative;width:{{ $mapW }}px;height:{{ $mapH }}px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;transform-origin:top left;">
                             <div style="position:absolute;top:6px;left:50%;transform:translateX(-50%);background:#1e293b;color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:2px;padding:3px 20px;border-radius:4px;white-space:nowrap;">ESCENARIO</div>
                             @foreach($todosAsientos as $asiento)
                             @php

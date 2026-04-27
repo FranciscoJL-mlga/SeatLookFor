@@ -164,8 +164,8 @@
 
             @if($asientos->count() > 0)
                 {{-- Row labels + seat grid --}}
-                <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;">
-                <div style="display:inline-flex;align-items:flex-start;gap:0;min-width:max-content;">
+                <div id="showmap-wrap" style="overflow:hidden;width:100%;">
+                <div id="showmap-inner" style="display:inline-flex;align-items:flex-start;gap:0;min-width:max-content;transform-origin:top left;">
 
                     {{-- Row letters --}}
                     <div style="display:grid;grid-template-rows:repeat({{ $uniqueRows->count() }},50px);gap:5px;">
@@ -557,6 +557,23 @@
 
 @push('scripts')
 <script>
+(function () {
+    var wrap  = document.getElementById('showmap-wrap');
+    var inner = document.getElementById('showmap-inner');
+    function fit() {
+        if (!wrap || !inner) return;
+        inner.style.transform = 'scale(1)';
+        wrap.style.height = '';
+        var naturalW = inner.scrollWidth;
+        var naturalH = inner.scrollHeight;
+        var scale = Math.min(1, wrap.offsetWidth / naturalW);
+        inner.style.transform = 'scale(' + scale + ')';
+        wrap.style.height = Math.ceil(naturalH * scale) + 'px';
+    }
+    document.addEventListener('DOMContentLoaded', fit);
+    window.addEventListener('resize', fit);
+})();
+
 function seatSelector(asientosData) {
     return {
         asientos: asientosData,
