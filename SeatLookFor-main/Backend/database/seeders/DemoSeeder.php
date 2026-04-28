@@ -16,7 +16,6 @@ class DemoSeeder extends Seeder
             'nombre'   => 'Teatro Demo SeatLookFor',
             'ubicacion'=> 'Av. de la Constitución 1, Madrid',
             'imagen'   => 'images/establecimientos/default.jpg',
-            'tipo'     => null,
             'demo'     => true,
         ]);
 
