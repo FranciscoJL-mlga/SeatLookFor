@@ -44,6 +44,10 @@ public function logueoBack(LoginRequest $request)
     $request->authenticate();
     $request->session()->regenerate();
 
+    if (Auth::user()->es_demo) {
+        Auth::user()->update(['demo_expires_at' => now()->addMinutes(15)]);
+    }
+
     return redirect()->intended(RouteServiceProvider::HOME);
 }
 

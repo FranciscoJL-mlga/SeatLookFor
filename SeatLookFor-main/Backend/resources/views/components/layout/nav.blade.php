@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin — SeatLookFor</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         [x-cloak] { display: none !important; }
@@ -227,11 +228,12 @@
             </span>
         </header>
 
-        @if(Auth::check() && Auth::user()->es_demo)
+        @if(Auth::check() && Auth::user()->es_demo && Auth::user()->demo_expires_at)
         <div class="demo-banner">
-            <span>⚠ Modo Demo — el contenido se reseteará automáticamente en</span>
+            <span>⚠ Modo Demo — el contenido se reseteará en</span>
             <span class="demo-banner__timer" id="demo-countdown">15:00</span>
         </div>
+        <script>window._demoExpiresAt = {{ Auth::user()->demo_expires_at->timestamp }};</script>
         @endif
 
         <main class="admin-content">
@@ -243,15 +245,32 @@
 <script>
 (function () {
     var el = document.getElementById('demo-countdown');
-    if (!el) return;
+    if (!el || !window._demoExpiresAt) return;
+
+    var expired = false;
+
     function pad(n) { return n < 10 ? '0' + n : String(n); }
+
     function tick() {
-        var now = new Date();
-        var totalSec = now.getMinutes() * 60 + now.getSeconds();
-        var remaining = 15 * 60 - (totalSec % (15 * 60));
-        if (remaining === 15 * 60) remaining = 0; // justo en el reset
+        var remaining = Math.max(0, window._demoExpiresAt - Math.floor(Date.now() / 1000));
         el.textContent = pad(Math.floor(remaining / 60)) + ':' + pad(remaining % 60);
+
+        if (remaining === 0 && !expired) {
+            expired = true;
+            el.textContent = '00:00';
+            // Notifica al servidor y redirige al login
+            fetch('{{ route("demo.session.expired") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            }).finally(function () {
+                window.location.href = '{{ route("admin.login.form") }}';
+            });
+        }
     }
+
     tick();
     setInterval(tick, 1000);
 })();

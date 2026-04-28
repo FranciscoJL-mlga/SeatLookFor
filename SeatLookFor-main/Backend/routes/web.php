@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EstablecimientoController;
@@ -64,7 +65,18 @@ Route::post('/admin/logout', [AuthenticatedSessionController::class, 'logout'])
     ->middleware('auth')
     ->name('admin.logout');
 
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+// Forzar reset demo desde el JS del navegador (cuando el countdown llega a 0)
+Route::post('/demo/session-expired', function () {
+    if (Auth::check() && Auth::user()->es_demo) {
+        \Illuminate\Support\Facades\Artisan::call('demo:reset');
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+    }
+    return response()->json(['redirect' => route('admin.login.form')]);
+})->middleware('auth')->name('demo.session.expired');
+
+Route::prefix('admin')->middleware(['auth', 'admin', 'demo.session'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

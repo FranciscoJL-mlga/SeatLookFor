@@ -31,6 +31,7 @@ class Usuario extends Authenticatable
         'estado',
         'admin',
         'es_demo',
+        'demo_expires_at',
     ];
 
     public $timestamps = false;
@@ -50,10 +51,11 @@ class Usuario extends Authenticatable
      * @return array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'admin' => 'boolean',
-        'es_demo' => 'boolean',
+        'email_verified_at'  => 'datetime',
+        'password'           => 'hashed',
+        'admin'              => 'boolean',
+        'es_demo'            => 'boolean',
+        'demo_expires_at'    => 'datetime',
     ];
 
 /*     public function comentarios()

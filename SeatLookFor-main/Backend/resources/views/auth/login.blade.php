@@ -3,6 +3,12 @@
         <div class="w-full max-w-md p-8 bg-[#1F2937] text-white rounded-2xl shadow-xl border border-indigo-500">
             <h1 class="text-2xl font-bold text-center mb-6 text-indigo-400">Panel de Administración</h1>
 
+            @if(session('demo_expired'))
+                <div class="mb-5 px-4 py-3 bg-amber-900/60 border border-amber-500 text-amber-200 rounded-lg text-sm text-center">
+                    ⏱ La sesión demo ha expirado. El contenido ha sido reseteado.
+                </div>
+            @endif
+
             <!-- Formulario de login -->
             <form method="POST" action="{{ route('admin.login') }}" class="space-y-5">
                 {{-- Formulario de login del panel de administración --}}
