@@ -9,4 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Resetea el contenido demo cada 30 minutos
-Schedule::command('demo:reset')->everyThirtyMinutes();
+Schedule::command('demo:reset')->everyFifteenMinutes();
