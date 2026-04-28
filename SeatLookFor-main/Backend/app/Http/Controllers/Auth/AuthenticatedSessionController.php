@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -63,11 +64,15 @@ public function destroy(Request $request)
 
 public function logout(Request $request)
 {
+    if (Auth::check() && Auth::user()->es_demo) {
+        Artisan::call('demo:reset');
+    }
+
     Auth::guard('web')->logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    return redirect('/login'); // O puedes redirigir a la página principal con "/"
+    return redirect('/login');
 }
 
 }
