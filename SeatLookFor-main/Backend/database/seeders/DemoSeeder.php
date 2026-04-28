@@ -17,7 +17,7 @@ class DemoSeeder extends Seeder
             'ubicacion'=> 'Av. de la Constitución 1, Madrid',
             'imagen'   => 'images/establecimientos/default.jpg',
             'demo'     => true,
-        ]);
+        ], 'idEst');
 
         // Asientos: escenario (fila 0), zonas A (filas 1-2), B (filas 3-5), C (filas 6-8)
         $zones = [
@@ -68,7 +68,7 @@ class DemoSeeder extends Seeder
             'idEst'       => $idEst,
             'codigo'      => Str::random(8),
             'demo'        => true,
-        ]);
+        ], 'idEve');
 
         // Vincular todos los asientos (excepto escenario) al evento
         $asientoIds = DB::table('asiento')
