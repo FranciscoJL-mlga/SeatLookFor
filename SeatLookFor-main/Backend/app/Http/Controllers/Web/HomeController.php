@@ -10,6 +10,7 @@ class HomeController extends Controller
     public function index()
     {
         $recientes = Evento::where('estado', 'activo')
+            ->where('demo', false)
             ->orderBy('fecha', 'desc')
             ->take(6)
             ->get();

@@ -11,7 +11,7 @@ class EventoWebController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Evento::where('estado', 'activo');
+        $query = Evento::where('estado', 'activo')->where('demo', false);
 
         if ($request->filled('tipo')) {
             $query->where('tipo', $request->tipo);
@@ -45,6 +45,10 @@ class EventoWebController extends Controller
 
     public function show(Evento $evento)
     {
+        if ($evento->demo) {
+            abort(404);
+        }
+
         $evento->load(['asientos.usuariosComentaron', 'establecimiento']);
         $idEve = $evento->idEve;
 

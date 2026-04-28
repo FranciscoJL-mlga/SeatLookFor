@@ -170,10 +170,33 @@
         .admin-content .text-gray-700 { color: #e2e8f0 !important; }
         .admin-content .text-gray-600 { color: #cbd5e1 !important; }
         .admin-content .text-gray-500 { color: #94a3b8 !important; }
-        .admin-content .text-gray-400 { color: #64748b !important; }
-        .admin-content .bg-white { background: var(--bg-card) !important; }
+        .admin-content .text-gray-400 { color: #94a3b8 !important; }
+        .admin-content .bg-white      { background: var(--bg-card) !important; }
+        .admin-content .bg-gray-100,
+        .admin-content .bg-gray-200   { background: var(--bg-raised) !important; }
         .admin-content .shadow-md,
-        .admin-content .shadow-lg { box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important; }
+        .admin-content .shadow-lg     { box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important; }
+
+        /* Badges de estado */
+        .admin-content .bg-green-100  { background: rgba(34,197,94,0.15)  !important; }
+        .admin-content .text-green-800{ color: #86efac !important; }
+        .admin-content .bg-red-100    { background: rgba(239,68,68,0.15)  !important; }
+        .admin-content .text-red-800  { color: #fca5a5 !important; }
+        .admin-content .bg-blue-100   { background: rgba(59,130,246,0.15) !important; }
+        .admin-content .text-blue-800 { color: #93c5fd !important; }
+        .admin-content .bg-yellow-100 { background: rgba(234,179,8,0.15)  !important; }
+        .admin-content .text-yellow-800{color: #fde047 !important; }
+        .admin-content .border-yellow-500 { border-color: rgba(234,179,8,0.5) !important; }
+
+        /* Inputs y selects de Tailwind dentro del admin */
+        .admin-content input,
+        .admin-content select,
+        .admin-content textarea {
+            background: var(--bg-raised) !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
+        }
+        .admin-content input::placeholder { color: var(--text-dim) !important; }
     </style>
 </head>
 <body>
