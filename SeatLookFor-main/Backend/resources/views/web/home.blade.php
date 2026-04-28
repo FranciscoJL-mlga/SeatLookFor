@@ -348,14 +348,6 @@
                     Q936,6 1008,38 Q1080,72 1152,40
                     Q1224,6 1296,38 Q1368,72 1440,40"
                     stroke="#c9a227" stroke-width="2.5" fill="none" opacity="0.75"/>
-                @foreach([72, 216, 360, 504, 648, 792, 936, 1080, 1224, 1368] as $tx)
-                    <line x1="{{ $tx }}" y1="68" x2="{{ $tx }}" y2="72"
-                          stroke="#c9a227" stroke-width="1.5" opacity="0.7"/>
-                    <polygon
-                        points="{{ $tx }},72 {{ $tx - 4 }},64 {{ $tx }},57 {{ $tx + 4 }},64"
-                        fill="#d4aa37" opacity="0.85"/>
-                    <circle cx="{{ $tx }}" cy="57" r="2.5" fill="#e0c040" opacity="0.9"/>
-                @endforeach
             </svg>
         </div>
 
