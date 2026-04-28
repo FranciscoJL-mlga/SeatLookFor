@@ -98,7 +98,7 @@
         @endif
 
         {{-- Seat legend --}}
-        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);flex-shrink:0;">
             <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:10px;">Leyenda</p>
             <div style="display:flex;flex-direction:column;gap:9px;">
                 @foreach($zoneColors as $zona => [$c,$cd])

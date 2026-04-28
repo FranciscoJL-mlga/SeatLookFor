@@ -799,6 +799,9 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; }
   box-sizing: border-box;
   text-align: center;
   z-index: 15;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 108px);
 }
 
 .event__reservation h3 {
@@ -824,6 +827,9 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; }
   list-style: none;
   padding: 0;
   margin: 0 0 12px;
+  max-height: 210px;
+  overflow-y: auto;
+  flex-shrink: 1;
 }
 
 .event__reservation li {

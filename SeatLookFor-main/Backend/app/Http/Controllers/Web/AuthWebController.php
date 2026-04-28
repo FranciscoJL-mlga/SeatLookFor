@@ -31,6 +31,11 @@ class AuthWebController extends Controller
         Auth::login($usuario, $request->boolean('remember'));
         $request->session()->regenerate();
 
+        if ($usuario->admin && $usuario->es_demo) {
+            $usuario->update(['demo_expires_at' => now()->addMinutes(15)]);
+            return redirect()->route('dashboard');
+        }
+
         return redirect()->intended(route('home'));
     }
 
