@@ -119,7 +119,11 @@ class EventoController extends Controller
 
     public function listar()
     {
-        $eventos = Evento::with('establecimiento')->paginate(6);
+        if (auth()->user()->es_demo) {
+            $eventos = Evento::with('establecimiento')->where('demo', true)->paginate(6);
+        } else {
+            $eventos = Evento::with('establecimiento')->paginate(6);
+        }
         return view('Evento.listadoEventos', compact('eventos'));
     }
 
@@ -263,7 +267,11 @@ class EventoController extends Controller
 
     public function formularioCrear()
     {
-        $establecimientos = Establecimiento::with("asientos")->get();;
+        if (auth()->user()->es_demo) {
+            $establecimientos = Establecimiento::where('demo', true)->with("asientos")->get();
+        } else {
+            $establecimientos = Establecimiento::with("asientos")->get();
+        }
         return view('Evento.CrearEvento', compact('establecimientos'));
     }
 
@@ -365,6 +373,7 @@ class EventoController extends Controller
             $evento->categoria = $request->categoria;
             $evento->ubicacion = 'Por determinar';
             $evento->duracion = $request->duracion;
+            $evento->demo = auth()->user()->es_demo;
 
             if ($request->hasFile('imagen')) {
                 $imagen = $request->file('imagen');
@@ -493,6 +502,10 @@ public function ver($id)
     try {
         $evento = Evento::with(['establecimiento', 'ReservaDeEventos', 'asientos'])->findOrFail($id);
 
+        if (auth()->user()->es_demo && !$evento->demo) {
+            return redirect()->route('eventos.listado')->withErrors(['error' => 'No tienes permisos para ver este evento.']);
+        }
+
         $reservadosIds  = $evento->ReservaDeEventos->pluck('idAsi')->map(fn ($v) => (int) $v)->toArray();
         $habilitadosIds = $evento->asientos->pluck('idAsi')->map(fn ($v) => (int) $v)->toArray();
 
@@ -519,6 +532,10 @@ public function ver($id)
 public function guardarAsientos(Request $request, $id)
 {
     $evento = Evento::with(['asientos', 'ReservaDeEventos'])->findOrFail($id);
+
+    if (auth()->user()->es_demo && !$evento->demo) {
+        return redirect()->back()->withErrors(['error' => 'No tienes permisos para modificar este evento.']);
+    }
 
     $reservadosIds = $evento->ReservaDeEventos->pluck('idAsi')->map(fn ($v) => (int) $v)->toArray();
     $seleccionados = array_map('intval', $request->input('asientos', []));
@@ -587,6 +604,10 @@ public function eliminar($id)
     try {
         $evento = Evento::with('ReservaDeEventos')->findOrFail($id);
 
+        if (auth()->user()->es_demo && !$evento->demo) {
+            return redirect()->back()->withErrors(['error' => 'No tienes permisos para eliminar este evento.']);
+        }
+
         // Eliminar primero las reservas asociadas
         foreach ($evento->ReservaDeEventos as $reserva) {
             $reserva->delete();
@@ -610,6 +631,10 @@ public function eliminar($id)
     {
         try {
             $evento = Evento::findOrFail($id);
+
+            if (auth()->user()->es_demo && !$evento->demo) {
+                return redirect()->back()->withErrors(['error' => 'No tienes permisos para modificar este evento.']);
+            }
 
             $nuevoEstado = $request->input('estado');
             if (!in_array($nuevoEstado, ['activo', 'finalizado'])) {

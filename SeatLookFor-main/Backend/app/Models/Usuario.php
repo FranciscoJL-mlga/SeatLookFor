@@ -30,6 +30,7 @@ class Usuario extends Authenticatable
         'password',
         'estado',
         'admin',
+        'es_demo',
     ];
 
     public $timestamps = false;
@@ -52,6 +53,7 @@ class Usuario extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'admin' => 'boolean',
+        'es_demo' => 'boolean',
     ];
 
 /*     public function comentarios()

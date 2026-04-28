@@ -75,6 +75,15 @@ class UsuarioSeeder extends Seeder
                 'estado'   => true,
                 'admin'    => false,
             ],
+            [
+                'nombre'   => 'Demo',
+                'apellido' => 'SeatLookFor',
+                'email'    => 'demo@seatlookfor.com',
+                'password' => Hash::make('demo1234'),
+                'estado'   => true,
+                'admin'    => true,
+                'es_demo'  => true,
+            ],
         ]);
     }
 }

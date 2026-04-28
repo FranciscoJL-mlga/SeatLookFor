@@ -29,6 +29,7 @@ class Evento extends Model
         'idEst',
         'portada',
         'codigo',
+        'demo',
     ];
 
     public function getRouteKeyName(): string

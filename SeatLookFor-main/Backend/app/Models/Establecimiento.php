@@ -18,7 +18,8 @@ class Establecimiento extends Model
         'nombre',
         'ubicacion',
         'imagen',
-        'tipo'
+        'tipo',
+        'demo',
     ];
 
     public function eventos()

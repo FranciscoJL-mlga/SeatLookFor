@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ComentariosSeeder::class,
             ReservaSeeder::class,
+            DemoSeeder::class,
         ]);
     }
 

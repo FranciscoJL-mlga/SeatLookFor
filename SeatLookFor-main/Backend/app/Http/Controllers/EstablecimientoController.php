@@ -74,12 +74,14 @@ class EstablecimientoController extends Controller
      * Listado de los establecimientos 
      */
     public function listar(Request $request)
-    {   
+    {
+        if (auth()->user()->es_demo) {
+            $establecimientos = Establecimiento::where('demo', true)->paginate(6);
+        } else {
+            $establecimientos = Establecimiento::paginate(6);
+        }
 
-   // Carga todos los establecimientos, 6 por página
-    $establecimientos = Establecimiento::paginate(6);
-
-    return view('Establecimiento.listadoEstablecimiento', compact('establecimientos'));
+        return view('Establecimiento.listadoEstablecimiento', compact('establecimientos'));
     }
 
 
@@ -173,6 +175,7 @@ public function guardar(Request $request)
         'nombre'   => $request->input('nombre'),
         'ubicacion'=> $request->input('ubicacion'),
         'imagen'   => $imagenPath,
+        'demo'     => auth()->user()->es_demo,
     ]);
 
     // Procesar los asientos desde el JSON
@@ -334,6 +337,10 @@ public function eliminar($id)
 {
     try {
         $establecimiento = Establecimiento::with(['asientos.usuariosComentaron', 'eventos'])->findOrFail($id);
+
+        if (auth()->user()->es_demo && !$establecimiento->demo) {
+            return redirect()->back()->withErrors(['error' => 'No tienes permisos para eliminar este establecimiento.']);
+        }
 
         // Si hay eventos asociados, no permitir borrar
         if ($establecimiento->eventos->count() > 0) {
