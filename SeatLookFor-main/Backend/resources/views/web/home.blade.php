@@ -368,7 +368,7 @@
 
     <p style="text-align:center;color:var(--text-muted);font-size:1.05rem;position:relative;z-index:2;
               padding:0 20px 40px;max-width:560px;margin:0 auto;line-height:1.7;">
-        Reserva tu asiento en teatros, salas y eventos locales — y descubre la vista desde cada butaca.
+        Reserva tu asiento en teatros, salas y eventos locales y descubre la vista desde cada butaca.
     </p>
 
     <div class="ante-container">
