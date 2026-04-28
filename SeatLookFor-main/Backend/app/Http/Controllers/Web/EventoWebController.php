@@ -6,12 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Evento;
 use App\Models\Reserva;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventoWebController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Evento::where('estado', 'activo')->where('demo', false);
+        $esDemo = Auth::check() && Auth::user()->es_demo;
+        $query = Evento::where('estado', 'activo');
+        if (!$esDemo) {
+            $query->where('demo', false);
+        }
 
         if ($request->filled('tipo')) {
             $query->where('tipo', $request->tipo);
@@ -45,7 +50,7 @@ class EventoWebController extends Controller
 
     public function show(Evento $evento)
     {
-        if ($evento->demo) {
+        if ($evento->demo && (!Auth::check() || !Auth::user()->es_demo)) {
             abort(404);
         }
 
