@@ -170,7 +170,7 @@
 
             <div style="text-align:center;margin-top:8px;">
                 <button type="submit" class="admin-btn-primary">
-                    💾 Guardar Establecimiento
+                    Guardar Establecimiento
                 </button>
             </div>
         </form>

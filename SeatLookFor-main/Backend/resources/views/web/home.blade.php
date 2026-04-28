@@ -425,7 +425,7 @@
 <script>
 /* ── Letter animation ── */
 (function () {
-    var text = 'seatlookfor';
+    var text = 'SeatLookFor';
     var container = document.getElementById('landing-title');
     if (!container) return;
     text.split('').forEach(function (letter, i) {
