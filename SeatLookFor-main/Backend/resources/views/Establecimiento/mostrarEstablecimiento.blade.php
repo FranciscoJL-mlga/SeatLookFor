@@ -12,7 +12,7 @@
         <!-- IMAGEN -->
         @if($establecimiento->imagen)
             <div class="mb-10 flex justify-center">
-                <img src="{{ $establecimiento->imagen }}" alt="Imagen del establecimiento"
+                <img src="{{ asset($establecimiento->imagen) }}" alt="Imagen del establecimiento"
                      class="rounded-lg shadow-lg w-full max-w-2xl h-64 object-cover">
             </div>
         @endif

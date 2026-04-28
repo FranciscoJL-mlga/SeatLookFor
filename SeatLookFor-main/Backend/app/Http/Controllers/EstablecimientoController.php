@@ -153,7 +153,7 @@ public function guardar(Request $request)
     $request->validate([
         'nombre'   => 'required|string|max:255',
         'ubicacion'=> 'required|string|max:255',
-        'imagen'   => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'imagen'   => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
     ]);
 
     $imagenPath = 'images/establecimientos/default.jpg';

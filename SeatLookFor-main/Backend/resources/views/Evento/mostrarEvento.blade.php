@@ -10,7 +10,7 @@
         <!-- IMAGEN DEL ESTABLECIMIENTO -->
         @if($evento->establecimiento->imagen)
             <div class="mb-10 flex justify-center">
-                <img src="{{ $evento->establecimiento->imagen }}" alt="Imagen del establecimiento"
+                <img src="{{ asset($evento->establecimiento->imagen) }}" alt="Imagen del establecimiento"
                      class="rounded-lg shadow-lg w-full max-w-2xl h-64 object-cover">
             </div>
         @endif
@@ -121,15 +121,15 @@
 
                 {{-- Leyenda --}}
                 <div style="display:flex;gap:20px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
-                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#f1f5f9;">
                         <svg viewBox="0 0 44 48" width="16" height="18"><rect x="5" y="0" width="34" height="29" rx="7" fill="#3b82f6"/><rect x="0" y="32" width="44" height="14" rx="5" fill="#3b82f6"/></svg>
                         Habilitado
                     </div>
-                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#f1f5f9;">
                         <svg viewBox="0 0 44 48" width="16" height="18" style="opacity:0.3"><rect x="5" y="0" width="34" height="29" rx="7" fill="#94a3b8"/><rect x="0" y="32" width="44" height="14" rx="5" fill="#94a3b8"/></svg>
                         Deshabilitado
                     </div>
-                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#f1f5f9;">
                         <svg viewBox="0 0 44 48" width="16" height="18"><rect x="5" y="0" width="34" height="29" rx="7" fill="#f97316"/><rect x="0" y="32" width="44" height="14" rx="5" fill="#f97316"/></svg>
                         🔒 Con reserva (no modificable)
                     </div>

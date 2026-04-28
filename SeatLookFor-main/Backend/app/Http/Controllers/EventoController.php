@@ -342,7 +342,7 @@ class EventoController extends Controller
                     'establecimiento_id' => 'required|exists:establecimiento,idEst',
                     'tipo'               => 'required|in:Teatro,Orquesta,Musical,Concierto',
                     'categoria'          => 'required|in:Drama,Familiar,Clásica,Musical,Barroco,Fantasía,Suspenso,Comedia',
-                    'imagen'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                    'imagen'             => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
                 ]);
 
 

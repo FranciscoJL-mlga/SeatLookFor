@@ -12,7 +12,7 @@
                 <a href="{{ route('eventos.ver', $evento->idEve) }}" class="block group">
                     <div class="bg-white shadow-md hover:shadow-xl transition rounded-xl overflow-hidden">
                         @if($evento->portada)
-                            <img src="{{ $evento->portada }}" alt="{{ $evento->titulo }}" class="object-cover w-full h-48 group-hover:scale-105 transition-transform">
+                            <img src="{{ asset($evento->portada) }}" alt="{{ $evento->titulo }}" class="object-cover w-full h-48 group-hover:scale-105 transition-transform">
                         @else
                             <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
                                 <span class="text-gray-400">Sin imagen</span>
