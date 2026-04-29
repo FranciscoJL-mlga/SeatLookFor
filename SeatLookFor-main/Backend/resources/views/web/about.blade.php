@@ -31,13 +31,21 @@
                 </div>
                 <h1 class="about__card-title">Francisco Jiménez López</h1>
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:4px;">
                 <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:20px;font-size:12px;color:var(--primary);font-weight:600;">
                     Backend
                 </span>
                 <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.25);border-radius:20px;font-size:12px;color:var(--accent);font-weight:600;">
                     Laravel
                 </span>
+                <a href="https://www.linkedin.com/in/ENLACE-FRANCISCO" target="_blank" rel="noopener"
+                   style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(10,102,194,0.12);border:1px solid rgba(10,102,194,0.35);border-radius:20px;font-size:12px;color:#4a9fd4;font-weight:600;text-decoration:none;transition:background 0.2s;"
+                   onmouseover="this.style.background='rgba(10,102,194,0.25)'" onmouseout="this.style.background='rgba(10,102,194,0.12)'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                    LinkedIn
+                </a>
             </div>
             <p class="about__card-text">Desde pequeño me han interesado los videojuegos, especialmente los RPG, lo que despertó en mí la curiosidad por entender cómo funcionan los sistemas por dentro. Con el tiempo, esa curiosidad se transformó en una vocación por la programación, centrada principalmente en el desarrollo web.
 
@@ -60,13 +68,21 @@ Me considero una persona constante, con gran capacidad de aprendizaje y motivada
                     </svg>
                 </div>
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:4px;">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center;margin-bottom:4px;">
                 <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(16,185,129,0.10);border:1px solid rgba(16,185,129,0.25);border-radius:20px;font-size:12px;color:#10b981;font-weight:600;">
                     Frontend
                 </span>
                 <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.25);border-radius:20px;font-size:12px;color:var(--accent);font-weight:600;">
                     Diseño
                 </span>
+                <a href="https://www.linkedin.com/in/ENLACE-TONI" target="_blank" rel="noopener"
+                   style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(10,102,194,0.12);border:1px solid rgba(10,102,194,0.35);border-radius:20px;font-size:12px;color:#4a9fd4;font-weight:600;text-decoration:none;transition:background 0.2s;"
+                   onmouseover="this.style.background='rgba(10,102,194,0.25)'" onmouseout="this.style.background='rgba(10,102,194,0.12)'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                    LinkedIn
+                </a>
             </div>
             <p class="about__card-text">¡Ey! Soy Toni. Me considero una persona alegre, positiva y bastante realista. Me gusta ver el vaso medio lleno, pero tampoco me monto películas de Disney cuando sé que viene una semana con cuatro entregas y dos exámenes. La clave está en reírse, moverse y seguir.
 
