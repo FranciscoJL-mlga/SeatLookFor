@@ -132,7 +132,7 @@
                         <div class="event__comment"
                              style="display:flex;gap:16px;align-items:center;padding:16px 20px;">
                             @if($reserva->evento?->portada)
-                                <img src="{{ $reserva->evento->portada }}"
+                                <img src="{{ asset($reserva->evento->portada) }}"
                                      alt="{{ $reserva->evento->titulo }}"
                                      style="width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1px solid var(--border);">
                             @else
@@ -196,7 +196,7 @@
                         <div style="display:flex;gap:16px;align-items:center;padding:16px 20px;background:var(--bg-raised);border:1px solid var(--border);border-radius:12px;">
                             <div style="width:72px;height:72px;border-radius:8px;background:linear-gradient(135deg,#4c1d95,#1e1b4b);flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">
                                 @if($evento->imagen)
-                                    <img src="{{ asset('storage/' . $evento->imagen) }}" alt="{{ $evento->titulo }}"
+                                    <img src="{{ asset($evento->portada) }}" alt="{{ $evento->titulo }}"
                                          style="width:100%;height:100%;object-fit:cover;border-radius:8px;">
                                 @else
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"

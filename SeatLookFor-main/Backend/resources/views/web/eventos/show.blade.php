@@ -300,7 +300,7 @@
         <div class="event__info">
             @if($evento->establecimiento && $evento->establecimiento->imagen)
             <div class="event__info-image">
-                <img src="{{ $evento->establecimiento->imagen }}"
+                <img src="{{ asset($evento->establecimiento->imagen) }}"
                      alt="Portada de establecimiento">
             </div>
             @endif
