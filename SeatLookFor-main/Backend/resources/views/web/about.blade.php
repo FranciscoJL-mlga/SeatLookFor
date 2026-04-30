@@ -51,7 +51,7 @@
 
             {{-- Stack tecnológico --}}
             <div style="margin:16px 0 20px;display:flex;flex-wrap:wrap;gap:8px;">
-                @foreach(['PHP', 'Laravel', 'MySQL', 'PostgreSQL', 'JavaScript', 'HTML/CSS', 'Python', 'Angular', 'React', 'AWS'] as $tech)
+                @foreach(['PHP', 'Laravel', 'MySQL', 'PostgreSQL', 'JavaScript', 'HTML/CSS', 'Python', 'Angular', 'AWS', 'Tailwind CSS', 'Bootstrap', 'Figma'] as $tech)
                 <span style="padding:4px 11px;border-radius:99px;font-size:11px;font-weight:600;
                              background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
                              color:var(--text-dim);">{{ $tech }}</span>
@@ -108,8 +108,8 @@
             <p class="about__card-text">Desarrollador Frontend con pasión por el diseño de interfaces, recién graduado en DAW. Me especializo en crear experiencias visuales atractivas, intuitivas y funcionales — donde el código y el diseño se encuentran.</p>
 
             {{-- Stack tecnológico --}}
-            <div style="margin:16px 0 20px;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;">
-                @foreach(['HTML/CSS', 'JavaScript', 'Tailwind CSS', 'Alpine.js', 'React', 'Figma', 'UI/UX', 'Diseño Responsive'] as $tech)
+            <div style="margin:16px 0 20px;display:flex;flex-wrap:wrap;gap:8px;">
+                @foreach(['HTML/CSS', 'JavaScript', 'Tailwind CSS', 'Alpine.js', 'Bootstrap', 'PHP', 'Laravel', 'AWS', 'Diseño Responsive'] as $tech)
                 <span style="padding:4px 11px;border-radius:99px;font-size:11px;font-weight:600;
                              background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
                              color:var(--text-dim);">{{ $tech }}</span>
