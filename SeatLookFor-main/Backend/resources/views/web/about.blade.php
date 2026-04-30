@@ -38,7 +38,7 @@
                 <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.25);border-radius:20px;font-size:12px;color:var(--accent);font-weight:600;">
                     Laravel
                 </span>
-                <a href="https://www.linkedin.com/in/ENLACE-FRANCISCO" target="_blank" rel="noopener"
+                <a href="https://www.linkedin.com/in/francisco-jimenez-lopez-1a1517217" target="_blank" rel="noopener"
                    style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(10,102,194,0.12);border:1px solid rgba(10,102,194,0.35);border-radius:20px;font-size:12px;color:#4a9fd4;font-weight:600;text-decoration:none;transition:background 0.2s;"
                    onmouseover="this.style.background='rgba(10,102,194,0.25)'" onmouseout="this.style.background='rgba(10,102,194,0.12)'">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
@@ -75,7 +75,7 @@ Me considero una persona constante, con gran capacidad de aprendizaje y motivada
                 <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.25);border-radius:20px;font-size:12px;color:var(--accent);font-weight:600;">
                     Diseño
                 </span>
-                <a href="https://www.linkedin.com/in/ENLACE-TONI" target="_blank" rel="noopener"
+                <a href="https://www.linkedin.com/in/antoniojheredia/" target="_blank" rel="noopener"
                    style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(10,102,194,0.12);border:1px solid rgba(10,102,194,0.35);border-radius:20px;font-size:12px;color:#4a9fd4;font-weight:600;text-decoration:none;transition:background 0.2s;"
                    onmouseover="this.style.background='rgba(10,102,194,0.25)'" onmouseout="this.style.background='rgba(10,102,194,0.12)'">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
