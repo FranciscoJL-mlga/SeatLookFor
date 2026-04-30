@@ -105,15 +105,36 @@
                     LinkedIn
                 </a>
             </div>
-            <p class="about__card-text">¡Ey! Soy Toni. Me considero una persona alegre, positiva y bastante realista. Me gusta ver el vaso medio lleno, pero tampoco me monto películas de Disney cuando sé que viene una semana con cuatro entregas y dos exámenes. La clave está en reírse, moverse y seguir.
+            <p class="about__card-text">Desarrollador Frontend con pasión por el diseño de interfaces, recién graduado en DAW. Me especializo en crear experiencias visuales atractivas, intuitivas y funcionales — donde el código y el diseño se encuentran.</p>
 
-            Me encanta el deporte. Juego al pádel siempre que puedo —aunque mis amigos dicen que a veces le hablo a la pala más que a ellos—, y también hago pesas. Vale, lo admito: no se nota mucho… pero están ahí, te lo juro. Lo importante es el esfuerzo, ¿no?
+            {{-- Stack tecnológico --}}
+            <div style="margin:16px 0 20px;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;">
+                @foreach(['HTML/CSS', 'JavaScript', 'Tailwind CSS', 'Alpine.js', 'React', 'Figma', 'UI/UX', 'Diseño Responsive'] as $tech)
+                <span style="padding:4px 11px;border-radius:99px;font-size:11px;font-weight:600;
+                             background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
+                             color:var(--text-dim);">{{ $tech }}</span>
+                @endforeach
+            </div>
 
-            Soy fan de la buena comida, sin muchas complicaciones. Si hay una buena pizza, una hamburguesa o unas tapas, estoy dentro. Y si después se puede caer una peli o una serie, mejor aún. Me puedo enganchar a cualquier cosa si tiene buen ritmo o personajes que molen. Desde thrillers a comedias tontas, soy de los que dicen "un capítulo más" y acaba viendo cuatro.
-
-            Estudio programación en el Instituto Alan Turing. Allí conocí a gente muy crack, y también a otros que están igual de perdidos que yo cuando vemos un error de JavaScript. Pero lo bueno es que me encanta lo que hago, sobre todo el frontend. Me flipa todo lo que tiene que ver con diseño, colores, interacción… eso de ver cómo tus líneas de código se convierten en algo visual y funcional me parece magia pura.
-
-            Intento llevarlo todo con humor, aunque a veces toque apretar los dientes. Soy de los que prefieren disfrutar el camino, aunque haya bugs, trabajos de grupo y días donde nada compila.</p>
+            {{-- Puntos clave --}}
+            <ul style="display:flex;flex-direction:column;gap:10px;padding:0;list-style:none;margin:0 0 8px;">
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:#10b981;margin-top:2px;flex-shrink:0;">▸</span>
+                    Maquetación de interfaces modernas y responsivas con HTML, CSS, Tailwind y JavaScript.
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:#10b981;margin-top:2px;flex-shrink:0;">▸</span>
+                    Enfoque en la experiencia de usuario: diseño limpio, accesible e intuitivo desde el primer clic.
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:#10b981;margin-top:2px;flex-shrink:0;">▸</span>
+                    Capacidad para traducir ideas y mockups en productos visuales reales, trabajando codo a codo con backend.
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:#10b981;margin-top:2px;flex-shrink:0;">▸</span>
+                    Actualmente buscando una oportunidad donde seguir creciendo en frontend y diseño de producto.
+                </li>
+            </ul>
         </div>
 
         {{-- ── El Proyecto ── --}}
