@@ -81,7 +81,7 @@
 
         {{-- ── Antonio Jesus Heredias ── --}}
         <div class="about__card about__card--toni">
-            <div class="about__header" style="justify-content:flex-end;">
+            <div class="about__header">
                 <h1 class="about__card-title">Antonio Jesus Heredias</h1>
                 <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--primary));display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white">
@@ -89,7 +89,7 @@
                     </svg>
                 </div>
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center;margin-bottom:4px;">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:4px;">
                 <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(16,185,129,0.10);border:1px solid rgba(16,185,129,0.25);border-radius:20px;font-size:12px;color:#10b981;font-weight:600;">
                     Frontend
                 </span>
@@ -105,7 +105,7 @@
                     LinkedIn
                 </a>
             </div>
-            <p class="about__card-text">Desarrollador Frontend con pasión por el diseño de interfaces, recién graduado en DAW. Me especializo en crear experiencias visuales atractivas, intuitivas y funcionales — donde el código y el diseño se encuentran.</p>
+            <p class="about__card-text" style="text-align:left;">Desarrollador Frontend con pasión por el diseño de interfaces, recién graduado en DAW. Me especializo en crear experiencias visuales atractivas, intuitivas y funcionales donde el código y el diseño se encuentran.</p>
 
             {{-- Stack tecnológico --}}
             <div style="margin:16px 0 20px;display:flex;flex-wrap:wrap;gap:8px;">
