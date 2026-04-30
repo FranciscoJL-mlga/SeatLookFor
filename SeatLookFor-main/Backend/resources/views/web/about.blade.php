@@ -47,15 +47,36 @@
                     LinkedIn
                 </a>
             </div>
-            <p class="about__card-text">Desde pequeño me han interesado los videojuegos, especialmente los RPG, lo que despertó en mí la curiosidad por entender cómo funcionan los sistemas por dentro. Con el tiempo, esa curiosidad se transformó en una vocación por la programación, centrada principalmente en el desarrollo web.
+            <p class="about__card-text">Desarrollador Web con especialización en backend, recién graduado en DAW y con experiencia práctica en proyectos reales. Me apasiona diseñar la lógica que hay detrás de las aplicaciones: que todo funcione de forma eficiente, estructurada y escalable.</p>
 
-Actualmente he finalizado mis estudios en Desarrollo de Aplicaciones Web y he trabajado en distintos proyectos utilizando PHP y Laravel, gestión de bases de datos y desarrollo de funcionalidades completas del lado del servidor. Disfruto especialmente diseñando la lógica que hay detrás de las aplicaciones y asegurando que todo funcione de forma eficiente y estructurada.
+            {{-- Stack tecnológico --}}
+            <div style="margin:16px 0 20px;display:flex;flex-wrap:wrap;gap:8px;">
+                @foreach(['PHP', 'Laravel', 'MySQL', 'PostgreSQL', 'JavaScript', 'HTML/CSS', 'Python', 'Angular', 'React', 'AWS'] as $tech)
+                <span style="padding:4px 11px;border-radius:99px;font-size:11px;font-weight:600;
+                             background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
+                             color:var(--text-dim);">{{ $tech }}</span>
+                @endforeach
+            </div>
 
-Además, tengo conocimientos en HTML, CSS, JavaScript, Python y SQL, así como experiencia con Angular y formación en React. También estoy familiarizado con entornos de despliegue en la nube como AWS.
-
-Compagino mi formación tecnológica con experiencia laboral en el sector de la hostelería, lo que me ha permitido desarrollar habilidades como la responsabilidad, el trabajo en equipo y la capacidad de adaptación.
-
-Me considero una persona constante, con gran capacidad de aprendizaje y motivada por seguir creciendo profesionalmente dentro del desarrollo de software.</p>
+            {{-- Puntos clave --}}
+            <ul style="display:flex;flex-direction:column;gap:10px;padding:0;list-style:none;margin:0 0 8px;">
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:var(--primary);margin-top:2px;flex-shrink:0;">▸</span>
+                    Desarrollo de APIs REST con Laravel y gestión de bases de datos relacionales (MySQL, PostgreSQL).
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:var(--primary);margin-top:2px;flex-shrink:0;">▸</span>
+                    Experiencia en despliegue en la nube con AWS y entornos de producción reales.
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:var(--primary);margin-top:2px;flex-shrink:0;">▸</span>
+                    Capacidad de adaptación y trabajo en equipo, reforzada por años de experiencia en el sector de la hostelería.
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:var(--primary);margin-top:2px;flex-shrink:0;">▸</span>
+                    Actualmente buscando una primera oportunidad profesional donde seguir creciendo en desarrollo de software.
+                </li>
+            </ul>
         </div>
 
         {{-- ── Antonio Jesus Heredias ── --}}
