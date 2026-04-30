@@ -1,10 +1,58 @@
 <x-layout.nav>
     <div class="max-w-7xl mx-auto py-10 px-4">
         <!-- ENCABEZADO -->
-        <div class="text-center mb-12">
+        <div class="text-center mb-12" x-data="{ modalRepetir: false }">
             <h1 class="text-4xl font-bold text-gray-800 mb-2">{{ $evento->titulo }}</h1>
             <p class="text-lg text-gray-500">{{ $evento->establecimiento->nombre }}</p>
             <p class="text-sm text-gray-400">{{ $evento->fecha }}</p>
+
+            <button @click="modalRepetir = true"
+                    class="mt-4 inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold"
+                    style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.4);color:#f59e0b;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                </svg>
+                Repetir evento
+            </button>
+
+            <!-- Modal -->
+            <div x-show="modalRepetir" x-cloak
+                 style="position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);">
+                <div style="background:var(--bg-card,#1e1e2e);border:1px solid var(--border,#333);border-radius:14px;padding:32px;width:100%;max-width:420px;text-align:left;"
+                     @click.outside="modalRepetir = false">
+                    <h3 style="font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:6px;">
+                        Repetir: {{ $evento->titulo }}
+                    </h3>
+                    <p style="font-size:0.8rem;color:#94a3b8;margin-bottom:20px;">
+                        Se creará un evento idéntico con la nueva fecha. Los asientos y precios se copian automáticamente.
+                    </p>
+
+                    <form method="POST" action="{{ route('eventos.repetir', $evento->idEve) }}">
+                        @csrf
+                        <div style="margin-bottom:14px;">
+                            <label style="display:block;font-size:0.8rem;color:#94a3b8;margin-bottom:6px;">Nueva fecha</label>
+                            <input type="date" name="nueva_fecha" required
+                                   style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid #374151;background:#111827;color:#f1f5f9;font-size:0.9rem;">
+                        </div>
+                        <div style="margin-bottom:22px;">
+                            <label style="display:block;font-size:0.8rem;color:#94a3b8;margin-bottom:6px;">Hora</label>
+                            <input type="time" name="nueva_hora" required
+                                   style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid #374151;background:#111827;color:#f1f5f9;font-size:0.9rem;">
+                        </div>
+                        <div style="display:flex;gap:10px;justify-content:flex-end;">
+                            <button type="button" @click="modalRepetir = false"
+                                    style="padding:8px 18px;border-radius:8px;border:1px solid #374151;background:transparent;color:#94a3b8;font-size:0.85rem;cursor:pointer;">
+                                Cancelar
+                            </button>
+                            <button type="submit"
+                                    style="padding:8px 18px;border-radius:8px;background:#f59e0b;border:none;color:#000;font-weight:700;font-size:0.85rem;cursor:pointer;">
+                                Crear evento repetido
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- IMAGEN DEL ESTABLECIMIENTO -->

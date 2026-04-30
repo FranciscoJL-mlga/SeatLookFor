@@ -627,6 +627,32 @@ public function eliminar($id)
         }
     }
 
+    public function repetir(Request $request, $id)
+    {
+        $request->validate([
+            'nueva_fecha' => 'required|date|after:today',
+            'nueva_hora'  => 'required|date_format:H:i',
+        ]);
+
+        $original = Evento::with('asientos')->findOrFail($id);
+
+        $nuevo = $original->replicate();
+        $nuevo->fecha  = $request->nueva_fecha . ' ' . $request->nueva_hora;
+        $nuevo->codigo = \Illuminate\Support\Str::random(8);
+        $nuevo->estado = 'activo';
+        $nuevo->demo   = auth()->user()->es_demo;
+        $nuevo->save();
+
+        foreach ($original->asientos as $asiento) {
+            $nuevo->asientos()->attach($asiento->idAsi, [
+                'precio' => $asiento->pivot->precio,
+            ]);
+        }
+
+        return redirect()->route('eventos.ver', $nuevo->idEve)
+            ->with('success', 'Evento repetido correctamente para el ' . \Carbon\Carbon::parse($nuevo->fecha)->format('d/m/Y H:i') . '.');
+    }
+
     public function cambiarEstado(Request $request, $id)
     {
         try {

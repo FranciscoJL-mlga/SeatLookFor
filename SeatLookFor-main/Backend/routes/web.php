@@ -103,4 +103,5 @@ Route::prefix('admin')->middleware(['auth', 'admin', 'demo.session'])->group(fun
     Route::post('/eventos/{id}/precio-zona', [EventoController::class, 'actualizarPrecioZona'])->name('eventos.precio-zona');
     Route::post('/eventos/{id}/asientos/vincular', [EventoController::class, 'vincularAsientos'])->name('eventos.vincular-asientos');
     Route::post('/eventos/{id}/asientos/guardar', [EventoController::class, 'guardarAsientos'])->name('eventos.guardar-asientos');
+    Route::post('/eventos/{id}/repetir', [EventoController::class, 'repetir'])->name('eventos.repetir');
 });
