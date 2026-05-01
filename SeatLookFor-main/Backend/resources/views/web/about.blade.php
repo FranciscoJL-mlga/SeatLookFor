@@ -109,7 +109,7 @@
 
             {{-- Stack tecnológico --}}
             <div style="margin:16px 0 20px;display:flex;flex-wrap:wrap;gap:8px;">
-                @foreach(['HTML/CSS', 'JavaScript', 'Tailwind CSS', 'Alpine.js', 'Bootstrap', 'PHP', 'Laravel', 'AWS', 'Diseño Responsive'] as $tech)
+                @foreach(['HTML/CSS', 'JavaScript', 'Tailwind CSS', 'Alpine.js', 'Bootstrap', 'PHP', 'Laravel', 'AWS', 'MySQL', 'Angular', 'Diseño Responsive'] as $tech)
                 <span style="padding:4px 11px;border-radius:99px;font-size:11px;font-weight:600;
                              background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
                              color:var(--text-dim);">{{ $tech }}</span>
