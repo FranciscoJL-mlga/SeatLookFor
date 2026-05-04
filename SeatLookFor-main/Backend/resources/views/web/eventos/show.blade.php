@@ -231,8 +231,8 @@
                 <div class="seats__tooltip"
                      x-show="tooltip.visible && tooltip.comentarios.length > 0"
                      :style="'left:' + tooltip.x + 'px; top:' + tooltip.y + 'px;'"
-                     @mouseenter="tooltip.hovered = true"
-                     @mouseleave="tooltip.hovered = false; hideTooltip()">
+                     @mouseenter="if(tooltip.timer){clearTimeout(tooltip.timer);tooltip.timer=null;} tooltip.hovered = true"
+                     @mouseleave="tooltip.hovered = false; tooltip.visible = false">
 
                     {{-- Navigation header --}}
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -629,11 +629,18 @@ function seatSelector(asientosData) {
         showTooltipById(event, idAsi) {
             var asiento = this.findSeat(idAsi);
             if (!asiento || !asiento.comentarios || asiento.comentarios.length === 0) return;
+            if (this.tooltip.timer) { clearTimeout(this.tooltip.timer); this.tooltip.timer = null; }
+            var rect = event.currentTarget.getBoundingClientRect();
+            var tipW = 260;
+            var x = rect.left + rect.width / 2 - tipW / 2;
+            if (x + tipW > window.innerWidth - 8) x = window.innerWidth - tipW - 8;
+            if (x < 8) x = 8;
+            this.tooltip.x = x;
+            this.tooltip.y = rect.top - 8;
             this.tooltip.visible = true;
-            this.tooltip.x = event.clientX + 10;
-            this.tooltip.y = event.clientY + 10;
             this.tooltip.comentarios = asiento.comentarios;
             this.tooltip.current = 0;
+            this.tooltip.hovered = false;
         },
 
         openCommentModal(asiento) {
@@ -653,11 +660,12 @@ function seatSelector(asientosData) {
 
         hideTooltip() {
             var self = this;
+            if (self.tooltip.timer) clearTimeout(self.tooltip.timer);
             self.tooltip.timer = setTimeout(function () {
                 if (!self.tooltip.hovered) {
                     self.tooltip.visible = false;
                 }
-            }, 200);
+            }, 350);
         }
     };
 }
