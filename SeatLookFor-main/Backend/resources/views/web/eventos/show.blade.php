@@ -116,7 +116,7 @@
                     Zona {{ $zona }}
                 </div>
                 @endforeach
-                @foreach([['#a78bfa','#4c1d95','Tu asiento'],['#f59e0b','#78350f','Seleccionado'],['#f97316','#7c2d12','Bloqueado'],['#dc2626','#7f1d1d','Ocupado']] as [$c,$cd,$label])
+                @foreach([['#d4aa37','#7a5c00','Tu asiento'],['#f59e0b','#78350f','Seleccionado'],['#f97316','#7c2d12','Bloqueado'],['#dc2626','#7f1d1d','Ocupado']] as [$c,$cd,$label])
                 <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);">
                     <svg viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg" style="width:16px;height:18px;flex-shrink:0;{{ $label==='Ocupado'?'opacity:.5;':'' }}">
                         <rect x="4" y="2" width="28" height="22" rx="5" fill="{{ $cd }}"/>
@@ -287,7 +287,7 @@
             {{-- Hint --}}
             @if($evento->estado === 'finalizado' && $puedeCommentar)
                 <p style="font-size:11px;color:var(--text-dim);text-align:center;margin-top:12px;opacity:.7;">
-                    Haz clic en tu asiento <span style="color:#a78bfa;font-weight:600;">morado</span> para valorarlo
+                    Haz clic en tu asiento <span style="color:#d4aa37;font-weight:600;">dorado</span> para valorarlo
                 </p>
             @elseif($evento->estado !== 'finalizado')
                 <p style="font-size:11px;color:var(--text-dim);text-align:center;margin-top:12px;opacity:.7;">
