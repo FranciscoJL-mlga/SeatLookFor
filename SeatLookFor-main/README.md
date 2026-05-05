@@ -1,104 +1,150 @@
-# SeatLookFor 🎭🎟️
+# SeatLookFor
 
-## Descripción 📌
+Plataforma web de reserva de asientos para teatros, musicales y eventos en espacios pequeños. Permite a los usuarios elegir su asiento en un mapa interactivo, ver cómo se ve el escenario desde esa posición gracias a las valoraciones de asistentes anteriores, y confirmar su reserva descargando una entrada en PDF.
 
-SeatLookFor es una plataforma web que permite a los usuarios conocer la vista real desde cualquier asiento antes de comprar su entrada. Los usuarios pueden reservar entradas, subir fotos desde su asiento, valorar su experiencia y comentar sobre eventos y espectáculos.
+> **Aviso:** La aplicación está desplegada en un servidor gratuito de [Render](https://render.com). Si llevas un tiempo sin acceder, el servidor puede estar en reposo y tardar **aproximadamente 1 minuto** en arrancar antes de responder. Es completamente normal, solo hay que esperar.
 
-## Funcionalidades principales ✨
+---
 
-- 🗺️ **Mapa de asientos interactivo**: Selección visual de asientos por zonas con disponibilidad en tiempo real.
-- 🔒 **Reserva con bloqueo temporal**: Los asientos se bloquean 5 minutos durante el proceso de compra para evitar conflictos.
-- 📷 **Fotos desde el asiento**: Los usuarios que han asistido pueden subir fotos reales desde su ubicación.
-- ⭐ **Valoraciones y comentarios**: Sistema de valoración por asiento y comentarios generales sobre el evento.
-- 💬 **Respuestas entre usuarios**: Los usuarios pueden responder a comentarios de otros.
-- 🎟️ **Historial de reservas**: Cada usuario tiene acceso a sus entradas y eventos visitados en su perfil.
-- 👤 **Gestión de cuenta**: Cambio de contraseña y eliminación de cuenta desde el perfil.
-- 🛡️ **Panel de administración**: Gestión de eventos, establecimientos y usuarios.
-- 📄 **Generación de PDF**: Entrada en formato PDF descargable tras la compra.
+## Tecnologías
 
-## Tecnologías utilizadas 🛠️
+**Backend:** PHP · Laravel · PostgreSQL  
+**Frontend:** Blade · Alpine.js · Tailwind CSS · JavaScript  
+**Infraestructura:** AWS · Artisan CLI
 
-- **Frontend**: Laravel Blade + Alpine.js + CSS personalizado
-- **Backend**: Laravel 11 (PHP)
-- **Base de datos**: MySQL (local) / PostgreSQL via Supabase (producción)
-- **Servidor local**: Laragon
+---
 
-## Instalación local 🚀
+## Funcionalidades — Modo Usuario
 
-### Requisitos
-- PHP 8.2+
-- Composer
-- Node.js + npm
-- MySQL (o Laragon)
+### Explorar eventos
 
-### Pasos
+Los usuarios pueden navegar por el catálogo de eventos activos desde la página de inicio y desde la sección `/eventos`. Cada tarjeta muestra la portada, el título, la fecha, la categoría y el precio.
 
-```bash
-# Clonar el repositorio
-git clone https://github.com/FranciscoJL-mlga/SeatLookFor.git
-cd SeatLookFor/Backend
+### Ver detalle de un evento
 
-# Instalar dependencias PHP
-composer install
+Al entrar en un evento se muestra:
 
-# Instalar dependencias JS y compilar assets
-npm install && npm run build
+- Mapa de asientos interactivo con colores por zona
+- Información del establecimiento (nombre, imagen, ubicación)
+- Sinopsis, duración, categoría y tipo del evento
+- Sección de comentarios generales del evento
+- Valoraciones por asiento dejadas por asistentes anteriores
 
-# Copiar y configurar el .env
-cp .env.example .env
-php artisan key:generate
+### Registro e inicio de sesión
 
-# Configurar la base de datos en .env y ejecutar migraciones
-php artisan migrate --seed
+Cualquier persona puede crear una cuenta con nombre, apellido, email y contraseña.
 
-# Enlazar el almacenamiento de imágenes
-php artisan storage:link
+### Selección de asientos
 
-# Iniciar el servidor
-php artisan serve
-```
+El mapa muestra todos los asientos codificados por color según su zona. Cada asiento puede estar en uno de estos estados:
 
-La aplicación estará disponible en `http://localhost:8000`.
+| Color | Estado |
+|---|---|
+| Color de zona | Libre, seleccionable |
+| Dorado | Tu asiento reservado en este evento |
+| Amarillo | Seleccionado por ti en este momento |
+| Naranja (parpadeante) | Bloqueado temporalmente por otro usuario |
+| Rojo (opaco) | Ocupado, ya reservado |
 
-### Credenciales de prueba
+Al pasar el cursor sobre un asiento con valoraciones, aparece un **tooltip** encima del asiento con la foto del escenario desde esa posición, la puntuación y la opinión de quien lo ocupó anteriormente. Si hay varios comentarios se puede navegar entre ellos con flechas.
 
-| Rol | Email | Contraseña |
-|-----|-------|-----------|
-| Administrador | paco@seatlookfor.com | (ver seeder) |
-| Usuario | maria.garcia@gmail.com | (ver seeder) |
+### Proceso de reserva y bloqueo de asientos
 
-## Base de datos 🗄️
+1. El usuario selecciona uno o varios asientos libres en el mapa
+2. Pulsa **Confirmar Reserva**
+3. Los asientos seleccionados quedan **bloqueados durante 5 minutos** para ese usuario, impidiendo que otra persona los reserve simultáneamente
+4. Se muestra una pantalla de resumen con los asientos, el precio total y un contador de tiempo
+5. El usuario confirma y se genera una **entrada en PDF** descargable al instante
+6. Al confirmar, los bloqueos se eliminan y los asientos quedan marcados como ocupados
 
-El archivo `seatlook_dump.sql` contiene un volcado completo de MySQL con datos de prueba.
+Si el usuario abandona el proceso sin confirmar, los bloqueos expiran automáticamente pasados los 5 minutos. Si otro usuario llega a esos asientos mientras están bloqueados, recibe un aviso y se le redirige al mapa para elegir otros.
 
-Para importar en Supabase (PostgreSQL) usa el archivo `seatlook_postgresql.sql`.
+### Comentarios en eventos
 
-## Equipo 👥
+Cualquier usuario autenticado puede dejar un comentario de texto libre en la página de un evento y responder a los comentarios de otros. No requiere haber asistido.
 
-- **Francisco Jiménez López**
-- **Antonio J. Heredia Leiva**
+### Valoración de asientos
 
-## Anteproyecto 📄
+Los usuarios que hayan reservado un asiento pueden dejar una **valoración con foto** desde ese mismo asiento en el mapa. Esta funcionalidad tiene condiciones estrictas:
 
-[TFG - SeatLookFor en Notion](https://branched-juniper-ded.notion.site/TFG-1b984cda3c97803dbb8dd31a2e6bb895)
+- El evento debe estar en estado **finalizado**
+- El usuario debe tener una **reserva confirmada** en ese asiento concreto
+- Solo está disponible durante el **mes siguiente** a la fecha del evento; pasado ese plazo, el formulario se cierra definitivamente
 
-## Checkpoint
-[Enlace a video de YouTube](https://www.youtube.com/watch?v=KySzsRHFuxM&ab_channel=AntonioJes%C3%BAsHerediaLeiva)
+La valoración incluye una opinión de texto, una puntuación de 1 a 5 estrellas y una foto opcional de cómo se ve el escenario desde ese asiento. Estas fotos y valoraciones son las que aparecen en el tooltip del mapa para futuros compradores.
 
-## Presentación PDF
-[TGC.pdf](https://github.com/user-attachments/files/20769626/TGC.pdf)
+### Perfil de usuario
 
-## Enlaces de Diseño (Figma)
+Desde `/usuario` el usuario autenticado puede:
 
-### UI Kits
-[UI Kits de SeatLookFor](https://www.figma.com/proto/ImMMo3FgZPSp6FfYw4JNMP/SeatLookFor?node-id=3027-141&p=f&t=Kvjn1FSMpw0egeMm-0&scaling=contain&content-scaling=fixed&page-id=0%3A1)
+- Ver su **historial de reservas** con evento, fecha y asiento
+- Acceder a la sección de **valoración pendiente** si tiene eventos finalizados recientemente
+- **Cambiar su contraseña** introduciendo la actual
+- **Eliminar su cuenta** de forma permanente confirmando con contraseña
 
-### Wireframes
-- [Wireframe de Baja Fidelidad](https://www.figma.com/proto/ImMMo3FgZPSp6FfYw4JNMP/SeatLookFor?node-id=3261-604&p=f&t=Kvjn1FSMpw0egeMm-0&scaling=min-zoom&content-scaling=fixed&page-id=3261%3A594)
-- [Wireframe de Alta Fidelidad](https://www.figma.com/proto/ImMMo3FgZPSp6FfYw4JNMP/SeatLookFor?node-id=3261-652&p=f&t=oJVvSz3zhEM0c21j-1&scaling=min-zoom&content-scaling=fixed&page-id=3261%3A595&starting-point-node-id=3261%3A652)
+---
 
-### FigJam
-[FigJam de SeatLookFor](https://www.figma.com/board/hK2Am5sJmjC7Rc83VmBF1f/SeatLookFor?node-id=1-731&t=VQYImc6Rd39f3ank-1)
+## Modo Administrador
 
-## Video de Review del Proyecto
-[Ver video de review](https://youtu.be/nXtgN2nFSh8)
+El panel de administración está disponible en `/admin` y es independiente del acceso de usuarios.
+
+### Gestión de establecimientos
+
+- Crear un establecimiento con nombre, ubicación e imagen
+- Definir zonas y distribuir asientos en un editor de cuadrícula
+- Ver el detalle de cada establecimiento con sus zonas y asientos
+- Eliminar un establecimiento (elimina en cascada sus zonas y asientos)
+
+### Gestión de eventos
+
+- Crear un evento asociándolo a un establecimiento existente, con título, descripción, categoría, tipo, fecha, duración y portada
+- Vincular los asientos del establecimiento al evento y asignar un precio por zona
+- Ver el detalle de un evento con el estado de ocupación de cada asiento
+- **Cambiar el estado** entre `activo` y `finalizado`
+- **Repetir un evento**: crea un nuevo evento idéntico cambiando únicamente la fecha y hora, copiando todos los asientos y precios del original
+- Eliminar un evento
+
+---
+
+## Modo Demo
+
+El modo demo permite que cualquier persona explore el panel de administración sin riesgo de modificar datos reales.
+
+### Cómo funciona
+
+El acceso al modo demo se realiza con las siguientes credenciales:
+
+| Campo | Valor |
+|---|---|
+| Email | `demo@seatlookfor.com` |
+| Contraseña | `demo1234` |
+
+- Al iniciar sesión, la cuenta **Demo SeatLookFor** tiene un tiempo de sesión limitado
+- Durante la sesión puede crear establecimientos, eventos y asientos exactamente igual que un administrador real
+- Todo el contenido creado queda marcado internamente como demo y no es visible para otros usuarios
+
+### Reset automático
+
+El contenido demo se borra y se regenera automáticamente en tres situaciones:
+
+1. **Al cerrar sesión** manualmente
+2. **Al expirar el tiempo** de sesión (el middleware lo detecta en cada petición al panel)
+3. **Cuando el contador llega a cero** en el navegador (el cliente notifica al servidor vía JS)
+
+El reset elimina en orden correcto todos los datos relacionados (reservas, bloqueos, comentarios, asientos, eventos, zonas y establecimientos demo), restaura la contraseña del usuario demo a `demo1234` y vuelve a sembrar el contenido de ejemplo desde el seeder.
+
+### Visibilidad en modo usuario
+
+Si el usuario demo accede al área pública (`/eventos`), puede ver los eventos que él mismo ha creado en el panel, aunque estos no son visibles para el resto de usuarios.
+
+---
+
+## Autores
+
+**Francisco Jiménez López** — Backend  
+[linkedin.com/in/francisco-jimenez-lopez-1a1517217](https://www.linkedin.com/in/francisco-jimenez-lopez-1a1517217)
+
+**Antonio Jesus Heredias** — Frontend y diseño  
+[linkedin.com/in/antoniojheredia](https://www.linkedin.com/in/antoniojheredia/)
+
+Desarrollado como proyecto de fin de ciclo en el **Instituto Alan Turing** (DAW).
