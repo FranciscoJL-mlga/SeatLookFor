@@ -7,7 +7,7 @@
 (function () {
     const expiresAt  = {{ $expiresAt->timestamp }} * 1000;
     const liberarUrl = "{{ route('reserva.liberar') }}";
-    const eventoUrl  = "{{ route('evento.show', $evento->idEve) }}";
+    const eventoUrl  = "{{ route('evento.show', $evento->codigo) }}";
     const csrfToken  = "{{ csrf_token() }}";
 
     const timerEl = document.getElementById('bloqueo-timer');
@@ -34,6 +34,24 @@
 
     window.addEventListener('pagehide', liberar);
     document.addEventListener('DOMContentLoaded', tick);
+})();
+
+(function () {
+    var wrap  = document.getElementById('resumap-wrap');
+    var inner = document.getElementById('resumap-inner');
+    function fit() {
+        if (!wrap || !inner) return;
+        inner.style.transform = 'scale(1)';
+        wrap.style.height = '';
+        var naturalW = inner.offsetWidth;
+        var naturalH = inner.offsetHeight;
+        if (!naturalW) return;
+        var scale = Math.min(1, wrap.offsetWidth / naturalW);
+        inner.style.transform = 'scale(' + scale + ')';
+        wrap.style.height = Math.ceil(naturalH * scale) + 'px';
+    }
+    document.addEventListener('DOMContentLoaded', fit);
+    window.addEventListener('resize', fit);
 })();
 </script>
 @endpush
@@ -62,7 +80,7 @@
 
                 {{-- ── Breadcrumb / back link ── --}}
                 <div style="text-align:center;margin-bottom:28px;">
-                    <a href="{{ route('evento.show', $evento->idEve) }}"
+                    <a href="{{ route('evento.show', $evento->codigo) }}"
                        style="font-size:13px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;transition:color 0.2s;"
                        onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-dim)'">
                         ← Volver al evento
@@ -109,32 +127,83 @@
                 </div>
                 @endif
 
-                {{-- ── Seats ── --}}
+                {{-- ── Seat map ── --}}
                 <div class="detalles-asientos">
                     <h3>Asientos Seleccionados</h3>
 
-                    @if($asientos->isNotEmpty())
-                        <ul>
-                            @foreach($asientos as $asiento)
-                            <li>
-                                <div class="asiento-info">
-                                    <span>
-                                        <strong style="color:var(--text);">Zona</strong>
-                                        {{ $asiento['zona'] }}
-                                    </span>
-                                    <span>Fila {{ $asiento['ejeX'] }}</span>
-                                    <span>Asiento {{ $asiento['ejeY'] }}</span>
-                                    <span class="precio-asiento">
-                                        {{ number_format($asiento['precio'], 2) }} €
-                                    </span>
-                                </div>
-                            </li>
-                            @endforeach
-                        </ul>
+                    @if($todosAsientos->isNotEmpty())
+                    @php
+                        $zonePalette = [
+                            '#3b82f6','#10b981','#8b5cf6','#06b6d4',
+                            '#f43f5e','#84cc16','#d946ef','#f97316',
+                            '#14b8a6','#6366f1','#ec4899','#eab308',
+                            '#22c55e','#ef4444','#fb923c','#38bdf8',
+                            '#a3e635','#2dd4bf','#c026d3','#d97706',
+                            '#1d4ed8','#15803d','#7c3aed','#be123c',
+                            '#0891b2','#65a30d','#9333ea','#0284c7',
+                            '#f472b6','#4ade80','#fb7185','#34d399',
+                        ];
+                        $uniqueZones = collect($todosAsientos)->pluck('zona')->unique()->values();
+                        $zoneColors  = [];
+                        foreach ($uniqueZones as $i => $z) {
+                            $zoneColors[$z] = $zonePalette[$i % count($zonePalette)];
+                        }
+                        $allEjeX  = collect($todosAsientos)->pluck('ejeX');
+                        $allEjeY  = collect($todosAsientos)->pluck('ejeY');
+                        $minX     = $allEjeX->min();
+                        $minY     = $allEjeY->min();
+                        $maxX     = $allEjeX->max();
+                        $maxY     = $allEjeY->max();
+                        $mapW     = ($maxX - $minX + 2) * 50 + 20;
+                        $mapH     = ($maxY - $minY + 2) * 50 + 44;
+                    @endphp
 
-                        <div class="total">
-                            <h4>Total a pagar: {{ number_format($total, 2) }} €</h4>
+                    {{-- Leyenda --}}
+                    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px;align-items:center;">
+                        @foreach($zoneColors as $zona => $color)
+                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);">
+                            <span style="width:12px;height:12px;border-radius:3px;background:{{ $color }};display:inline-block;"></span>
+                            Zona {{ $zona }}
                         </div>
+                        @endforeach
+                        <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);">
+                            <span style="width:12px;height:12px;border-radius:3px;background:#f59e0b;display:inline-block;box-shadow:0 0 6px rgba(245,158,11,0.8);"></span>
+                            Seleccionado
+                        </div>
+                    </div>
+
+                    {{-- Mapa --}}
+                    <div id="resumap-wrap" style="overflow:hidden;width:100%;">
+                        <div id="resumap-inner" style="position:relative;width:{{ $mapW }}px;height:{{ $mapH }}px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;transform-origin:top left;">
+                            <div style="position:absolute;top:6px;left:50%;transform:translateX(-50%);background:#1e293b;color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:2px;padding:3px 20px;border-radius:4px;white-space:nowrap;">ESCENARIO</div>
+                            @foreach($todosAsientos as $asiento)
+                            @php
+                                $color = $zoneColors[$asiento['zona']] ?? '#64748b';
+                                $left  = ($asiento['ejeX'] - $minX) * 50 + 10;
+                                $top   = ($asiento['ejeY'] - $minY) * 50 + 30;
+                            @endphp
+                            <div title="Zona {{ $asiento['zona'] }} · Fila {{ $asiento['ejeY'] }} · Col {{ $asiento['ejeX'] }} · {{ number_format($asiento['precio'],2) }}€"
+                                 style="position:absolute;left:{{ $left }}px;top:{{ $top }}px;width:44px;height:48px;
+                                        {{ $asiento['seleccionado'] ? 'filter:drop-shadow(0 0 8px rgba(245,158,11,0.9));z-index:2;' : 'opacity:0.55;' }}">
+                                <svg viewBox="0 0 44 48" width="44" height="48" xmlns="http://www.w3.org/2000/svg">
+                                    @if($asiento['seleccionado'])
+                                        <rect x="5" y="0" width="34" height="29" rx="7" fill="#f59e0b"/>
+                                        <rect x="5" y="0" width="34" height="10" rx="7" fill="rgba(255,255,255,0.25)"/>
+                                        <rect x="0" y="32" width="44" height="14" rx="5" fill="#f59e0b"/>
+                                    @else
+                                        <rect x="5" y="0" width="34" height="29" rx="7" fill="{{ $color }}"/>
+                                        <rect x="5" y="0" width="34" height="10" rx="7" fill="rgba(255,255,255,0.15)"/>
+                                        <rect x="0" y="32" width="44" height="14" rx="5" fill="{{ $color }}"/>
+                                    @endif
+                                </svg>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="total" style="margin-top:20px;">
+                        <h4>Total a pagar: {{ number_format($total, 2) }} €</h4>
+                    </div>
                     @else
                         <p style="color:var(--text-dim);font-style:italic;padding:8px 0;">
                             No hay asientos seleccionados.
@@ -144,7 +213,7 @@
 
                 {{-- ── Actions ── --}}
                 <div class="acciones">
-                    <a href="{{ route('evento.show', $evento->idEve) }}" class="btn-secundario">
+                    <a href="{{ route('evento.show', $evento->codigo) }}" class="btn-secundario">
                         ← Modificar Reserva
                     </a>
 

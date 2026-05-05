@@ -6,12 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Evento;
 use App\Models\Reserva;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventoWebController extends Controller
 {
     public function index(Request $request)
     {
+        $esDemo = Auth::check() && Auth::user()->es_demo;
         $query = Evento::where('estado', 'activo');
+        if (!$esDemo) {
+            $query->where('demo', false);
+        }
 
         if ($request->filled('tipo')) {
             $query->where('tipo', $request->tipo);
@@ -43,16 +48,21 @@ class EventoWebController extends Controller
         return view('web.eventos.index', compact('eventos', 'tipos', 'categorias'));
     }
 
-    public function show($id)
+    public function show(Evento $evento)
     {
-        $evento = Evento::with(['asientos.usuariosComentaron', 'establecimiento'])->findOrFail($id);
+        if ($evento->demo && (!Auth::check() || !Auth::user()->es_demo)) {
+            abort(404);
+        }
+
+        $evento->load(['asientos.usuariosComentaron', 'establecimiento']);
+        $idEve = $evento->idEve;
 
         // Eventos finalizados: solo accesibles para usuarios con reserva en ese evento
         if ($evento->estado === 'finalizado') {
             if (!auth()->check()) {
                 return redirect()->route('login');
             }
-            $tieneReserva = Reserva::where('idEve', $id)->where('idUsu', auth()->id())->exists();
+            $tieneReserva = Reserva::where('idEve', $idEve)->where('idUsu', auth()->id())->exists();
             if (!$tieneReserva) {
                 abort(403, 'Este evento ha finalizado y no tienes entrada para él.');
             }
@@ -60,10 +70,10 @@ class EventoWebController extends Controller
 
         \App\Models\Bloqueo::limpiarExpirados();
 
-        $asientosReservadosIds = Reserva::where('idEve', $id)->pluck('idAsi')->toArray();
+        $asientosReservadosIds = Reserva::where('idEve', $idEve)->pluck('idAsi')->toArray();
 
         // Asientos bloqueados por otros usuarios actualmente
-        $asientosBloqueadosIds = \App\Models\Bloqueo::where('idEve', $id)
+        $asientosBloqueadosIds = \App\Models\Bloqueo::where('idEve', $idEve)
             ->where('expires_at', '>', now())
             ->when(auth()->check(), fn ($q) => $q->where('idUsu', '!=', auth()->id()))
             ->pluck('idAsi')
@@ -71,7 +81,7 @@ class EventoWebController extends Controller
 
         // IDs de asientos que el usuario actual ha reservado en este evento
         $misAsientosIds = auth()->check()
-            ? Reserva::where('idEve', $id)->where('idUsu', auth()->id())->pluck('idAsi')->toArray()
+            ? Reserva::where('idEve', $idEve)->where('idUsu', auth()->id())->pluck('idAsi')->toArray()
             : [];
 
         // Puede comentar si el evento es activo, o si es finalizado y no han pasado más de 30 días
@@ -109,7 +119,7 @@ class EventoWebController extends Controller
 
         // Comentarios del evento (no ligados a asiento, sin ser respuestas)
         $comentariosEvento = \App\Models\Comentario::with(['usuario', 'respuestas'])
-            ->where('idEve', $id)
+            ->where('idEve', $idEve)
             ->whereNull('idAsi')
             ->whereNull('idParent')
             ->orderBy('idCom', 'asc')

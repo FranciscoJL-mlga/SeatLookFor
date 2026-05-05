@@ -11,15 +11,20 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $esDemo = auth()->user()->es_demo;
+
         $data = [
-            'totalEstablecimientos' => Establecimiento::count(),
-            'totalEventos' => Evento::count(),
-            'eventosActivos' => Evento::where('estado', 'activo')->count(),
-            'totalReservas' => Reserva::count(),
-            'ultimosEventos' => Evento::with('establecimiento')
-                ->orderBy('fecha', 'desc')
-                ->take(5)
-                ->get()
+            'totalEstablecimientos' => Establecimiento::where('demo', $esDemo)->count(),
+            'totalEventos'          => Evento::where('demo', $esDemo)->count(),
+            'eventosActivos'        => Evento::where('demo', $esDemo)->where('estado', 'activo')->count(),
+            'totalReservas'         => Reserva::whereIn('idEve',
+                                           Evento::where('demo', $esDemo)->pluck('idEve')
+                                       )->count(),
+            'ultimosEventos'        => Evento::where('demo', $esDemo)
+                                           ->with('establecimiento')
+                                           ->orderBy('fecha', 'desc')
+                                           ->take(5)
+                                           ->get(),
         ];
 
         return view('dashboard', $data);

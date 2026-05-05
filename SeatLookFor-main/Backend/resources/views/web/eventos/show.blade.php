@@ -14,6 +14,24 @@
     window.__eventoFinalizado = {{ $evento->estado === 'finalizado' ? 'true' : 'false' }};
 </script>
 
+@php
+    $zonePalette = [
+        ['#3b82f6','#1e3a8a'],['#10b981','#064e3b'],['#8b5cf6','#4c1d95'],['#06b6d4','#164e63'],
+        ['#f43f5e','#881337'],['#84cc16','#3f6212'],['#d946ef','#701a75'],['#f97316','#7c2d12'],
+        ['#14b8a6','#134e4a'],['#6366f1','#312e81'],['#ec4899','#831843'],['#eab308','#713f12'],
+        ['#22c55e','#14532d'],['#ef4444','#7f1d1d'],['#fb923c','#9a3412'],['#38bdf8','#0369a1'],
+        ['#a3e635','#365314'],['#2dd4bf','#115e59'],['#c026d3','#701a75'],['#d97706','#78350f'],
+        ['#1d4ed8','#1e3a8a'],['#15803d','#064e3b'],['#7c3aed','#4c1d95'],['#be123c','#881337'],
+        ['#0891b2','#164e63'],['#65a30d','#3f6212'],['#9333ea','#581c87'],['#0284c7','#0c4a6e'],
+        ['#f472b6','#9d174d'],['#4ade80','#14532d'],['#fb7185','#881337'],['#34d399','#064e3b'],
+    ];
+    $uniqueZones = collect($asientos)->pluck('zona')->unique()->values();
+    $zoneColors  = [];
+    foreach ($uniqueZones as $i => $zona) {
+        $zoneColors[$zona] = $zonePalette[$i % count($zonePalette)];
+    }
+@endphp
+
 <div class="layout" x-data="seatSelector(window.__asientosData)">
 
     {{-- ═══════════════════════════════════════════════════
@@ -80,10 +98,25 @@
         @endif
 
         {{-- Seat legend --}}
-        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);flex-shrink:0;">
             <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:10px;">Leyenda</p>
             <div style="display:flex;flex-direction:column;gap:9px;">
-                @foreach([['#22c55e','#14532d','Libre'],['#a78bfa','#4c1d95','Tu asiento'],['#f59e0b','#78350f','Seleccionado'],['#f97316','#7c2d12','Bloqueado'],['#dc2626','#7f1d1d','Ocupado']] as [$c,$cd,$label])
+                @foreach($zoneColors as $zona => [$c,$cd])
+                <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);">
+                    <svg viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg" style="width:16px;height:18px;flex-shrink:0;">
+                        <rect x="4" y="2" width="28" height="22" rx="5" fill="{{ $cd }}"/>
+                        <rect x="3" y="0" width="28" height="21" rx="5" fill="{{ $c }}"/>
+                        <rect x="3" y="0" width="28" height="8"  rx="5" fill="rgba(255,255,255,0.2)"/>
+                        <rect x="0" y="13" width="5" height="15" rx="3" fill="{{ $cd }}"/>
+                        <rect x="31" y="13" width="5" height="15" rx="3" fill="{{ $cd }}"/>
+                        <rect x="4" y="27" width="28" height="13" rx="4" fill="{{ $cd }}"/>
+                        <rect x="3" y="26" width="28" height="12" rx="4" fill="{{ $c }}"/>
+                        <rect x="3" y="26" width="28" height="5"  rx="3" fill="rgba(255,255,255,0.18)"/>
+                    </svg>
+                    Zona {{ $zona }}
+                </div>
+                @endforeach
+                @foreach([['#d4aa37','#7a5c00','Tu asiento'],['#f59e0b','#78350f','Seleccionado'],['#f97316','#7c2d12','Bloqueado'],['#dc2626','#7f1d1d','Ocupado']] as [$c,$cd,$label])
                 <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);">
                     <svg viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg" style="width:16px;height:18px;flex-shrink:0;{{ $label==='Ocupado'?'opacity:.5;':'' }}">
                         <rect x="4" y="2" width="28" height="22" rx="5" fill="{{ $cd }}"/>
@@ -131,7 +164,8 @@
 
             @if($asientos->count() > 0)
                 {{-- Row labels + seat grid --}}
-                <div style="display:flex;align-items:flex-start;gap:0;">
+                <div id="showmap-wrap" style="overflow:hidden;width:100%;">
+                <div id="showmap-inner" style="display:inline-flex;align-items:flex-start;gap:0;min-width:max-content;transform-origin:top left;">
 
                     {{-- Row letters --}}
                     <div style="display:grid;grid-template-rows:repeat({{ $uniqueRows->count() }},50px);gap:5px;">
@@ -150,7 +184,7 @@
                                             @if($asiento['estado'] === 'bloqueado') seats__seat--locked  @endif
                                             @if($asiento['esPropio'])              seats__seat--mine     @endif"
                                      :class="{ 'seats__seat--selected': isSelected({{ $asiento['idAsi'] }}) }"
-                                     style="grid-column:{{ max(1,(int)$asiento['ejeX']-($minEjeX-1)) }};grid-row:{{ $asiento['ejeY'] }};{{ $asiento['estado']==='ocupado'?'cursor:pointer;':'' }}"
+                                     style="grid-column:{{ max(1,(int)$asiento['ejeX']-($minEjeX-1)) }};grid-row:{{ $asiento['ejeY'] }};{{ $asiento['estado']==='ocupado'?'cursor:pointer;':'' }}--zone-c:{{ $zoneColors[$asiento['zona']][0] }};--zone-cd:{{ $zoneColors[$asiento['zona']][1] }};"
                                      @if($asiento['esPropio'])
                                          @click="openCommentModal(findSeat({{ $asiento['idAsi'] }}))"
                                      @elseif($asiento['estado'] === 'libre')
@@ -191,13 +225,14 @@
                         </div>
                     </div>
                 </div>
+                </div>
 
                 {{-- Tooltip carousel --}}
                 <div class="seats__tooltip"
                      x-show="tooltip.visible && tooltip.comentarios.length > 0"
                      :style="'left:' + tooltip.x + 'px; top:' + tooltip.y + 'px;'"
-                     @mouseenter="tooltip.hovered = true"
-                     @mouseleave="tooltip.hovered = false; hideTooltip()">
+                     @mouseenter="if(tooltip.timer){clearTimeout(tooltip.timer);tooltip.timer=null;} tooltip.hovered = true"
+                     @mouseleave="tooltip.hovered = false; tooltip.visible = false">
 
                     {{-- Navigation header --}}
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -252,7 +287,7 @@
             {{-- Hint --}}
             @if($evento->estado === 'finalizado' && $puedeCommentar)
                 <p style="font-size:11px;color:var(--text-dim);text-align:center;margin-top:12px;opacity:.7;">
-                    Haz clic en tu asiento <span style="color:#a78bfa;font-weight:600;">morado</span> para valorarlo
+                    Haz clic en tu asiento <span style="color:#d4aa37;font-weight:600;">dorado</span> para valorarlo
                 </p>
             @elseif($evento->estado !== 'finalizado')
                 <p style="font-size:11px;color:var(--text-dim);text-align:center;margin-top:12px;opacity:.7;">
@@ -265,7 +300,7 @@
         <div class="event__info">
             @if($evento->establecimiento && $evento->establecimiento->imagen)
             <div class="event__info-image">
-                <img src="{{ $evento->establecimiento->imagen }}"
+                <img src="{{ asset($evento->establecimiento->imagen) }}"
                      alt="Portada de establecimiento">
             </div>
             @endif
@@ -522,6 +557,23 @@
 
 @push('scripts')
 <script>
+(function () {
+    var wrap  = document.getElementById('showmap-wrap');
+    var inner = document.getElementById('showmap-inner');
+    function fit() {
+        if (!wrap || !inner) return;
+        inner.style.transform = 'scale(1)';
+        wrap.style.height = '';
+        var naturalW = inner.scrollWidth;
+        var naturalH = inner.scrollHeight;
+        var scale = Math.min(1, wrap.offsetWidth / naturalW);
+        inner.style.transform = 'scale(' + scale + ')';
+        wrap.style.height = Math.ceil(naturalH * scale) + 'px';
+    }
+    document.addEventListener('DOMContentLoaded', fit);
+    window.addEventListener('resize', fit);
+})();
+
 function seatSelector(asientosData) {
     return {
         asientos: asientosData,
@@ -577,11 +629,18 @@ function seatSelector(asientosData) {
         showTooltipById(event, idAsi) {
             var asiento = this.findSeat(idAsi);
             if (!asiento || !asiento.comentarios || asiento.comentarios.length === 0) return;
+            if (this.tooltip.timer) { clearTimeout(this.tooltip.timer); this.tooltip.timer = null; }
+            var rect = event.currentTarget.getBoundingClientRect();
+            var tipW = 260;
+            var x = rect.left + rect.width / 2 - tipW / 2;
+            if (x + tipW > window.innerWidth - 8) x = window.innerWidth - tipW - 8;
+            if (x < 8) x = 8;
+            this.tooltip.x = x;
+            this.tooltip.y = rect.top - 8;
             this.tooltip.visible = true;
-            this.tooltip.x = event.clientX + 10;
-            this.tooltip.y = event.clientY + 10;
             this.tooltip.comentarios = asiento.comentarios;
             this.tooltip.current = 0;
+            this.tooltip.hovered = false;
         },
 
         openCommentModal(asiento) {
@@ -601,11 +660,12 @@ function seatSelector(asientosData) {
 
         hideTooltip() {
             var self = this;
+            if (self.tooltip.timer) clearTimeout(self.tooltip.timer);
             self.tooltip.timer = setTimeout(function () {
                 if (!self.tooltip.hovered) {
                     self.tooltip.visible = false;
                 }
-            }, 200);
+            }, 350);
         }
     };
 }

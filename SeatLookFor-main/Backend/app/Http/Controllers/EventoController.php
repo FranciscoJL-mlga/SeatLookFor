@@ -119,7 +119,11 @@ class EventoController extends Controller
 
     public function listar()
     {
-        $eventos = Evento::with('establecimiento')->paginate(6);
+        if (auth()->user()->es_demo) {
+            $eventos = Evento::with('establecimiento')->where('demo', true)->paginate(6);
+        } else {
+            $eventos = Evento::with('establecimiento')->paginate(6);
+        }
         return view('Evento.listadoEventos', compact('eventos'));
     }
 
@@ -263,7 +267,11 @@ class EventoController extends Controller
 
     public function formularioCrear()
     {
-        $establecimientos = Establecimiento::with("asientos")->get();;
+        if (auth()->user()->es_demo) {
+            $establecimientos = Establecimiento::where('demo', true)->with("asientos")->get();
+        } else {
+            $establecimientos = Establecimiento::with("asientos")->get();
+        }
         return view('Evento.CrearEvento', compact('establecimientos'));
     }
 
@@ -342,7 +350,7 @@ class EventoController extends Controller
                     'establecimiento_id' => 'required|exists:establecimiento,idEst',
                     'tipo'               => 'required|in:Teatro,Orquesta,Musical,Concierto',
                     'categoria'          => 'required|in:Drama,Familiar,Clásica,Musical,Barroco,Fantasía,Suspenso,Comedia',
-                    'imagen'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                    'imagen'             => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
                 ]);
 
 
@@ -365,11 +373,16 @@ class EventoController extends Controller
             $evento->categoria = $request->categoria;
             $evento->ubicacion = 'Por determinar';
             $evento->duracion = $request->duracion;
+            $evento->demo = auth()->user()->es_demo;
 
             if ($request->hasFile('imagen')) {
                 $imagen = $request->file('imagen');
                 $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
-                $imagen->move(public_path('images/eventos'), $nombreImagen);
+                $destino = public_path('images/eventos');
+                if (!file_exists($destino)) {
+                    mkdir($destino, 0775, true);
+                }
+                $imagen->move($destino, $nombreImagen);
                 $evento->portada = 'images/eventos/' . $nombreImagen;
             } else {
                 $evento->portada = 'images/eventos/default.jpg';
@@ -488,17 +501,112 @@ public function ver($id)
 {
     try {
         $evento = Evento::with(['establecimiento', 'ReservaDeEventos', 'asientos'])->findOrFail($id);
-        return view('Evento.mostrarEvento', compact('evento'));
+
+        if (auth()->user()->es_demo && !$evento->demo) {
+            return redirect()->route('eventos.listado')->withErrors(['error' => 'No tienes permisos para ver este evento.']);
+        }
+
+        $reservadosIds  = $evento->ReservaDeEventos->pluck('idAsi')->map(fn ($v) => (int) $v)->toArray();
+        $habilitadosIds = $evento->asientos->pluck('idAsi')->map(fn ($v) => (int) $v)->toArray();
+
+        $todosAsientos = Asiento::where('idEst', $evento->idEst)->get()->map(function ($a) use ($habilitadosIds, $reservadosIds, $evento) {
+            $pivot = $evento->asientos->firstWhere('idAsi', $a->idAsi);
+            return [
+                'idAsi'      => $a->idAsi,
+                'zona'       => $a->zona,
+                'ejeX'       => (int) $a->ejeX,
+                'ejeY'       => (int) $a->ejeY,
+                'habilitado' => in_array($a->idAsi, $habilitadosIds),
+                'reservado'  => in_array($a->idAsi, $reservadosIds),
+                'precio'     => $pivot?->pivot->precio ?? 0,
+            ];
+        });
+
+        return view('Evento.mostrarEvento', compact('evento', 'todosAsientos'));
     } catch (\Exception $e) {
         Log::error('Error al cargar vista del evento: ' . $e->getMessage());
         return redirect()->route('eventos.listado')->withErrors(['error' => 'No se pudo mostrar el evento.']);
     }
 }
 
+public function guardarAsientos(Request $request, $id)
+{
+    $evento = Evento::with(['asientos', 'ReservaDeEventos'])->findOrFail($id);
+
+    if (auth()->user()->es_demo && !$evento->demo) {
+        return redirect()->back()->withErrors(['error' => 'No tienes permisos para modificar este evento.']);
+    }
+
+    $reservadosIds = $evento->ReservaDeEventos->pluck('idAsi')->map(fn ($v) => (int) $v)->toArray();
+    $seleccionados = array_map('intval', $request->input('asientos', []));
+    $preciosZona   = $request->input('precio_zona', []);
+
+    $finalSet = array_unique(array_merge($seleccionados, $reservadosIds));
+
+    $syncData = [];
+    foreach (Asiento::whereIn('idAsi', $finalSet)->get() as $asiento) {
+        $existing = $evento->asientos->firstWhere('idAsi', $asiento->idAsi);
+        $precio = isset($preciosZona[$asiento->zona]) && is_numeric($preciosZona[$asiento->zona])
+            ? (float) $preciosZona[$asiento->zona]
+            : ($existing?->pivot->precio ?? 0);
+        $syncData[$asiento->idAsi] = ['precio' => $precio];
+    }
+
+    $evento->asientos()->sync($syncData);
+
+    return redirect()->back()->with('success', 'Asientos actualizados correctamente.');
+}
+
+public function actualizarPrecioZona(Request $request, $id)
+{
+    $evento   = Evento::with('asientos')->findOrFail($id);
+    $precios  = $request->input('precios', []);
+
+    foreach ($evento->asientos as $asiento) {
+        $zona = $asiento->zona;
+        if (isset($precios[$zona]) && is_numeric($precios[$zona])) {
+            $evento->asientos()->updateExistingPivot($asiento->idAsi, [
+                'precio' => (float) $precios[$zona],
+            ]);
+        }
+    }
+
+    return redirect()->back()->with('success', 'Precios actualizados correctamente.');
+}
+
+public function vincularAsientos(Request $request, $id)
+{
+    $evento       = Evento::findOrFail($id);
+    $asientosIds  = $request->input('asientos', []);
+    $preciosZona  = $request->input('precio_zona', []);
+
+    if (empty($asientosIds)) {
+        return redirect()->back()->with('error', 'No has seleccionado ningún asiento.');
+    }
+
+    $asientos = Asiento::whereIn('idAsi', $asientosIds)->get();
+
+    foreach ($asientos as $asiento) {
+        $precio = isset($preciosZona[$asiento->zona]) && is_numeric($preciosZona[$asiento->zona])
+            ? (float) $preciosZona[$asiento->zona]
+            : 0;
+
+        $evento->asientos()->syncWithoutDetaching([
+            $asiento->idAsi => ['precio' => $precio],
+        ]);
+    }
+
+    return redirect()->back()->with('success', count($asientosIds) . ' asientos habilitados correctamente.');
+}
+
 public function eliminar($id)
 {
     try {
         $evento = Evento::with('ReservaDeEventos')->findOrFail($id);
+
+        if (auth()->user()->es_demo && !$evento->demo) {
+            return redirect()->back()->withErrors(['error' => 'No tienes permisos para eliminar este evento.']);
+        }
 
         // Eliminar primero las reservas asociadas
         foreach ($evento->ReservaDeEventos as $reserva) {
@@ -519,10 +627,40 @@ public function eliminar($id)
         }
     }
 
+    public function repetir(Request $request, $id)
+    {
+        $request->validate([
+            'nueva_fecha' => 'required|date|after:today',
+            'nueva_hora'  => 'required|date_format:H:i',
+        ]);
+
+        $original = Evento::with('asientos')->findOrFail($id);
+
+        $nuevo = $original->replicate();
+        $nuevo->fecha  = $request->nueva_fecha . ' ' . $request->nueva_hora;
+        $nuevo->codigo = \Illuminate\Support\Str::random(8);
+        $nuevo->estado = 'activo';
+        $nuevo->demo   = auth()->user()->es_demo;
+        $nuevo->save();
+
+        foreach ($original->asientos as $asiento) {
+            $nuevo->asientos()->attach($asiento->idAsi, [
+                'precio' => $asiento->pivot->precio,
+            ]);
+        }
+
+        return redirect()->route('eventos.ver', $nuevo->idEve)
+            ->with('success', 'Evento repetido correctamente para el ' . \Carbon\Carbon::parse($nuevo->fecha)->format('d/m/Y H:i') . '.');
+    }
+
     public function cambiarEstado(Request $request, $id)
     {
         try {
             $evento = Evento::findOrFail($id);
+
+            if (auth()->user()->es_demo && !$evento->demo) {
+                return redirect()->back()->withErrors(['error' => 'No tienes permisos para modificar este evento.']);
+            }
 
             $nuevoEstado = $request->input('estado');
             if (!in_array($nuevoEstado, ['activo', 'finalizado'])) {

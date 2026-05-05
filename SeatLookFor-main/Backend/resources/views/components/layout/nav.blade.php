@@ -1,177 +1,302 @@
 <!DOCTYPE html>
-<html lang="es"
-    x-data="{ 
-        mostrarMenu: window.innerWidth > 960,
-        isMobile: window.innerWidth <= 960
-    }"
-    x-init="
-        window.addEventListener('resize', () => {
-            isMobile = window.innerWidth <= 960;
-            if (!isMobile) {
-                mostrarMenu = true;
-            } else {
-                mostrarMenu = false;
-            }
-        })
-    ">
+<html lang="es" x-data="{ sidebarOpen: window.innerWidth > 960 }"
+      x-init="window.addEventListener('resize', () => { sidebarOpen = window.innerWidth > 960; })">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>SeatLook - Dashboard</title>
-
+    <title>Admin — SeatLookFor</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <!-- Alpine.js -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs" defer></script>
-
-    <!-- Heroicons -->
-    <script src="https://unpkg.com/@heroicons/v2/24/outline/esm/index.js"></script>
-
     <style>
-        [x-cloak] { display: none; }
+        [x-cloak] { display: none !important; }
 
-        /* ── Admin form text fix ── */
-        main label {
+        /* ── Admin shell ── */
+        .admin-shell {
+            display: flex;
+            min-height: 100vh;
+            background: var(--bg);
+        }
+
+        /* ── Sidebar ── */
+        .admin-sidebar {
+            width: 240px;
+            flex-shrink: 0;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 100;
+            transition: transform 0.2s ease;
+        }
+        .admin-sidebar__logo {
+            padding: 24px 20px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .admin-sidebar__logo a {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .admin-sidebar__user {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .admin-sidebar__avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem; color: #fff;
+            flex-shrink: 0;
+        }
+        .admin-sidebar__name { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+        .admin-sidebar__role { font-size: 0.75rem; color: var(--text-dim); }
+
+        .admin-sidebar__nav { padding: 16px 12px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .admin-nav-link {
             display: block;
-            color: #374151;
-            font-weight: 500;
+            padding: 10px 14px;
+            border-radius: 8px;
             font-size: 0.875rem;
-            margin-bottom: 0.3rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            transition: background 0.15s, color 0.15s;
         }
-        main input:not([type="hidden"]),
-        main textarea,
-        main select {
-            color: #111827;
-            background-color: #ffffff;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            padding: 0.5rem 0.75rem;
+        .admin-nav-link:hover { background: var(--bg-raised); color: var(--text); }
+        .admin-nav-link--active { background: rgba(128,0,32,0.25); color: var(--primary); font-weight: 600; border-left: 2px solid var(--primary); }
+
+        .admin-sidebar__footer {
+            padding: 16px 12px;
+            border-top: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .admin-sidebar__footer a,
+        .admin-sidebar__footer button {
+            display: block; width: 100%; text-align: left;
+            padding: 10px 14px; border-radius: 8px;
+            font-size: 0.875rem; font-weight: 500;
+            color: var(--text-dim);
+            background: none; border: none; cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        .admin-sidebar__footer a:hover,
+        .admin-sidebar__footer button:hover { background: var(--bg-raised); color: var(--text); }
+        .admin-sidebar__footer .logout-btn:hover { color: #f87171; background: rgba(239,68,68,0.08); }
+
+        /* ── Main ── */
+        .admin-main {
+            margin-left: 240px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .admin-topbar {
+            height: 56px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 12px;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .admin-topbar__toggle {
+            display: none;
+            background: none; border: none; cursor: pointer;
+            color: var(--text-dim); font-size: 1.2rem; padding: 4px;
+        }
+        .admin-content {
+            flex: 1;
+            padding: 32px 28px;
+            max-width: 1200px;
             width: 100%;
-            transition: border-color 0.15s;
+            margin: 0 auto;
+            box-sizing: border-box;
         }
-        main input:not([type="hidden"]):focus,
-        main textarea:focus,
-        main select:focus {
-            outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+
+        /* ── Overlay for mobile ── */
+        .admin-overlay {
+            display: none;
+            position: fixed; inset: 0; z-index: 99;
+            background: rgba(0,0,0,0.5);
         }
-        main h1, main h2, main h3, main h4 { color: #111827; }
-        main p:not([class*="text-"]) { color: #374151; }
+
+        @media (max-width: 960px) {
+            .admin-sidebar { transform: translateX(-100%); }
+            .admin-sidebar--open { transform: translateX(0); }
+            .admin-main { margin-left: 0; }
+            .admin-topbar__toggle { display: block; }
+            .admin-overlay--show { display: block; }
+            .admin-content { padding: 20px 16px; }
+        }
+
+        /* ── Demo banner ── */
+        .demo-banner {
+            background: linear-gradient(90deg, #78350f, #92400e);
+            color: #fef3c7;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 7px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid rgba(251,191,36,0.25);
+        }
+        .demo-banner__timer {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fbbf24;
+            background: rgba(0,0,0,0.3);
+            padding: 1px 10px;
+            border-radius: 4px;
+            min-width: 52px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* ── Tailwind overrides for dark admin theme ── */
+        .admin-content .text-gray-800 { color: #f1f5f9 !important; }
+        .admin-content .text-gray-700 { color: #e2e8f0 !important; }
+        .admin-content .text-gray-600 { color: #cbd5e1 !important; }
+        .admin-content .text-gray-500 { color: #94a3b8 !important; }
+        .admin-content .text-gray-400 { color: #94a3b8 !important; }
+        .admin-content .bg-white      { background: var(--bg-card) !important; }
+        .admin-content .bg-gray-100,
+        .admin-content .bg-gray-200   { background: var(--bg-raised) !important; }
+        .admin-content .shadow-md,
+        .admin-content .shadow-lg     { box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important; }
+
+        /* Badges de estado */
+        .admin-content .bg-green-100  { background: rgba(34,197,94,0.15)  !important; }
+        .admin-content .text-green-800{ color: #86efac !important; }
+        .admin-content .bg-red-100    { background: rgba(239,68,68,0.15)  !important; }
+        .admin-content .text-red-800  { color: #fca5a5 !important; }
+        .admin-content .bg-blue-100   { background: rgba(59,130,246,0.15) !important; }
+        .admin-content .text-blue-800 { color: #93c5fd !important; }
+        .admin-content .bg-yellow-100 { background: rgba(234,179,8,0.15)  !important; }
+        .admin-content .text-yellow-800{color: #fde047 !important; }
+        .admin-content .border-yellow-500 { border-color: rgba(234,179,8,0.5) !important; }
+
+        /* Inputs y selects de Tailwind dentro del admin */
+        .admin-content input,
+        .admin-content select,
+        .admin-content textarea {
+            background: var(--bg-raised) !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
+        }
+        .admin-content input::placeholder { color: var(--text-dim) !important; }
     </style>
 </head>
+<body>
+<div class="admin-shell">
 
-<body class="bg-gray-100">
-    <div class="min-h-screen flex">
-        <!-- Sidebar -->
-        <div class="bg-gray-900 text-white w-64 space-y-6 py-7 px-2 fixed md:relative inset-y-0 left-0 transform transition duration-200 ease-in-out"
-             :class="{ '-translate-x-full': !mostrarMenu && isMobile }"
-             x-show="mostrarMenu"
-             @click.away="if (isMobile) mostrarMenu = false"
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="-translate-x-full"
-             x-transition:enter-end="translate-x-0"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="translate-x-0"
-             x-transition:leave-end="-translate-x-full">
-
-            <!-- Logo -->
-            <div class="flex items-center justify-center mb-8">
-                <img src="{{ asset('images/logo.png') }}" alt="SeatLook Logo" class="h-12 w-auto">
-            </div>
-
-            <!-- User Info -->
-            <div class="px-4 py-3 border-b border-gray-800">
-                <div class="flex items-center space-x-3">
-                    <div class="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center">
-                        <span class="text-lg font-semibold">{{ substr(Auth::user()->nombre?? 'U', 0, 1) }}</span>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium">{{ Auth::user()->nombre." ".Auth::user()->apellido ?? 'Usuario' }}</p>
-                        <p class="text-xs text-gray-400">Administrador</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Navigation -->
-            <nav class="space-y-2">
-                <a href="{{ route('dashboard') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-800 hover:text-white">
-                    <div class="flex items-center space-x-2">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                        </svg>
-                        <span>Dashboard</span>
-                    </div>
-                </a>
-
-                <a href="{{ route('establecimiento.listado') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-800 hover:text-white">
-                    <div class="flex items-center space-x-2">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
-                        <span>Establecimientos</span>
-                    </div>
-                </a>
-
-                <a href="{{ route('eventos.listado') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-800 hover:text-white">
-                    <div class="flex items-center space-x-2">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        <span>Eventos</span>
-                    </div>
-                </a>
-
-             
-
-               
-            </nav>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" :class="{ 'admin-sidebar--open': sidebarOpen }">
+        <div class="admin-sidebar__logo">
+            <a href="{{ route('home') }}">SeatLookFor</a>
+            <div style="font-size:0.7rem;color:var(--text-dim);margin-top:2px;text-transform:uppercase;letter-spacing:1px;">Panel Admin</div>
         </div>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Navigation -->
-            <header class="bg-white shadow-sm">
-                <div class="flex items-center justify-between h-16 px-6">
-                    <!-- Mobile menu button -->
-                    <button @click="mostrarMenu = !mostrarMenu" class="md:hidden text-gray-500 hover:text-gray-600">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-
-                    <!-- Right side buttons -->
-                    <div class="flex items-center space-x-4">
-                        <a href="{{ route('home') }}"
-                           style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.35);border-radius:8px;font-size:13px;font-weight:600;color:#7c3aed;text-decoration:none;transition:all 0.2s;"
-                           onmouseover="this.style.background='rgba(139,92,246,0.2)'"
-                           onmouseout="this.style.background='rgba(139,92,246,0.1)'">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/>
-                            </svg>
-                            Modo Usuario
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="text-gray-500 hover:text-gray-600 flex items-center space-x-2">
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                                </svg>
-                                <span>Cerrar Sesión</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-                <div class="container mx-auto px-6 py-8">
-                    {{ $slot }}
-                </div>
-            </main>
+        <div class="admin-sidebar__user">
+            <div class="admin-sidebar__avatar">{{ substr(Auth::user()->nombre ?? 'U', 0, 1) }}</div>
+            <div>
+                <div class="admin-sidebar__name">{{ Auth::user()->nombre ?? 'Admin' }}</div>
+                <div class="admin-sidebar__role">{{ Auth::user()->es_demo ? 'Usuario Demo' : 'Administrador' }}</div>
+            </div>
         </div>
+
+        <nav class="admin-sidebar__nav">
+            <a href="{{ route('dashboard') }}" class="admin-nav-link {{ request()->routeIs('dashboard') ? 'admin-nav-link--active' : '' }}">
+                Dashboard
+            </a>
+            <a href="{{ route('establecimiento.listado') }}" class="admin-nav-link {{ request()->routeIs('establecimiento.*') ? 'admin-nav-link--active' : '' }}">
+                Establecimientos
+            </a>
+            <a href="{{ route('eventos.listado') }}" class="admin-nav-link {{ request()->routeIs('eventos.*') ? 'admin-nav-link--active' : '' }}">
+                Eventos
+            </a>
+        </nav>
+
+        <div class="admin-sidebar__footer">
+            <a href="{{ route('home') }}">Modo Usuario</a>
+            <form method="POST" action="{{ route('logout') }}" style="margin:0;padding:0;">
+                @csrf
+                <button type="submit" class="logout-btn">Cerrar Sesión</button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Mobile overlay -->
+    <div class="admin-overlay" :class="{ 'admin-overlay--show': sidebarOpen && window.innerWidth <= 960 }"
+         @click="sidebarOpen = false"></div>
+
+    <!-- Main -->
+    <div class="admin-main">
+        <header class="admin-topbar">
+            <button class="admin-topbar__toggle" @click="sidebarOpen = !sidebarOpen">☰</button>
+            <span style="font-size:0.85rem;color:var(--text-dim);margin-left:auto;">
+                {{ Auth::user()->nombre ?? '' }} {{ Auth::user()->apellido ?? '' }}
+            </span>
+        </header>
+
+        @if(Auth::check() && Auth::user()->es_demo && Auth::user()->demo_expires_at)
+        <div class="demo-banner">
+            <span>⚠ Modo Demo — el contenido se reseteará en</span>
+            <span class="demo-banner__timer" id="demo-countdown">15:00</span>
+        </div>
+        <script>window._demoExpiresAt = {{ Auth::user()->demo_expires_at->timestamp }};</script>
+        @endif
+
+        <main class="admin-content">
+            {{ $slot }}
+        </main>
     </div>
+
+</div>
+<script>
+(function () {
+    var el = document.getElementById('demo-countdown');
+    if (!el || !window._demoExpiresAt) return;
+
+    var expired = false;
+
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+    function tick() {
+        var remaining = Math.max(0, window._demoExpiresAt - Math.floor(Date.now() / 1000));
+        el.textContent = pad(Math.floor(remaining / 60)) + ':' + pad(remaining % 60);
+
+        if (remaining === 0 && !expired) {
+            expired = true;
+            el.textContent = '00:00';
+            // Notifica al servidor y redirige al login
+            fetch('{{ route("demo.session.expired") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            }).finally(function () {
+                window.location.href = '{{ route("admin.login.form") }}';
+            });
+        }
+    }
+
+    tick();
+    setInterval(tick, 1000);
+})();
+</script>
 </body>
 </html>

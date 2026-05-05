@@ -74,12 +74,14 @@ class EstablecimientoController extends Controller
      * Listado de los establecimientos 
      */
     public function listar(Request $request)
-    {   
+    {
+        if (auth()->user()->es_demo) {
+            $establecimientos = Establecimiento::where('demo', true)->paginate(6);
+        } else {
+            $establecimientos = Establecimiento::paginate(6);
+        }
 
-   // Carga todos los establecimientos, 6 por página
-    $establecimientos = Establecimiento::paginate(6);
-
-    return view('Establecimiento.listadoEstablecimiento', compact('establecimientos'));
+        return view('Establecimiento.listadoEstablecimiento', compact('establecimientos'));
     }
 
 
@@ -151,17 +153,29 @@ public function guardar(Request $request)
 {
     // Validar establecimiento
     $request->validate([
-        'nombre' => 'required|string|max:255',
-        'ubicacion' => 'required|string|max:255',
-        'imagen' => 'required|string|max:255',
-        
+        'nombre'   => 'required|string|max:255',
+        'ubicacion'=> 'required|string|max:255',
+        'imagen'   => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
     ]);
+
+    $imagenPath = 'images/establecimientos/default.jpg';
+    if ($request->hasFile('imagen')) {
+        $destino = public_path('images/establecimientos');
+        if (!file_exists($destino)) {
+            mkdir($destino, 0775, true);
+        }
+        $file = $request->file('imagen');
+        $nombre = time() . '_' . $file->getClientOriginalName();
+        $file->move($destino, $nombre);
+        $imagenPath = 'images/establecimientos/' . $nombre;
+    }
 
     // Crear el establecimiento
     $establecimiento = Establecimiento::create([
-        'nombre' => $request->input('nombre'),
-        'ubicacion' => $request->input('ubicacion'),
-        'imagen' => $request->input('imagen')
+        'nombre'   => $request->input('nombre'),
+        'ubicacion'=> $request->input('ubicacion'),
+        'imagen'   => $imagenPath,
+        'demo'     => auth()->user()->es_demo,
     ]);
 
     // Procesar los asientos desde el JSON
@@ -181,8 +195,8 @@ public function guardar(Request $request)
         
         
    foreach ($zonas as $zonaNombre) {
-    if (strlen($zonaNombre) > 5) {
-        return back()->withErrors(['zona' => "La zona '$zonaNombre' no puede tener más de 5 caracteres."])->withInput();
+    if (strlen($zonaNombre) > 50) {
+        return back()->withErrors(['zona' => "La zona '$zonaNombre' no puede tener más de 50 caracteres."])->withInput();
     }
 
     Zona::firstOrCreate([
@@ -323,6 +337,10 @@ public function eliminar($id)
 {
     try {
         $establecimiento = Establecimiento::with(['asientos.usuariosComentaron', 'eventos'])->findOrFail($id);
+
+        if (auth()->user()->es_demo && !$establecimiento->demo) {
+            return redirect()->back()->withErrors(['error' => 'No tienes permisos para eliminar este establecimiento.']);
+        }
 
         // Si hay eventos asociados, no permitir borrar
         if ($establecimiento->eventos->count() > 0) {

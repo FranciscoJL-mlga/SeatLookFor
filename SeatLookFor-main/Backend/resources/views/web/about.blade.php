@@ -31,28 +31,57 @@
                 </div>
                 <h1 class="about__card-title">Francisco Jiménez López</h1>
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:4px;">
                 <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:20px;font-size:12px;color:var(--primary);font-weight:600;">
                     Backend
                 </span>
                 <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.25);border-radius:20px;font-size:12px;color:var(--accent);font-weight:600;">
                     Laravel
                 </span>
+                <a href="https://www.linkedin.com/in/francisco-jimenez-lopez-1a1517217" target="_blank" rel="noopener"
+                   style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(10,102,194,0.12);border:1px solid rgba(10,102,194,0.35);border-radius:20px;font-size:12px;color:#4a9fd4;font-weight:600;text-decoration:none;transition:background 0.2s;"
+                   onmouseover="this.style.background='rgba(10,102,194,0.25)'" onmouseout="this.style.background='rgba(10,102,194,0.12)'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                    LinkedIn
+                </a>
             </div>
-            <p class="about__card-text">Desde pequeño me han interesado los videojuegos, especialmente los RPG, lo que despertó en mí la curiosidad por entender cómo funcionan los sistemas por dentro. Con el tiempo, esa curiosidad se transformó en una vocación por la programación, centrada principalmente en el desarrollo web.
+            <p class="about__card-text">Desarrollador Web con especialización en backend, recién graduado en DAW y con experiencia práctica en proyectos reales. Me apasiona diseñar la lógica que hay detrás de las aplicaciones: que todo funcione de forma eficiente, estructurada y escalable.</p>
 
-Actualmente he finalizado mis estudios en Desarrollo de Aplicaciones Web y he trabajado en distintos proyectos utilizando PHP y Laravel, gestión de bases de datos y desarrollo de funcionalidades completas del lado del servidor. Disfruto especialmente diseñando la lógica que hay detrás de las aplicaciones y asegurando que todo funcione de forma eficiente y estructurada.
+            {{-- Stack tecnológico --}}
+            <div style="margin:16px 0 20px;display:flex;flex-wrap:wrap;gap:8px;">
+                @foreach(['PHP', 'Laravel', 'MySQL', 'PostgreSQL', 'JavaScript', 'HTML/CSS', 'Python', 'Angular', 'AWS', 'Tailwind CSS', 'Bootstrap', 'Figma'] as $tech)
+                <span style="padding:4px 11px;border-radius:99px;font-size:11px;font-weight:600;
+                             background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
+                             color:var(--text-dim);">{{ $tech }}</span>
+                @endforeach
+            </div>
 
-Además, tengo conocimientos en HTML, CSS, JavaScript, Python y SQL, así como experiencia con Angular y formación en React. También estoy familiarizado con entornos de despliegue en la nube como AWS.
-
-Compagino mi formación tecnológica con experiencia laboral en el sector de la hostelería, lo que me ha permitido desarrollar habilidades como la responsabilidad, el trabajo en equipo y la capacidad de adaptación.
-
-Me considero una persona constante, con gran capacidad de aprendizaje y motivada por seguir creciendo profesionalmente dentro del desarrollo de software.</p>
+            {{-- Puntos clave --}}
+            <ul style="display:flex;flex-direction:column;gap:10px;padding:0;list-style:none;margin:0 0 8px;">
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:var(--primary);margin-top:2px;flex-shrink:0;">▸</span>
+                    Desarrollo de APIs REST con Laravel y gestión de bases de datos relacionales (MySQL, PostgreSQL).
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:var(--primary);margin-top:2px;flex-shrink:0;">▸</span>
+                    Experiencia en despliegue en la nube con AWS y entornos de producción reales.
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:var(--primary);margin-top:2px;flex-shrink:0;">▸</span>
+                    Capacidad de adaptación y trabajo en equipo, reforzada por años de experiencia en el sector de la hostelería.
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:var(--primary);margin-top:2px;flex-shrink:0;">▸</span>
+                    Actualmente buscando una primera oportunidad profesional donde seguir creciendo en desarrollo de software.
+                </li>
+            </ul>
         </div>
 
         {{-- ── Antonio Jesus Heredias ── --}}
         <div class="about__card about__card--toni">
-            <div class="about__header" style="justify-content:flex-end;">
+            <div class="about__header">
                 <h1 class="about__card-title">Antonio Jesus Heredias</h1>
                 <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--primary));display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white">
@@ -60,23 +89,52 @@ Me considero una persona constante, con gran capacidad de aprendizaje y motivada
                     </svg>
                 </div>
             </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:4px;">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:4px;">
                 <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(16,185,129,0.10);border:1px solid rgba(16,185,129,0.25);border-radius:20px;font-size:12px;color:#10b981;font-weight:600;">
                     Frontend
                 </span>
                 <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.25);border-radius:20px;font-size:12px;color:var(--accent);font-weight:600;">
                     Diseño
                 </span>
+                <a href="https://www.linkedin.com/in/antoniojheredia/" target="_blank" rel="noopener"
+                   style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(10,102,194,0.12);border:1px solid rgba(10,102,194,0.35);border-radius:20px;font-size:12px;color:#4a9fd4;font-weight:600;text-decoration:none;transition:background 0.2s;"
+                   onmouseover="this.style.background='rgba(10,102,194,0.25)'" onmouseout="this.style.background='rgba(10,102,194,0.12)'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                    LinkedIn
+                </a>
             </div>
-            <p class="about__card-text">¡Ey! Soy Toni. Me considero una persona alegre, positiva y bastante realista. Me gusta ver el vaso medio lleno, pero tampoco me monto películas de Disney cuando sé que viene una semana con cuatro entregas y dos exámenes. La clave está en reírse, moverse y seguir.
+            <p class="about__card-text" style="text-align:left;">Desarrollador Frontend con pasión por el diseño de interfaces, recién graduado en DAW. Me especializo en crear experiencias visuales atractivas, intuitivas y funcionales donde el código y el diseño se encuentran.</p>
 
-            Me encanta el deporte. Juego al pádel siempre que puedo —aunque mis amigos dicen que a veces le hablo a la pala más que a ellos—, y también hago pesas. Vale, lo admito: no se nota mucho… pero están ahí, te lo juro. Lo importante es el esfuerzo, ¿no?
+            {{-- Stack tecnológico --}}
+            <div style="margin:16px 0 20px;display:flex;flex-wrap:wrap;gap:8px;">
+                @foreach(['HTML/CSS', 'JavaScript', 'Tailwind CSS', 'Alpine.js', 'Bootstrap', 'PHP', 'Laravel', 'AWS', 'MySQL', 'Angular', 'Diseño Responsive'] as $tech)
+                <span style="padding:4px 11px;border-radius:99px;font-size:11px;font-weight:600;
+                             background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
+                             color:var(--text-dim);">{{ $tech }}</span>
+                @endforeach
+            </div>
 
-            Soy fan de la buena comida, sin muchas complicaciones. Si hay una buena pizza, una hamburguesa o unas tapas, estoy dentro. Y si después se puede caer una peli o una serie, mejor aún. Me puedo enganchar a cualquier cosa si tiene buen ritmo o personajes que molen. Desde thrillers a comedias tontas, soy de los que dicen "un capítulo más" y acaba viendo cuatro.
-
-            Estudio programación en el Instituto Alan Turing. Allí conocí a gente muy crack, y también a otros que están igual de perdidos que yo cuando vemos un error de JavaScript. Pero lo bueno es que me encanta lo que hago, sobre todo el frontend. Me flipa todo lo que tiene que ver con diseño, colores, interacción… eso de ver cómo tus líneas de código se convierten en algo visual y funcional me parece magia pura.
-
-            Intento llevarlo todo con humor, aunque a veces toque apretar los dientes. Soy de los que prefieren disfrutar el camino, aunque haya bugs, trabajos de grupo y días donde nada compila.</p>
+            {{-- Puntos clave --}}
+            <ul style="display:flex;flex-direction:column;gap:10px;padding:0;list-style:none;margin:0 0 8px;">
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:#10b981;margin-top:2px;flex-shrink:0;">▸</span>
+                    Maquetación de interfaces modernas y responsivas con HTML, CSS, Tailwind y JavaScript.
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:#10b981;margin-top:2px;flex-shrink:0;">▸</span>
+                    Enfoque en la experiencia de usuario: diseño limpio, accesible e intuitivo desde el primer clic.
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:#10b981;margin-top:2px;flex-shrink:0;">▸</span>
+                    Capacidad para traducir ideas y mockups en productos visuales reales, trabajando codo a codo con backend.
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);line-height:1.6;">
+                    <span style="color:#10b981;margin-top:2px;flex-shrink:0;">▸</span>
+                    Actualmente buscando una oportunidad donde seguir creciendo en frontend y diseño de producto.
+                </li>
+            </ul>
         </div>
 
         {{-- ── El Proyecto ── --}}

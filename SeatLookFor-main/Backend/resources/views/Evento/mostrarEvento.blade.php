@@ -1,16 +1,64 @@
 <x-layout.nav>
     <div class="max-w-7xl mx-auto py-10 px-4">
         <!-- ENCABEZADO -->
-        <div class="text-center mb-12">
+        <div class="text-center mb-12" x-data="{ modalRepetir: false }">
             <h1 class="text-4xl font-bold text-gray-800 mb-2">{{ $evento->titulo }}</h1>
             <p class="text-lg text-gray-500">{{ $evento->establecimiento->nombre }}</p>
             <p class="text-sm text-gray-400">{{ $evento->fecha }}</p>
+
+            <button @click="modalRepetir = true"
+                    class="mt-4 inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold"
+                    style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.4);color:#f59e0b;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                </svg>
+                Repetir evento
+            </button>
+
+            <!-- Modal -->
+            <div x-show="modalRepetir" x-cloak
+                 style="position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);">
+                <div style="background:var(--bg-card,#1e1e2e);border:1px solid var(--border,#333);border-radius:14px;padding:32px;width:100%;max-width:420px;text-align:left;"
+                     @click.outside="modalRepetir = false">
+                    <h3 style="font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:6px;">
+                        Repetir: {{ $evento->titulo }}
+                    </h3>
+                    <p style="font-size:0.8rem;color:#94a3b8;margin-bottom:20px;">
+                        Se creará un evento idéntico con la nueva fecha. Los asientos y precios se copian automáticamente.
+                    </p>
+
+                    <form method="POST" action="{{ route('eventos.repetir', $evento->idEve) }}">
+                        @csrf
+                        <div style="margin-bottom:14px;">
+                            <label style="display:block;font-size:0.8rem;color:#94a3b8;margin-bottom:6px;">Nueva fecha</label>
+                            <input type="date" name="nueva_fecha" required
+                                   style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid #374151;background:#111827;color:#f1f5f9;font-size:0.9rem;">
+                        </div>
+                        <div style="margin-bottom:22px;">
+                            <label style="display:block;font-size:0.8rem;color:#94a3b8;margin-bottom:6px;">Hora</label>
+                            <input type="time" name="nueva_hora" required
+                                   style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid #374151;background:#111827;color:#f1f5f9;font-size:0.9rem;">
+                        </div>
+                        <div style="display:flex;gap:10px;justify-content:flex-end;">
+                            <button type="button" @click="modalRepetir = false"
+                                    style="padding:8px 18px;border-radius:8px;border:1px solid #374151;background:transparent;color:#94a3b8;font-size:0.85rem;cursor:pointer;">
+                                Cancelar
+                            </button>
+                            <button type="submit"
+                                    style="padding:8px 18px;border-radius:8px;background:#f59e0b;border:none;color:#000;font-weight:700;font-size:0.85rem;cursor:pointer;">
+                                Crear evento repetido
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- IMAGEN DEL ESTABLECIMIENTO -->
         @if($evento->establecimiento->imagen)
             <div class="mb-10 flex justify-center">
-                <img src="{{ $evento->establecimiento->imagen }}" alt="Imagen del establecimiento"
+                <img src="{{ asset($evento->establecimiento->imagen) }}" alt="Imagen del establecimiento"
                      class="rounded-lg shadow-lg w-full max-w-2xl h-64 object-cover">
             </div>
         @endif
@@ -47,52 +95,132 @@
             </div>
         </div>
 
-        <!-- MAPA DE ASIENTOS -->
+        @php
+            $zonePalette = [
+                '#3b82f6','#10b981','#8b5cf6','#06b6d4',
+                '#f43f5e','#84cc16','#d946ef','#f97316',
+                '#14b8a6','#6366f1','#ec4899','#eab308',
+                '#22c55e','#ef4444','#fb923c','#38bdf8',
+                '#a3e635','#2dd4bf','#c026d3','#d97706',
+                '#1d4ed8','#15803d','#7c3aed','#be123c',
+                '#0891b2','#65a30d','#9333ea','#0284c7',
+                '#f472b6','#4ade80','#fb7185','#34d399',
+            ];
+            $uniqueZones = collect($todosAsientos)->pluck('zona')->unique()->values();
+            $zoneColorMap = [];
+            foreach ($uniqueZones as $i => $zona) {
+                $zoneColorMap[$zona] = $zonePalette[$i % count($zonePalette)];
+            }
+            $zonaPrecioMap = [];
+            foreach (collect($todosAsientos)->groupBy('zona') as $zona => $seats) {
+                $enabled = collect($seats)->firstWhere('habilitado', true);
+                $zonaPrecioMap[$zona] = $enabled ? $enabled['precio'] : 0;
+            }
+            $allEjeX = collect($todosAsientos)->pluck('ejeX');
+            $allEjeY = collect($todosAsientos)->pluck('ejeY');
+            $minX    = $allEjeX->min() ?? 0;
+            $minY    = $allEjeY->min() ?? 0;
+            $mapW    = (($allEjeX->max() ?? 0) - $minX + 2) * 50 + 20;
+            $mapH    = (($allEjeY->max() ?? 0) - $minY + 2) * 50 + 40;
+        @endphp
+
+        <!-- GESTIÓN DE ASIENTOS -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Mapa de Asientos</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-1">Gestión de Asientos</h2>
+            <p class="text-sm text-gray-500 mb-5">
+                Haz clic en un asiento para habilitarlo o deshabilitarlo. Los asientos con reserva no pueden deshabilitarse.
+            </p>
 
-            {{-- Leyenda --}}
-            <div style="display:flex;gap:20px;margin-bottom:14px;flex-wrap:wrap;">
-                @php
-                    $zonaColores = ['A' => '#8b5cf6', 'B' => '#3b82f6', 'C' => '#10b981'];
-                    $coloresExtra = ['#f59e0b','#ef4444','#ec4899','#06b6d4','#84cc16'];
-                    $colIdx = 0;
-                @endphp
-                @foreach($evento->asientos->groupBy('zona') as $zona => $seats)
-                    @php $color = $zonaColores[$zona] ?? $coloresExtra[$colIdx++ % count($coloresExtra)]; @endphp
-                    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;">
-                        <svg viewBox="0 0 44 48" width="18" height="20" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="5" y="0" width="34" height="29" rx="7" fill="{{ $color }}"/>
-                            <rect x="0" y="32" width="44" height="14" rx="5" fill="{{ $color }}"/>
-                        </svg>
-                        Zona {{ $zona }}
-                    </div>
-                @endforeach
-            </div>
+            @if(session('success'))
+                <div class="mb-4 px-4 py-3 bg-green-100 border border-green-400 text-green-800 rounded">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div class="mb-4 px-4 py-3 bg-red-100 border border-red-400 text-red-800 rounded">{{ session('error') }}</div>
+            @endif
 
-            <div class="overflow-x-auto">
-                <div class="relative border rounded-xl bg-gray-50 p-4 mx-auto" style="width:1000px;height:600px;">
-                    {{-- Escenario --}}
-                    <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;font-size:12px;font-weight:700;letter-spacing:2px;padding:6px 40px;border-radius:6px;">ESCENARIO</div>
+            <form action="{{ route('eventos.guardar-asientos', $evento->idEve) }}" method="POST">
+                @csrf
 
-                    @php $colIdx = 0; @endphp
-                    @foreach($evento->asientos as $asiento)
-                        @php
-                            $color = $zonaColores[$asiento->zona] ?? $coloresExtra[$colIdx++ % count($coloresExtra)];
-                        @endphp
-                        <div title="Zona {{ $asiento->zona }} — Fila {{ $asiento->ejeY }}, Col {{ $asiento->ejeX }}"
-                             style="position:absolute;
-                                    left:{{ $asiento->ejeX * 50 + 5 }}px;
-                                    top:{{ $asiento->ejeY * 50 + 20 }}px;
-                                    width:46px;height:50px;">
-                            <svg viewBox="0 0 44 48" width="44" height="48" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="5" y="0" width="34" height="29" rx="7" fill="{{ $color }}"/>
-                                <rect x="0" y="32" width="44" height="14" rx="5" fill="{{ $color }}"/>
-                            </svg>
+                {{-- Precios por zona --}}
+                <div class="mb-6">
+                    <h3 class="font-semibold text-gray-700 mb-3 text-sm uppercase tracking-wide">Precios por zona</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                        @foreach($zoneColorMap as $zona => $color)
+                        <div class="border rounded-lg p-3" style="border-left:4px solid {{ $color }};">
+                            <span class="font-semibold text-gray-800 text-sm block mb-2">Zona {{ $zona }}</span>
+                            <div class="flex items-center gap-1">
+                                <input type="number" name="precio_zona[{{ $zona }}]"
+                                       value="{{ $zonaPrecioMap[$zona] ?? 0 }}"
+                                       min="0" step="0.01"
+                                       class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                <span class="text-gray-500 text-xs">€</span>
+                            </div>
                         </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
-            </div>
+
+                {{-- Checkboxes ocultos --}}
+                @foreach($todosAsientos as $asiento)
+                    <input type="checkbox" id="chk-{{ $asiento['idAsi'] }}" name="asientos[]"
+                           value="{{ $asiento['idAsi'] }}" style="display:none;"
+                           {{ $asiento['habilitado'] ? 'checked' : '' }}>
+                @endforeach
+
+                {{-- Leyenda --}}
+                <div style="display:flex;gap:20px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#f1f5f9;">
+                        <svg viewBox="0 0 44 48" width="16" height="18"><rect x="5" y="0" width="34" height="29" rx="7" fill="#3b82f6"/><rect x="0" y="32" width="44" height="14" rx="5" fill="#3b82f6"/></svg>
+                        Habilitado
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#f1f5f9;">
+                        <svg viewBox="0 0 44 48" width="16" height="18" style="opacity:0.3"><rect x="5" y="0" width="34" height="29" rx="7" fill="#94a3b8"/><rect x="0" y="32" width="44" height="14" rx="5" fill="#94a3b8"/></svg>
+                        Deshabilitado
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#f1f5f9;">
+                        <svg viewBox="0 0 44 48" width="16" height="18"><rect x="5" y="0" width="34" height="29" rx="7" fill="#f97316"/><rect x="0" y="32" width="44" height="14" rx="5" fill="#f97316"/></svg>
+                        🔒 Con reserva (no modificable)
+                    </div>
+                </div>
+
+                {{-- Mapa de asientos --}}
+                <div id="seatmap-wrap" style="width:100%;overflow:hidden;margin-bottom:20px;">
+                    <div id="seatmap-inner" style="position:relative;width:{{ $mapW }}px;height:{{ $mapH }}px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;transform-origin:top left;">
+                        <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;padding:4px 24px;border-radius:4px;white-space:nowrap;">ESCENARIO</div>
+
+                        @foreach($todosAsientos as $asiento)
+                        @php
+                            $color    = $zoneColorMap[$asiento['zona']] ?? '#94a3b8';
+                            $svgColor = $asiento['habilitado'] ? $color : '#94a3b8';
+                            $opacity  = $asiento['habilitado'] ? '1' : '0.3';
+                            $cursor   = $asiento['reservado'] ? 'not-allowed' : 'pointer';
+                            $left     = ($asiento['ejeX'] - $minX) * 50 + 10;
+                            $top      = ($asiento['ejeY'] - $minY) * 50 + 32;
+                            $title    = 'Zona '.$asiento['zona'].' · F'.$asiento['ejeY'].'·C'.$asiento['ejeX'];
+                            if ($asiento['habilitado']) $title .= ' · '.number_format($asiento['precio'],2).'€';
+                            if ($asiento['reservado'])  $title .= ' · Con reserva';
+                        @endphp
+                        <div id="seat-{{ $asiento['idAsi'] }}"
+                             onclick="toggleSeat({{ $asiento['idAsi'] }}, {{ $asiento['reservado'] ? 'true' : 'false' }}, '{{ $color }}')"
+                             title="{{ $title }}"
+                             style="position:absolute;left:{{ $left }}px;top:{{ $top }}px;width:44px;height:48px;cursor:{{ $cursor }};opacity:{{ $opacity }};transition:opacity .15s;">
+                            <svg viewBox="0 0 44 48" width="44" height="48" xmlns="http://www.w3.org/2000/svg">
+                                <rect id="r1-{{ $asiento['idAsi'] }}" x="5" y="0" width="34" height="29" rx="7" fill="{{ $svgColor }}"/>
+                                <rect id="r2-{{ $asiento['idAsi'] }}" x="0" y="32" width="44" height="14" rx="5" fill="{{ $svgColor }}"/>
+                            </svg>
+                            @if($asiento['reservado'])
+                                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:11px;pointer-events:none;line-height:1;">🔒</div>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition">
+                    Guardar cambios
+                </button>
+            </form>
         </div>
 
         <!-- CAMBIO DE ESTADO -->
@@ -126,4 +254,36 @@
             </a>
         </div>
     </div>
+<script>
+(function () {
+    var mapW = {{ $mapW }}, mapH = {{ $mapH }};
+    var wrap  = document.getElementById('seatmap-wrap');
+    var inner = document.getElementById('seatmap-inner');
+    function fit() {
+        var scale = Math.min(1, wrap.offsetWidth / mapW);
+        inner.style.transform = 'scale(' + scale + ')';
+        wrap.style.height = Math.ceil(mapH * scale) + 'px';
+    }
+    fit();
+    window.addEventListener('resize', fit);
+})();
+
+function toggleSeat(idAsi, reservado, zoneColor) {
+    if (reservado) return;
+    var chk  = document.getElementById('chk-' + idAsi);
+    var seat = document.getElementById('seat-' + idAsi);
+    var r1   = document.getElementById('r1-' + idAsi);
+    var r2   = document.getElementById('r2-' + idAsi);
+    chk.checked = !chk.checked;
+    if (chk.checked) {
+        r1.setAttribute('fill', zoneColor);
+        r2.setAttribute('fill', zoneColor);
+        seat.style.opacity = '1';
+    } else {
+        r1.setAttribute('fill', '#94a3b8');
+        r2.setAttribute('fill', '#94a3b8');
+        seat.style.opacity = '0.3';
+    }
+}
+</script>
 </x-layout.nav>

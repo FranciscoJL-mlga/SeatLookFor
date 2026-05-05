@@ -12,16 +12,37 @@
         <!-- IMAGEN -->
         @if($establecimiento->imagen)
             <div class="mb-10 flex justify-center">
-                <img src="{{ $establecimiento->imagen }}" alt="Imagen del establecimiento"
+                <img src="{{ asset($establecimiento->imagen) }}" alt="Imagen del establecimiento"
                      class="rounded-lg shadow-lg w-full max-w-2xl h-64 object-cover">
             </div>
         @endif
 
+        @php
+            $zonePalette = [
+                '#3b82f6','#10b981','#8b5cf6','#06b6d4',
+                '#f43f5e','#84cc16','#d946ef','#f97316',
+                '#14b8a6','#6366f1','#ec4899','#eab308',
+                '#22c55e','#ef4444','#fb923c','#38bdf8',
+                '#a3e635','#2dd4bf','#c026d3','#d97706',
+                '#1d4ed8','#15803d','#7c3aed','#be123c',
+                '#0891b2','#65a30d','#9333ea','#0284c7',
+                '#f472b6','#4ade80','#fb7185','#34d399',
+            ];
+            $uniqueZones = $establecimiento->asientos->pluck('zona')->unique()->values();
+            $zoneColors  = [];
+            foreach ($uniqueZones as $i => $zona) {
+                $zoneColors[$zona] = $zonePalette[$i % count($zonePalette)];
+            }
+        @endphp
+
         <!-- LEYENDA -->
-        <div class="flex justify-center gap-6 text-sm text-gray-600 mb-6">
+        <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-600 mb-6">
+            @foreach($zoneColors as $zona => $color)
             <div class="flex items-center gap-2">
-                <span class="w-4 h-4 rounded bg-green-500 inline-block"></span> Libre
+                <span class="w-4 h-4 rounded inline-block" style="background-color:{{ $color }}"></span>
+                Zona {{ $zona }}
             </div>
+            @endforeach
             <div class="flex items-center gap-2">
                 <span class="w-4 h-4 rounded bg-gray-400 inline-block"></span> Ocupado
             </div>
@@ -30,8 +51,8 @@
         <!-- MAPA DE ASIENTOS -->
         <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Mapa de Asientos</h2>
 
-        <div class="overflow-x-auto">
-            <div class="relative bg-white border rounded-xl shadow p-4 mx-auto" style="width: 1000px; height: 600px;">
+        <div id="estmap-wrap" style="width:100%;overflow:hidden;">
+            <div id="estmap-inner" class="relative bg-white border rounded-xl shadow p-4" style="width:1000px;height:600px;transform-origin:top left;">
                 @foreach($establecimiento->asientos as $asiento)
                     <div
                         class="absolute text-[11px] font-semibold text-white flex items-center justify-center rounded-md shadow-sm"
@@ -40,7 +61,7 @@
                             height: 40px;
                             left: {{ $asiento->ejeX * 50 + 5 }}px;
                             top: {{ $asiento->ejeY * 50 + 5 }}px;
-                            background-color: {{ $asiento->estado === 'ocupado' ? '#9ca3af' : '#22c55e' }};
+                            background-color: {{ $asiento->estado === 'ocupado' ? '#9ca3af' : ($zoneColors[$asiento->zona] ?? '#22c55e') }};
                         "
                         title="Zona: {{ $asiento->zona }} | Precio: €{{ number_format($asiento->precio, 2) }}"
                     >
@@ -100,4 +121,17 @@
             </a>
         </div>
     </div>
+<script>
+(function () {
+    var wrap  = document.getElementById('estmap-wrap');
+    var inner = document.getElementById('estmap-inner');
+    function fit() {
+        var scale = Math.min(1, wrap.offsetWidth / 1000);
+        inner.style.transform = 'scale(' + scale + ')';
+        wrap.style.height = Math.ceil(600 * scale) + 'px';
+    }
+    fit();
+    window.addEventListener('resize', fit);
+})();
+</script>
 </x-layout.nav>

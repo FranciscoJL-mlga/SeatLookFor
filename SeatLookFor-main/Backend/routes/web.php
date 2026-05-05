@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EstablecimientoController;
@@ -19,7 +20,7 @@ use App\Http\Controllers\Web\ReservaWebController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/eventos', [EventoWebController::class, 'index'])->name('eventos.index');
-Route::get('/evento/{id}', [EventoWebController::class, 'show'])->name('evento.show');
+Route::get('/evento/{evento}', [EventoWebController::class, 'show'])->name('evento.show');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 // Auth de usuario (solo para invitados)
@@ -37,9 +38,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/usuario', [PerfilController::class, 'index'])->name('usuario.perfil');
     Route::post('/usuario/password', [PerfilController::class, 'cambiarPassword'])->name('usuario.password');
     Route::post('/usuario/eliminar', [PerfilController::class, 'eliminarCuenta'])->name('usuario.eliminar');
-    Route::get('/asientos/{idEvento}', [AsientoWebController::class, 'index'])->name('asientos.index');
+    Route::get('/asientos/{evento}', [AsientoWebController::class, 'index'])->name('asientos.index');
     Route::post('/asientos/seleccionar', [AsientoWebController::class, 'seleccionar'])->name('asientos.seleccionar');
-    Route::get('/resumen/{idEvento}', [ReservaWebController::class, 'resumen'])->name('reserva.resumen');
+    Route::get('/resumen/{evento}', [ReservaWebController::class, 'resumen'])->name('reserva.resumen');
     Route::post('/reserva', [ReservaWebController::class, 'crear'])->name('reserva.crear');
     Route::post('/reserva/liberar', [ReservaWebController::class, 'liberar'])->name('reserva.liberar');
     Route::post('/asientos/{id}/comentar', [AsientoWebController::class, 'comentar'])->name('asientos.comentar');
@@ -52,7 +53,6 @@ Route::middleware('auth')->group(function () {
 // RUTAS ADMINISTRACIÓN (Prefijo /admin)
 // ============================================================
 
-// El login de admin ahora es el mismo que el de usuario
 Route::get('/admin/login', fn () => redirect()->route('login'))
     ->middleware('guest')
     ->name('admin.login.form');
@@ -65,7 +65,18 @@ Route::post('/admin/logout', [AuthenticatedSessionController::class, 'logout'])
     ->middleware('auth')
     ->name('admin.logout');
 
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+// Forzar reset demo desde el JS del navegador (cuando el countdown llega a 0)
+Route::post('/demo/session-expired', function () {
+    if (Auth::check() && Auth::user()->es_demo) {
+        \Illuminate\Support\Facades\Artisan::call('demo:reset');
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+    }
+    return response()->json(['redirect' => route('admin.login.form')]);
+})->middleware('auth')->name('demo.session.expired');
+
+Route::prefix('admin')->middleware(['auth', 'admin', 'demo.session'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -89,4 +100,8 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/zonas-por-establecimiento/{idEst}', [EventoController::class, 'obtenerZonas'])->name('zonas.porEstablecimiento');
     Route::post('/eventos/eliminar/{id}', [EventoController::class, 'eliminar'])->name('eventos.eliminar');
     Route::post('/eventos/estado/{id}', [EventoController::class, 'cambiarEstado'])->name('eventos.estado');
+    Route::post('/eventos/{id}/precio-zona', [EventoController::class, 'actualizarPrecioZona'])->name('eventos.precio-zona');
+    Route::post('/eventos/{id}/asientos/vincular', [EventoController::class, 'vincularAsientos'])->name('eventos.vincular-asientos');
+    Route::post('/eventos/{id}/asientos/guardar', [EventoController::class, 'guardarAsientos'])->name('eventos.guardar-asientos');
+    Route::post('/eventos/{id}/repetir', [EventoController::class, 'repetir'])->name('eventos.repetir');
 });
